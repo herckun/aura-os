@@ -173,14 +173,32 @@ Singleton {
         if (!monitor || !monitor.availableModes)
             return [];
         var modes = [];
+        var seenValues = ({});
         for (var i = 0; i < monitor.availableModes.length; i++) {
             var modeStr = monitor.availableModes[i];
+            if (seenValues[modeStr])
+                continue;
+            seenValues[modeStr] = true;
             var parsed = _parseModeString(modeStr);
             if (parsed)
                 modes.push(parsed);
         }
 
-        modes.sort((a, b) => a.refreshRate - b.refreshRate);
+        var labelCounts = ({});
+        for (var j = 0; j < modes.length; j++)
+            labelCounts[modes[j].label] = (labelCounts[modes[j].label] || 0) + 1;
+        for (var k = 0; k < modes.length; k++) {
+            if (labelCounts[modes[k].label] > 1 && modes[k].refreshRate > 0)
+                modes[k].label = modes[k].width + "x" + modes[k].height + "@" + modes[k].refreshRate.toFixed(2) + "Hz";
+        }
+
+        modes.sort(function (a, b) {
+            if (a.width !== b.width)
+                return b.width - a.width;
+            if (a.height !== b.height)
+                return b.height - a.height;
+            return b.refreshRate - a.refreshRate;
+        });
         return modes;
     }
 
@@ -285,7 +303,7 @@ Singleton {
                     output: output,
                     mode: rawMode || "preferred",
                     position: (mon.x || 0) + "x" + (mon.y || 0),
-                    scale: String(mon.scale || 1)
+                    scale: String(mon.scale || 1).replace(/^(\d+)$/, "$1.0")
                 });
             }
         }
