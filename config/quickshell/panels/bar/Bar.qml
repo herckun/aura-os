@@ -8,7 +8,6 @@ import "../../core"
 import "../../services"
 import "../../components"
 import "../../overlays/osd"
-import "../../overlays/battery"
 import "../../overlays/toast"
 
 PanelWindow {
@@ -64,11 +63,6 @@ PanelWindow {
   }
 
   Connections {
-    target: IpcService
-    function onBatteryToggle() { bar.toggleBatteryTooltip() }
-  }
-
-  Connections {
     target: AudioService
     function onVolumeChanged() {
       var icon = AudioService.muted ? "volume-mute" : "volume"
@@ -105,26 +99,6 @@ PanelWindow {
     target: AppearanceService
     function onBarFloatingChanged(): void {
       bar._syncBarGeometry()
-    }
-  }
-
-  function toggleBatteryTooltip(): void {
-    if (!batteryTooltipLoader.active) {
-      batteryTooltipLoader.active = true
-      Qt.callLater(bar.toggleBatteryTooltip)
-      return
-    }
-    if (!batteryTooltipLoader.item) {
-      Qt.callLater(bar.toggleBatteryTooltip)
-      return
-    }
-
-    var tooltip = batteryTooltipLoader.item
-    if (tooltip.visible) {
-      tooltip.visible = false
-    } else {
-      tooltip.anchorItem = PopupAnchors.batteryWidget
-      tooltip.visible = true
     }
   }
 
@@ -176,21 +150,6 @@ PanelWindow {
 
   OSD {
     id: osdOverlay
-  }
-
-  LazyLoader {
-    id: batteryTooltipLoader
-    active: false
-
-    BatteryTooltip {
-      id: batteryTooltip
-      visible: false
-      Component.onCompleted: PopupAnchors.batteryTooltip = batteryTooltip
-      onVisibleChanged: { if (!visible) batteryTooltipLoader.active = false }
-      Component.onDestruction: {
-        if (PopupAnchors.batteryTooltip === batteryTooltip) PopupAnchors.batteryTooltip = null
-      }
-    }
   }
 
   Toast { id: toast0; slot: 0 }

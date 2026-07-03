@@ -3,11 +3,11 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
-import "../../styles"
-import "../../core"
-import "../../lib"
-import "../../services"
-import "../../components"
+import "../../../../styles"
+import "../../../../core"
+import "../../../../lib"
+import "../../../../services"
+import "../../../../components"
 
 PanelWindow {
   id: batteryPopup
@@ -25,10 +25,17 @@ PanelWindow {
   mask: Region { item: bg }
 
   property Item anchorItem: null
-  property real popupX: PopupPositioner.anchorRightX(anchorItem, batteryPopup.width, batteryPopup.screen.width)
+  property real popupX: PopupPositioner.anchorRightX(anchorItem, batteryPopup.width, batteryPopup.screen ? batteryPopup.screen.width : 0)
+
+  function _recalcPopupX() {
+    popupX = PopupPositioner.anchorRightX(anchorItem, batteryPopup.width, batteryPopup.screen ? batteryPopup.screen.width : 0)
+  }
+
+  onWidthChanged: _recalcPopupX()
+  onScreenChanged: _recalcPopupX()
 
   onVisibleChanged: {
-    if (visible) { animFrame = 0; chargeAnim.start() }
+    if (visible) { _recalcPopupX(); animFrame = 0; chargeAnim.start() }
     else chargeAnim.stop()
   }
 

@@ -55,7 +55,6 @@ Singleton {
   //  SIGNALS (for non-panel IPC)
   // ═══════════════════════════════════════════════════════════════
 
-  signal batteryToggle()
   signal brightnessBrighter()
   signal brightnessDimmer()
   signal performanceSetProfile(int profile)
@@ -102,11 +101,6 @@ Singleton {
   IpcHandler {
     target: "appswitch"
     function toggle(): void { svc.togglePanel("appswitch") }
-  }
-
-  IpcHandler {
-    target: "battery"
-    function toggle(): void { svc.batteryToggle() }
   }
 
   IpcHandler {

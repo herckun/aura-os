@@ -11,8 +11,6 @@ Item {
   height: 30
   visible: BatteryService.hasBattery
 
-  Component.onCompleted: PopupAnchors.batteryWidget = root
-
   Row {
     id: contentRow
     anchors.centerIn: parent
@@ -45,6 +43,11 @@ Item {
   MouseArea {
     anchors.fill: parent
     cursorShape: Qt.PointingHandCursor
-    onClicked: IpcService.batteryToggle()
+    onClicked: batteryTooltip.toggle()
+  }
+
+  BatteryTooltip {
+    id: batteryTooltip
+    anchorItem: root
   }
 }

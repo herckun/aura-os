@@ -10,6 +10,5 @@ singleton HotAreasService 1.0 HotAreasService.qml
 singleton IpcService 1.0 IpcService.qml
 singleton ModeService 1.0 ModeService.qml
 singleton OverviewService 1.0 OverviewService.qml
-singleton PopupAnchors 1.0 PopupAnchors.qml
 singleton PopupPositioner 1.0 PopupPositioner.qml
 singleton SettingsService 1.0 SettingsService.qml
