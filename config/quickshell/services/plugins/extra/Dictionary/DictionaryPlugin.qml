@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Dictionary",
-    description: "Define a word — prefix with 'def '",
+    description: "Define a word — type '/define'",
     icon: "book-2",
     locations: [],
     icons: {},
@@ -25,10 +25,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "dictionary",
     priority: 215,
+    command: { prefix: "define", args: "<word>", description: "Define a word", icon: "book-2" },
     query: function(text, qid) {
       var q = (text || "").trim()
-      if (q.toLowerCase().indexOf("def ") !== 0) return []
-      var word = q.substring(4).trim()
+      if (q.toLowerCase().indexOf("/define ") !== 0) return []
+      var word = q.substring(8).trim()
       if (word.length < 2) return []
 
       RequestService.get("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word), function(resp) {

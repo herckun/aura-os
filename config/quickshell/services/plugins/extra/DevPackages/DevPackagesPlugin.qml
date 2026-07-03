@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Dev packages",
-    description: "Search registries — 'npm x', 'crate x', 'pip x'",
+    description: "Search registries — '/npm', '/pip', '/crate'",
     icon: "package",
     locations: [],
     icons: {},
@@ -25,9 +25,14 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "devpackages",
     priority: 14,
+    command: [
+      { prefix: "npm", args: "<name>", description: "Search the npm registry", icon: "package" },
+      { prefix: "pip", args: "<name>", description: "Search PyPI", icon: "package" },
+      { prefix: "crate", args: "<name>", description: "Search crates.io", icon: "package" }
+    ],
     query: function(text, qid) {
       var q = (text || "").trim()
-      var m = q.match(/^(npm|crate|crates|cargo|pip|pypi)\s+(.+)$/i)
+      var m = q.match(/^\/(npm|crate|crates|cargo|pip|pypi)\s+(.+)$/i)
       if (!m) return []
       var kind = m[1].toLowerCase()
       var term = m[2].trim()

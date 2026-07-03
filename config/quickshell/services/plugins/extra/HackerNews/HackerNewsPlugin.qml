@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Hacker News",
-    description: "Search HN stories — prefix with 'hn '",
+    description: "Search HN stories — type '/hn'",
     icon: "brand-ycombinator",
     locations: [],
     icons: {},
@@ -27,10 +27,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "hackernews",
     priority: 15,
+    command: { prefix: "hn", args: "<query>", description: "Search Hacker News stories", icon: "brand-ycombinator" },
     query: function(text, qid) {
       var q = (text || "").trim()
-      if (q.toLowerCase().indexOf("hn ") !== 0) return []
-      var term = q.substring(3).trim()
+      if (q.toLowerCase().indexOf("/hn ") !== 0) return []
+      var term = q.substring(4).trim()
       if (term.length < 2) return []
 
       RequestService.get("https://hn.algolia.com/api/v1/search?tags=story&hitsPerPage=6&query="

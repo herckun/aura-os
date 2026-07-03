@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Currency",
-    description: "Convert currencies — e.g. '100 usd to eur'",
+    description: "Convert currencies — '/convert 100 usd to eur' or '100 usd to eur'",
     icon: "cash",
     locations: [],
     icons: {},
@@ -25,8 +25,12 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "currency",
     priority: 220,
+    command: { prefix: "convert", args: "<amt> <from> to <to>", description: "Convert currencies", icon: "cash" },
     query: function(text, qid) {
-      var m = (text || "").trim().match(/^([0-9]*\.?[0-9]+)?\s*([a-zA-Z]{3})\s+(?:to|in)\s+([a-zA-Z]{3})$/)
+      var raw = (text || "").trim()
+      var cmd = raw.match(/^\/convert\s+(.*)$/i)
+      if (cmd) raw = cmd[1].trim()
+      var m = raw.match(/^([0-9]*\.?[0-9]+)?\s*([a-zA-Z]{3})\s+(?:to|in)\s+([a-zA-Z]{3})$/)
       if (!m) return []
       var amount = m[1] ? parseFloat(m[1]) : 1
       var from = m[2].toUpperCase(), to = m[3].toUpperCase()

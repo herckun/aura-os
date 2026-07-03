@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "tldr",
-    description: "Command cheat sheet — prefix with 'tldr '",
+    description: "Command cheat sheet — type '/tldr'",
     icon: "terminal",
     locations: [],
     icons: {},
@@ -25,10 +25,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "tldr",
     priority: 18,
+    command: { prefix: "tldr", args: "<command>", description: "Command cheat sheet", icon: "terminal" },
     query: function(text, qid) {
       var q = (text || "").trim()
-      if (q.toLowerCase().indexOf("tldr ") !== 0) return []
-      var cmd = q.substring(5).trim()
+      if (q.toLowerCase().indexOf("/tldr ") !== 0) return []
+      var cmd = q.substring(6).trim()
       if (cmd.length < 1) return []
 
       ProcessPool.runTracked("search-tldr", ["sh", "-c",

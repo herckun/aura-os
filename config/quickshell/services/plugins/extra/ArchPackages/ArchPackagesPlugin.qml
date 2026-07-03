@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Arch packages",
-    description: "Search repo + AUR — prefix with 'pkg '",
+    description: "Search repo + AUR packages — type '/pkg'",
     icon: "package",
     locations: [],
     icons: {},
@@ -25,10 +25,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "archpackages",
     priority: 12,
+    command: { prefix: "pkg", args: "<name>", description: "Search repo + AUR packages", icon: "package" },
     query: function(text, qid) {
       var q = (text || "").trim()
-      if (q.toLowerCase().indexOf("pkg ") !== 0) return []
-      var term = q.substring(4).trim()
+      if (q.toLowerCase().indexOf("/pkg ") !== 0) return []
+      var term = q.substring(5).trim()
       if (term.length < 2) return []
 
       var acc = ({ repo: [], aur: [] })

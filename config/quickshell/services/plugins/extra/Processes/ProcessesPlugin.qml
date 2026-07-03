@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Processes",
-    description: "Find and kill a process — prefix with 'kill '",
+    description: "Find and kill a process — type '/kill'",
     icon: "square-x",
     locations: [],
     icons: {},
@@ -25,10 +25,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "processes",
     priority: 20,
+    command: { prefix: "kill", args: "<name>", description: "Find and kill a process", icon: "square-x" },
     query: function(text, qid) {
       var q = (text || "").trim()
-      if (q.toLowerCase().indexOf("kill ") !== 0) return []
-      var term = q.substring(5).trim()
+      if (q.toLowerCase().indexOf("/kill ") !== 0) return []
+      var term = q.substring(6).trim()
       if (term.length < 2) return []
 
       ProcessPool.runTracked("search-proc", ["sh", "-c",

@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Files",
-    description: "Find files by name — prefix with 'f '",
+    description: "Find files by name — type '/find'",
     icon: "file-search",
     locations: [],
     icons: {},
@@ -25,10 +25,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "files",
     priority: 20,
+    command: { prefix: "find", args: "<name>", description: "Find files by name", icon: "file-search" },
     query: function(text, qid) {
       var q = (text || "").trim()
-      if (q.toLowerCase().indexOf("f ") !== 0) return []
-      var term = q.substring(2).trim()
+      if (q.toLowerCase().indexOf("/find ") !== 0) return []
+      var term = q.substring(6).trim()
       if (term.length < 2) return []
 
       // fd if present, else find; both capped and rooted at $HOME.

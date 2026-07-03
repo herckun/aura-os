@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Encode / hash",
-    description: "base64, sha256, md5, sha1, hex, uuid",
+    description: "/md5 /sha1 /sha256 /base64 /hex /uuid",
     icon: "hash",
     locations: [],
     icons: {},
@@ -25,10 +25,20 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "hash",
     priority: 210,
+    command: [
+      { prefix: "md5", args: "<text>", description: "MD5 hash", icon: "hash" },
+      { prefix: "sha1", args: "<text>", description: "SHA-1 hash", icon: "hash" },
+      { prefix: "sha256", args: "<text>", description: "SHA-256 hash", icon: "hash" },
+      { prefix: "base64", args: "<text>", description: "Base64 encode (base64d to decode)", icon: "hash" },
+      { prefix: "hex", args: "<text>", description: "Hex encode", icon: "hash" },
+      { prefix: "uuid", args: "", description: "Generate a UUID", icon: "hash" }
+    ],
     query: function(text, qid) {
       var q = (text || "").trim()
       var sp = q.indexOf(" ")
-      var op = (sp < 0 ? q : q.substring(0, sp)).toLowerCase()
+      var first = sp < 0 ? q : q.substring(0, sp)
+      if (first.charAt(0) !== "/") return []
+      var op = first.slice(1).toLowerCase()
       var input = sp < 0 ? "" : q.substring(sp + 1)
 
       var cmd = root._cmdFor(op, input)

@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Crypto price",
-    description: "Coin price — e.g. 'btc price'",
+    description: "Coin price — '/price btc' or 'btc price'",
     icon: "coin",
     locations: [],
     icons: {},
@@ -32,10 +32,13 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "crypto",
     priority: 220,
+    command: { prefix: "price", args: "<coin>", description: "Crypto coin price in USD", icon: "coin" },
     query: function(text, qid) {
-      var m = (text || "").trim().toLowerCase().match(/^(?:price\s+([a-z]{2,6})|([a-z]{2,6})\s+price)$/)
-      if (!m) return []
-      var ticker = m[1] || m[2]
+      var raw = (text || "").trim().toLowerCase()
+      var cmd = raw.match(/^\/price\s+([a-z]{2,6})$/)
+      var m = cmd ? null : raw.match(/^(?:price\s+([a-z]{2,6})|([a-z]{2,6})\s+price)$/)
+      var ticker = cmd ? cmd[1] : (m ? (m[1] || m[2]) : null)
+      if (!ticker) return []
       var id = root._ids[ticker]
       if (!id) return []
 

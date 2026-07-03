@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Systemd (user)",
-    description: "Restart a user service — prefix with 'sc '",
+    description: "Restart a user service — type '/service'",
     icon: "settings-automation",
     locations: [],
     icons: {},
@@ -25,10 +25,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "systemd",
     priority: 20,
+    command: { prefix: "service", args: "<unit>", description: "Restart a user service", icon: "settings-automation" },
     query: function(text, qid) {
       var q = (text || "").trim()
-      if (q.toLowerCase().indexOf("sc ") !== 0) return []
-      var term = q.substring(3).trim()
+      if (q.toLowerCase().indexOf("/service ") !== 0) return []
+      var term = q.substring(9).trim()
       if (term.length < 2) return []
 
       var script = "systemctl --user list-units --type=service --all --no-legend --plain 2>/dev/null"

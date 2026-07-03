@@ -228,8 +228,8 @@ OverlayPanel {
             case Qt.Key_Return:
             case Qt.Key_Enter:
                 if (searchFocused && overview.isSearching && SearchService.results.length > 0) {
-                    SearchService.activate(overview.selectedIndex);
-                    overview.visible = false;
+                    if (!SearchService.activate(overview.selectedIndex))
+                        overview.visible = false;
                     event.accepted = true;
                 }
                 break;
@@ -314,6 +314,19 @@ OverlayPanel {
                         defaultFocus: true
 
                         onTextEdited: function (text) {
+                            overview.searchQuery = text;
+                            overview.isSearching = text.length > 0;
+                            overview.selectedIndex = 0;
+                            SearchService.search(text);
+                        }
+                    }
+
+                    Connections {
+                        target: SearchService
+                        function onFillRequested(text) {
+                            overviewSearch.input.text = text;
+                            overviewSearch.input.cursorPosition = text.length;
+                            overviewSearch.forceFocus();
                             overview.searchQuery = text;
                             overview.isSearching = text.length > 0;
                             overview.selectedIndex = 0;
@@ -420,8 +433,8 @@ OverlayPanel {
                                             showSource: false
                                             onHovered: overview.selectedIndex = resultGroup.index
                                             onClicked: {
-                                                SearchService.activate(resultGroup.index);
-                                                overview.visible = false;
+                                                if (!SearchService.activate(resultGroup.index))
+                                                    overview.visible = false;
                                             }
                                         }
 

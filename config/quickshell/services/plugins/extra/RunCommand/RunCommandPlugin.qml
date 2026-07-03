@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Run command",
-    description: "Run a shell command — prefix with '>'",
+    description: "Run a shell command — type '/run'",
     icon: "terminal-2",
     locations: [],
     icons: {},
@@ -25,10 +25,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "runcommand",
     priority: 250,
+    command: { prefix: "run", args: "<command>", description: "Run a shell command in a terminal", icon: "terminal-2" },
     query: function(text, qid) {
       var raw = text || ""
-      if (raw.indexOf(">") !== 0) return []
-      var cmd = raw.substring(1).trim()
+      if (raw.toLowerCase().indexOf("/run ") !== 0) return []
+      var cmd = raw.substring(5).trim()
       if (cmd.length === 0) return []
       return [{
         id: "run:" + cmd,

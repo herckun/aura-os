@@ -14,7 +14,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "SSH",
-    description: "Open an SSH host from ~/.ssh/config — prefix with 'ssh '",
+    description: "Open an SSH host from ~/.ssh/config — type '/ssh'",
     icon: "terminal",
     locations: [],
     icons: {},
@@ -25,10 +25,11 @@ BasePlugin {
   readonly property var searchProvider: ({
     id: "ssh",
     priority: 20,
+    command: { prefix: "ssh", args: "<host>", description: "Open an SSH host from ~/.ssh/config", icon: "terminal" },
     query: function(text, qid) {
       var q = (text || "").trim()
-      if (q.toLowerCase().indexOf("ssh ") !== 0) return []
-      var term = q.substring(4).trim()
+      if (q.toLowerCase().indexOf("/ssh ") !== 0) return []
+      var term = q.substring(5).trim()
 
       var script = "awk 'tolower($1)==\"host\"{for(i=2;i<=NF;i++) print $i}' \"$HOME/.ssh/config\" 2>/dev/null"
                  + " | grep -v '[*?]' | sort -u | grep -i \"$1\" | head -12"
