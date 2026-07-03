@@ -14,7 +14,7 @@ Rectangle {
   signal clicked()
   signal hovered()
 
-  implicitHeight: 46
+  implicitHeight: Math.max(46, textCol.implicitHeight + Theme.spaceSm * 2)
   height: implicitHeight
   radius: Theme.radiusMedium
   color: root.selected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.14)
@@ -96,8 +96,10 @@ Rectangle {
     }
 
     Column {
+      id: textCol
       Layout.fillWidth: true
-      spacing: 0
+      Layout.alignment: Qt.AlignVCenter
+      spacing: root.result.wrap ? Theme.space2 : 0
       Text {
         width: parent.width
         text: root.result.label || ""
@@ -114,7 +116,9 @@ Rectangle {
         color: Theme.textDisabled
         font.pixelSize: Theme.fontSizeCaption
         font.family: Theme.fontFamilyMono
-        elide: Text.ElideRight
+        wrapMode: root.result.wrap ? Text.Wrap : Text.NoWrap
+        maximumLineCount: root.result.wrap ? 6 : 1
+        elide: root.result.wrap ? Text.ElideNone : Text.ElideRight
       }
     }
 

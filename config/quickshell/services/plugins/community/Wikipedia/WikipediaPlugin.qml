@@ -61,7 +61,8 @@ BasePlugin {
     return {
       id: "wiki:" + (d.title || page),
       label: d.title || "",
-      sublabel: root._trim(d.extract, 130),
+      sublabel: root._trim(d.extract, 320),
+      wrap: true,
       icon: (d.thumbnail && d.thumbnail.source) ? d.thumbnail.source : root._favicon,
       iconKind: "image",
       iconFallback: "book",
