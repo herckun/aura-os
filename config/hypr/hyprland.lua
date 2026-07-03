@@ -138,4 +138,11 @@ hl.config({
     }
 })
 
+-- Cursor
+hl.config({
+    cursor = {
+        no_hardware_cursors = false,
+    }
+})
+
 -- Blur lists (set via decoration.blur in decorations.lua)
