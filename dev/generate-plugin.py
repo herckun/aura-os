@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate a new AuraDE plugin that extends BasePlugin (the golden rule).
+Generate a new plugin that extends BasePlugin (the golden rule).
 
 BasePlugin already handles registration, enabled-state, PluginService signal
 wiring, lifecycle and the _set/_setArray helpers — so this only scaffolds the
@@ -25,7 +25,7 @@ REPO = Path(__file__).resolve().parent.parent
 PLUGINS_DIR = REPO / "config" / "quickshell" / "services" / "plugins"
 CATEGORIES = ("core", "extra", "community")
 DEFAULT_AUTHOR = "herckun"
-SHELL_VERSION = "2.0"   # AuraDE shell version plugins target (see core/AppInfo.qml)
+SHELL_VERSION = "2.0"   # shell version plugins target (see core/AppInfo.qml)
 
 # location -> UI Component property (mirrors PluginService.componentMap).
 # Locations not listed here (e.g. "settings") have no UI component — their
@@ -212,7 +212,7 @@ def ask(prompt, default=""):
 
 
 def interactive(args):
-    print("── New AuraDE plugin ──")
+    print("── New plugin ──")
     args.name = args.name or ask("Plugin name", "My Plugin")
     args.category = args.category or ask(f"Category ({'/'.join(CATEGORIES)})", "community")
     args.description = args.description or ask("Description", "")
@@ -224,7 +224,7 @@ def interactive(args):
 
 
 def main():
-    p = argparse.ArgumentParser(description="Generate a BasePlugin-based AuraDE plugin.")
+    p = argparse.ArgumentParser(description="Generate a BasePlugin-based plugin.")
     p.add_argument("name", nargs="?", help="Plugin display name (e.g. \"Net Speed\")")
     p.add_argument("--category", choices=CATEGORIES)
     p.add_argument("--description", "--desc", default=None)

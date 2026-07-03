@@ -65,7 +65,7 @@ BORDER_FISH="${BORDER#\#}"
 mkdir -p "$FISH_CONF_DIR"
 
 cat > "$THEME_FILE" << EOF
-# ${APP_DISPLAY} — Fish Theme
+# Fish theme
 # Generated from theme.json — do not edit manually
 
 set -gx ${APP_ENV_PREFIX}_ACCENT '${ACCENT_FISH}'

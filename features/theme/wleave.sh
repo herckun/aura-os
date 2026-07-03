@@ -87,7 +87,7 @@ print("MODE=%d" % mode)
 
 # ── Generate style.css (GTK4/libadwaita CSS) ───────────────────────
 cat > "$LIVE_CSS" << EOF
-/* ${APP_DISPLAY} — wleave theme (auto-generated) */
+/* wleave theme (auto-generated) */
 
 window {
     background-color: ${WINDOW_BG};

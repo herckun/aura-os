@@ -66,7 +66,7 @@ print("ACCENT_DIM=\"%s\"" % accent_dim)
 mkdir -p "$KITTY_DIR"
 
 cat > "$THEME_FILE" << EOF
-# ${APP_DISPLAY} — Theme
+# Terminal theme
 # Generated from theme.json — do not edit manually
 
 font_family      ${FONT_MONO}

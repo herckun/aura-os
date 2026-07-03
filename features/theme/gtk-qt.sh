@@ -159,7 +159,7 @@ cat > "$HOME/.config/gtk-4.0/gtk.css" << EOF
 /* Import adw-gtk3-dark for full libadwaita widget styling */
 @import url('${ADW_GTK4_DIR}/gtk.css');
 
-/* ── ${APP_DISPLAY} colors — override libadwaita defaults ── */
+/* ── theme colors — override libadwaita defaults ── */
 @define-color theme_bg_color ${BG};
 @define-color theme_fg_color ${FG};
 @define-color theme_base_color ${BG};
@@ -1083,15 +1083,15 @@ if pgrep -x xsettingsd &>/dev/null; then
 fi
 
 # ═══════════════════════════════════════════════════════════════
-# Qt: KDE platform theme uses ${APP_DISPLAY}.colors via kdeglobals
+# Qt: KDE platform theme uses the generated color scheme via kdeglobals
 # ═══════════════════════════════════════════════════════════════
 # KDE platform theme (QT_QPA_PLATFORMTHEME=kde) reads
 # kdeglobals to find the active color scheme, then loads
 # the .colors file from ~/.local/share/color-schemes/
-# ${APP_DISPLAY}.colors is generated in the next section below.
+# The color scheme is generated in the next section below.
 
 # ═══════════════════════════════════════════════════════════════
-# KDE color scheme — ${APP_DISPLAY}.colors
+# KDE color scheme
 # ═══════════════════════════════════════════════════════════════
 COLORS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/color-schemes"
 mkdir -p "$COLORS_DIR"
@@ -1222,7 +1222,7 @@ ForegroundVisited=${DH_R},${DH_G},${DH_B}
 EOF
 
 # ═══════════════════════════════════════════════════════════════
-# kdeglobals — ${APP_DISPLAY} color scheme + Papirus-Dark icons
+# kdeglobals — color scheme + Papirus-Dark icons
 # ═══════════════════════════════════════════════════════════════
 cat > "$HOME/.config/kdeglobals" << KDECEOF
 [General]
