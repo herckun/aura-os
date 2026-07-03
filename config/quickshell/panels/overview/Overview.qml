@@ -493,21 +493,22 @@ OverlayPanel {
                             boundsBehavior: Flickable.StopAtBounds
                             visible: !overview.isSearching && overview._activePlugin !== null
 
+                            // Click-to-focus sits *under* the plugin so interactive
+                            // controls (and their pointer cursors) stay on top; clicks
+                            // on empty plugin space fall through to here.
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    if (pluginHost.activeItem && pluginHost.activeItem.forceActiveFocus)
+                                        pluginHost.activeItem.forceActiveFocus();
+                                }
+                            }
+
                             PluginHost {
                                 id: pluginHost
                                 width: pluginFlick.width
                                 location: "overview"
                                 onlyPluginId: overview._activePlugin ? overview._activePlugin.id : ""
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                propagateComposedEvents: true
-                                onClicked: function (mouse) {
-                                    if (pluginHost.activeItem && pluginHost.activeItem.forceActiveFocus)
-                                        pluginHost.activeItem.forceActiveFocus();
-                                    mouse.accepted = false;
-                                }
                             }
                         }
                     }
