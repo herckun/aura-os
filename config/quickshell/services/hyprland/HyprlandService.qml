@@ -47,7 +47,7 @@ Singleton {
         try {
           var data = JSON.parse(text.trim())
           if (Array.isArray(data.clients)) svc.clients = data.clients
-          if (Array.isArray(data.workspaces)) svc.workspaces = data.workspaces
+          if (Array.isArray(data.workspaces)) svc.workspaces = data.workspaces.sort((a, b) => a.id - b.id)
           svc.activeWorkspace = data.active || null
           if (svc.activeWorkspace) svc.activeWsId = svc.activeWorkspace.id
         } catch (e) {
