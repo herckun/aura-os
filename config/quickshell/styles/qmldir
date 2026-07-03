@@ -1,0 +1,3 @@
+module styles
+singleton AppIcons 1.0 AppIcons.qml
+singleton Theme 1.0 Theme.qml

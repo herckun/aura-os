@@ -1,0 +1,11 @@
+module system
+singleton AudioService 1.0 AudioService.qml
+singleton BatteryService 1.0 BatteryService.qml
+singleton BluetoothService 1.0 BluetoothService.qml
+singleton BrightnessService 1.0 BrightnessService.qml
+singleton NetworkService 1.0 NetworkService.qml
+singleton PerformanceService 1.0 PerformanceService.qml
+singleton RequestService 1.0 RequestService.qml
+singleton ResourceService 1.0 ResourceService.qml
+singleton ScreenshotService 1.0 ScreenshotService.qml
+singleton UpdatesService 1.0 UpdatesService.qml

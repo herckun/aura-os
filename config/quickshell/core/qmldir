@@ -1,0 +1,8 @@
+module core
+singleton AppInfo 1.0 AppInfo.qml
+singleton Icons 1.0 Icons.qml
+singleton Logger 1.0 Logger.qml
+singleton ProcessPool 1.0 ProcessPool.qml
+singleton Store 1.0 Store.qml
+TrackedProcess 1.0 TrackedProcess.qml
+singleton WatchService 1.0 WatchService.qml

@@ -1,0 +1,5 @@
+module hyprland
+singleton DisplayService 1.0 DisplayService.qml
+singleton HyprlandKeyboardService 1.0 HyprlandKeyboardService.qml
+singleton HyprlandService 1.0 HyprlandService.qml
+singleton KeybindingService 1.0 KeybindingService.qml

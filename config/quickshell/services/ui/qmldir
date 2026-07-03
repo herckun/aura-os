@@ -1,0 +1,15 @@
+module ui
+singleton AppSwitchService 1.0 AppSwitchService.qml
+singleton BarService 1.0 BarService.qml
+singleton CheatsheetService 1.0 CheatsheetService.qml
+singleton ControlCenterService 1.0 ControlCenterService.qml
+singleton DesktopLayoutService 1.0 DesktopLayoutService.qml
+singleton DevOverlayService 1.0 DevOverlayService.qml
+HotAreas 1.0 HotAreas.qml
+singleton HotAreasService 1.0 HotAreasService.qml
+singleton IpcService 1.0 IpcService.qml
+singleton ModeService 1.0 ModeService.qml
+singleton OverviewService 1.0 OverviewService.qml
+singleton PopupAnchors 1.0 PopupAnchors.qml
+singleton PopupPositioner 1.0 PopupPositioner.qml
+singleton SettingsService 1.0 SettingsService.qml

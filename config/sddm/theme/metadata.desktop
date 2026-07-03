@@ -1,0 +1,15 @@
+; Based on SilentSDDM (https://github.com/uiriansan/SilentSDDM)
+
+[SddmGreeterTheme]
+Name=@APP_DISPLAY@
+Type=sddm-theme
+Description=@APP_DISPLAY@ — dark monochrome industrial SDDM greeter
+License=GPL-3.0-or-later
+Version=1.5.0
+Theme-Id=@APP_NAME@
+Theme-API=2.0
+MainScript=Main.qml
+TranslationsDirectory=translations
+QtVersion=6
+
+ConfigFile=configs/theme.conf

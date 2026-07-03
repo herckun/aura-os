@@ -1,0 +1,7 @@
+module apps
+singleton ClipboardService 1.0 ClipboardService.qml
+singleton EmojiService 1.0 EmojiService.qml
+singleton LauncherService 1.0 LauncherService.qml
+singleton SearchService 1.0 SearchService.qml
+singleton TodoService 1.0 TodoService.qml
+singleton WeatherService 1.0 WeatherService.qml

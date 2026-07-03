@@ -1,0 +1,1268 @@
+{
+  "app": {
+    "name": "aura-os",
+    "displayName": "AuraOS",
+    "version": "2.0",
+    "logo": "assets/logo.svg",
+    "cacheKey": "aura-os",
+    "themeKey": "aura-os"
+  },
+  "icons": {
+    "source": "tabler",
+    "cdn": "https://raw.githubusercontent.com/tabler/tabler-icons/main/icons/outline",
+    "map": {
+      "arrow-clockwise": "arrow-forward",
+      "arrow-counter-clockwise": "arrow-back",
+      "arrows-clockwise": "refresh",
+      "arrows-in-simple": "arrows-minimize",
+      "arrows-out": "arrows-maximize",
+      "arrows-out-simple": "maximize",
+      "arrow-square-out": "external-link",
+      "battery-empty": "battery-off",
+      "battery-full": "battery-4",
+      "battery-low": "battery-1",
+      "battery-medium": "battery-2",
+      "bell": "bell",
+      "bluetooth": "bluetooth",
+      "calendar": "calendar",
+      "camera": "camera",
+      "caret-down": "chevron-down",
+      "caret-left": "chevron-left",
+      "caret-right": "chevron-right",
+      "caret-up": "chevron-up",
+      "chart-line-up": "chart-line",
+      "chart-pie": "chart-pie",
+      "chat-circle": "message-circle",
+      "check": "check",
+      "check-square": "square-check",
+      "clipboard": "clipboard",
+      "clock": "clock",
+      "compass": "compass",
+      "copy": "copy",
+      "cpu": "cpu",
+      "calculator": "calculator",
+      "dots-six-vertical": "dots-vertical",
+      "dots-three": "dots-circle-horizontal",
+      "download": "download",
+      "envelope": "mail",
+      "file": "file",
+      "floppy-disk": "device-floppy",
+      "folder": "folder",
+      "funnel": "filter",
+      "gear-six": "settings",
+      "globe": "globe",
+      "grid-four": "grid-4x4",
+      "grid-nine": "grid-3x3",
+      "hamburger": "menu-2",
+      "house": "home",
+      "image": "photo",
+      "info": "info-circle",
+      "lightbulb": "bulb",
+      "lightning": "bolt",
+      "link": "link",
+      "lock": "lock",
+      "lock-open": "lock-open",
+      "magnifying-glass": "search",
+      "map-pin": "map-pin",
+      "minus": "minus",
+      "monitor": "device-desktop",
+      "music-note": "music",
+      "paint-brush": "brush",
+      "palette": "palette",
+      "pause": "player-pause",
+      "pencil-simple": "pencil",
+      "phone": "phone",
+      "play": "player-play",
+      "plus": "plus",
+      "power": "power",
+      "question": "help-circle",
+      "scissors": "scissors",
+      "shield": "shield",
+      "sign-in": "login",
+      "sign-out": "logout",
+      "skip-back": "player-skip-back",
+      "skip-forward": "player-skip-forward",
+      "speaker-high": "volume-2",
+      "speaker-low": "volume",
+      "speaker-none": "volume-off",
+      "square": "square",
+      "squares-four": "layout-grid",
+      "stop": "player-stop",
+      "terminal": "terminal",
+      "timer": "clock-2",
+      "trash": "trash",
+      "upload": "upload",
+      "user": "user",
+      "users": "users",
+      "wifi-high": "wifi",
+      "wifi": "wifi",
+      "wifi-slash": "wifi-off",
+      "x": "x",
+      "hourglass": "hourglass-empty",
+      "arrows-shuffle": "arrows-shuffle",
+      "cat": "cat",
+      "circle-half": "circle-half",
+      "search": "search",
+      "close": "x",
+      "xmark": "x",
+      "more": "dots-circle-horizontal",
+      "grip": "dots-vertical",
+      "filter": "filter",
+      "gear": "settings",
+      "settings": "settings",
+      "alert": "bell",
+      "signal": "wifi",
+      "home": "home",
+      "photo": "photo",
+      "music": "music",
+      "volume": "volume-2",
+      "volume-mute": "volume-off",
+      "wifi-off": "wifi-off",
+      "speaker": "volume-2",
+      "bolt": "bolt",
+      "powerplug": "bolt",
+      "zap": "bolt",
+      "sleep": "power",
+      "unlock": "lock-open",
+      "redo": "arrow-forward",
+      "undo": "arrow-back",
+      "restart": "refresh",
+      "refresh": "refresh",
+      "save": "device-floppy",
+      "mail": "mail",
+      "message": "message-circle",
+      "edit": "pencil",
+      "grid": "grid-4x4",
+      "menu": "menu-2",
+      "workspaces": "layout-grid",
+      "todo": "square-check",
+      "browser": "globe",
+      "display": "device-desktop",
+      "keyboard": "terminal",
+      "paintbrush": "brush",
+      "sun": "bulb",
+      "moon": "compass",
+      "brightness": "bulb",
+      "chart": "chart-line",
+      "pie-chart": "chart-pie",
+      "trending-up": "chart-line",
+      "maximize": "maximize",
+      "minimize": "arrows-minimize",
+      "move": "arrows-maximize",
+      "external-link": "external-link",
+      "controlcenter": "settings",
+      "target": "compass",
+      "rocket": "bolt",
+      "note": "pencil",
+      "git-branch": "link",
+      "container": "terminal",
+      "adjustments": "settings",
+      "battery": "battery-4",
+      "code": "terminal",
+      "player-play": "player-play",
+      "window": "device-desktop",
+      "world": "globe",
+      "device-desktop": "device-desktop",
+      "database": "chart-pie",
+      "chevron.down": "chevron-down",
+      "chevron.up": "chevron-up",
+      "chevron.left": "chevron-left",
+      "chevron.right": "chevron-right"
+    }
+  },
+  "plugins": {
+    "core": [
+      {
+        "id": "bar-workspaces",
+        "file": "BarWorkspacesPlugin.qml",
+        "name": "Workspaces",
+        "description": "Workspace indicators and window title"
+      },
+      {
+        "id": "clipboard",
+        "file": "ClipboardPlugin.qml",
+        "name": "Clipboard",
+        "description": "Clipboard history"
+      },
+      {
+        "id": "desktopclock",
+        "file": "DesktopClockPlugin.qml",
+        "name": "Desktop Clock",
+        "description": "Large clock widget for the desktop"
+      },
+      {
+        "id": "desktopEq",
+        "file": "DesktopEqPlugin.qml",
+        "name": "Desktop Equalizer",
+        "description": "Audio equalizer for the desktop"
+      },
+      {
+        "id": "resourcemonitor",
+        "file": "ResourceMonitorPlugin.qml",
+        "name": "Resource Monitor",
+        "description": "CPU, memory, and GPU usage display"
+      },
+      {
+        "id": "lyrics",
+        "file": "LyricsPlugin.qml",
+        "name": "Lyrics",
+        "description": "Synced lyrics from currently playing track"
+      },
+      {
+        "id": "disk",
+        "file": "DiskPlugin.qml",
+        "name": "Disk",
+        "description": "Storage usage"
+      },
+      {
+        "id": "launchgroups",
+        "file": "LaunchGroupsPlugin.qml",
+        "name": "Quick Launch",
+        "description": "App launcher groups"
+      },
+      {
+        "id": "media",
+        "file": "MediaPlugin.qml",
+        "name": "Media",
+        "description": "Now playing controls"
+      },
+      {
+        "id": "nightlight",
+        "file": "NightLightPlugin.qml",
+        "name": "Night Light",
+        "description": "Blue light filter"
+      },
+      {
+        "id": "notes",
+        "file": "NotesPlugin.qml",
+        "name": "Notes",
+        "description": "Quick markdown scratchpad"
+      },
+      {
+        "id": "notifications",
+        "file": "NotificationsPlugin.qml",
+        "name": "Notifications",
+        "description": "Recent notifications and badge"
+      },
+      {
+        "id": "screenshot",
+        "file": "ScreenshotPlugin.qml",
+        "name": "Screenshots",
+        "description": "Screen capture"
+      },
+      {
+        "id": "clock",
+        "file": "SmartIslandPlugin.qml",
+        "name": "Clock",
+        "description": "Clock and media/timer island"
+      },
+      {
+        "id": "bar-status",
+        "file": "StatusPlugin.qml",
+        "name": "Status",
+        "description": "Weather, network, keyboard, and battery indicators"
+      },
+      {
+        "id": "system",
+        "file": "SystemPlugin.qml",
+        "name": "System",
+        "description": "CPU, memory, GPU, and updates"
+      },
+      {
+        "id": "timer",
+        "file": "TimerPlugin.qml",
+        "name": "Timer",
+        "description": "Pomodoro and countdown timer"
+      },
+      {
+        "id": "todo",
+        "file": "TodoPlugin.qml",
+        "name": "Todo",
+        "description": "Task manager"
+      },
+      {
+        "id": "weather",
+        "file": "WeatherPlugin.qml",
+        "name": "Weather",
+        "description": "Current weather conditions"
+      },
+      {
+        "id": "workspaces",
+        "file": "WorkspacesPlugin.qml",
+        "name": "Workspaces",
+        "description": "Hyprland workspace switcher"
+      }
+    ],
+    "extra": [
+      {
+        "id": "docker",
+        "file": "DockerPlugin.qml",
+        "name": "Docker",
+        "description": "Container management",
+        "dep": "docker",
+        "install": "sudo pacman -S --noconfirm docker"
+      },
+      {
+        "id": "easyeffects",
+        "file": "EasyEffectsPlugin.qml",
+        "name": "EasyEffects",
+        "description": "Audio effects and presets",
+        "dep": "easyeffects",
+        "install": "sudo pacman -S --noconfirm easyeffects"
+      },
+      {
+        "id": "powerprofile",
+        "file": "PowerProfilePlugin.qml",
+        "name": "Power Profile",
+        "description": "CPU power profile switcher",
+        "dep": "tlp",
+        "install": "sudo pacman -S --noconfirm tlp"
+      },
+      {
+        "id": "protonvpn",
+        "file": "ProtonVPNPlugin.qml",
+        "name": "ProtonVPN",
+        "description": "ProtonVPN secure core",
+        "dep": "protonvpn",
+        "install": "yay -S --noconfirm protonvpn"
+      },
+      {
+        "id": "windscribe",
+        "file": "WindscribePlugin.qml",
+        "name": "Windscribe",
+        "description": "Windscribe VPN client",
+        "dep": "windscribe-cli",
+        "install": "yay -S --noconfirm windscribe-cli"
+      }
+    ]
+  },
+  "keybindings": {
+    "categories": [
+      { "id": "apps", "label": "APP LAUNCHES" },
+      { "id": "shell", "label": "SHELL" },
+      { "id": "windows", "label": "WINDOW MANAGEMENT" },
+      { "id": "focus", "label": "FOCUS" },
+      { "id": "move", "label": "MOVE WINDOWS" },
+      { "id": "resize", "label": "RESIZE" },
+      { "id": "workspaces", "label": "WORKSPACES" },
+      { "id": "media", "label": "MEDIA KEYS" },
+      { "id": "screenshots", "label": "SCREENSHOTS" },
+      { "id": "system", "label": "SYSTEM" }
+    ],
+    "shellActions": [
+      { "id": "overview.toggle", "label": "Toggle Overview" },
+      { "id": "cheatsheet.toggle", "label": "Toggle Keybind Cheatsheet" },
+      { "id": "settings.toggle", "label": "Toggle Settings" },
+      { "id": "controlcenter.toggle", "label": "Toggle Control Center" },
+      { "id": "devoverlay.toggle", "label": "Toggle Dev Overlay" },
+      { "id": "screenshot.screen", "label": "Screenshot Screen" },
+      { "id": "screenshot.region", "label": "Screenshot Region" },
+      { "id": "screenshot.output", "label": "Screenshot Output" },
+      { "id": "brightness.brighter", "label": "Brightness Up" },
+      { "id": "brightness.dimmer", "label": "Brightness Down" },
+      { "id": "mode.cycle", "label": "Cycle Shell Mode" }
+    ],
+    "hyprActions": [
+      { "id": "closewindow", "label": "Close Window", "args": [] },
+      { "id": "fullscreen", "label": "Fullscreen", "args": [] },
+      { "id": "pseudo", "label": "Pseudo Tiling", "args": [] },
+      { "id": "togglefloating", "label": "Toggle Floating", "args": [] },
+      {
+        "id": "movefocus",
+        "label": "Move Focus",
+        "args": [
+          {
+            "key": "direction",
+            "label": "Direction",
+            "options": ["left", "right", "up", "down"]
+          }
+        ]
+      },
+      {
+        "id": "movewindow",
+        "label": "Move Window",
+        "args": [
+          {
+            "key": "direction",
+            "label": "Direction",
+            "options": ["left", "right", "up", "down"]
+          }
+        ]
+      },
+      {
+        "id": "resizeactive",
+        "label": "Resize Window",
+        "args": [
+          { "key": "params", "label": "Params (e.g. -30 0)", "type": "text" }
+        ]
+      },
+      {
+        "id": "workspace",
+        "label": "Switch Workspace",
+        "args": [{ "key": "id", "label": "Workspace ID", "type": "number" }]
+      },
+      {
+        "id": "movetoworkspace",
+        "label": "Move to Workspace",
+        "args": [{ "key": "id", "label": "Workspace ID", "type": "number" }]
+      },
+      {
+        "id": "togglespecialworkspace",
+        "label": "Toggle Special Workspace",
+        "args": [{ "key": "name", "label": "Name", "type": "text" }]
+      },
+      { "id": "exit", "label": "Exit Hyprland", "args": [] },
+      {
+        "id": "exec",
+        "label": "Execute Command",
+        "args": [{ "key": "cmd", "label": "Command", "type": "text" }]
+      }
+    ],
+    "globalActions": [{ "id": "appswitch", "label": "App Switcher" }],
+    "defaults": [
+      {
+        "id": "terminal",
+        "category": "apps",
+        "mod": "SUPER",
+        "key": "Return",
+        "actionType": "custom",
+        "action": "kitty",
+        "description": "Terminal"
+      },
+      {
+        "id": "files",
+        "category": "apps",
+        "mod": "SUPER",
+        "key": "E",
+        "actionType": "custom",
+        "action": "nautilus",
+        "description": "File manager"
+      },
+      {
+        "id": "browser",
+        "category": "apps",
+        "mod": "SUPER",
+        "key": "B",
+        "actionType": "custom",
+        "action": "firefox",
+        "description": "Browser"
+      },
+
+      {
+        "id": "overview",
+        "category": "shell",
+        "mod": "SUPER",
+        "key": "space",
+        "actionType": "shell",
+        "action": "overview.toggle",
+        "description": "Overview"
+      },
+      {
+        "id": "cheatsheet",
+        "category": "shell",
+        "mod": "SUPER",
+        "key": "slash",
+        "actionType": "shell",
+        "action": "cheatsheet.toggle",
+        "description": "Keybind cheatsheet"
+      },
+      {
+        "id": "settings",
+        "category": "shell",
+        "mod": "SUPER",
+        "key": "comma",
+        "actionType": "shell",
+        "action": "settings.toggle",
+        "description": "Settings"
+      },
+      {
+        "id": "controlcenter",
+        "category": "shell",
+        "mod": "SUPER",
+        "key": "period",
+        "actionType": "shell",
+        "action": "controlcenter.toggle",
+        "description": "Control center"
+      },
+      {
+        "id": "devoverlay",
+        "category": "shell",
+        "mod": "SUPER",
+        "key": "backslash",
+        "actionType": "shell",
+        "action": "devoverlay.toggle",
+        "description": "Dev overlay"
+      },
+      {
+        "id": "appswitch",
+        "category": "shell",
+        "mod": "ALT",
+        "key": "Tab",
+        "actionType": "global",
+        "action": "appswitch",
+        "description": "App switcher",
+        "readonly": true
+      },
+      {
+        "id": "mode-cycle",
+        "category": "shell",
+        "mod": "SUPER",
+        "key": "M",
+        "actionType": "shell",
+        "action": "mode.cycle",
+        "description": "Cycle shell mode"
+      },
+
+      {
+        "id": "close",
+        "category": "windows",
+        "mod": "SUPER",
+        "key": "W",
+        "actionType": "hypr",
+        "action": "closewindow",
+        "description": "Close window"
+      },
+      {
+        "id": "fullscreen",
+        "category": "windows",
+        "mod": "SUPER",
+        "key": "F",
+        "actionType": "hypr",
+        "action": "fullscreen",
+        "description": "Fullscreen"
+      },
+      {
+        "id": "pseudo",
+        "category": "windows",
+        "mod": "SUPER",
+        "key": "P",
+        "actionType": "hypr",
+        "action": "pseudo",
+        "description": "Pseudo tiling"
+      },
+      {
+        "id": "float",
+        "category": "windows",
+        "mod": "SUPER",
+        "key": "T",
+        "actionType": "hypr",
+        "action": "togglefloating",
+        "description": "Toggle floating"
+      },
+
+      {
+        "id": "focus-left",
+        "category": "focus",
+        "mod": "SUPER",
+        "key": "H",
+        "actionType": "hypr",
+        "action": "movefocus",
+        "args": { "direction": "left" },
+        "description": "Focus left"
+      },
+      {
+        "id": "focus-down",
+        "category": "focus",
+        "mod": "SUPER",
+        "key": "J",
+        "actionType": "hypr",
+        "action": "movefocus",
+        "args": { "direction": "down" },
+        "description": "Focus down"
+      },
+      {
+        "id": "focus-up",
+        "category": "focus",
+        "mod": "SUPER",
+        "key": "K",
+        "actionType": "hypr",
+        "action": "movefocus",
+        "args": { "direction": "up" },
+        "description": "Focus up"
+      },
+      {
+        "id": "focus-right",
+        "category": "focus",
+        "mod": "SUPER",
+        "key": "L",
+        "actionType": "hypr",
+        "action": "movefocus",
+        "args": { "direction": "right" },
+        "description": "Focus right"
+      },
+
+      {
+        "id": "move-left",
+        "category": "move",
+        "mod": "SUPER SHIFT",
+        "key": "H",
+        "actionType": "hypr",
+        "action": "movewindow",
+        "args": { "direction": "left" },
+        "description": "Move left"
+      },
+      {
+        "id": "move-down",
+        "category": "move",
+        "mod": "SUPER SHIFT",
+        "key": "J",
+        "actionType": "hypr",
+        "action": "movewindow",
+        "args": { "direction": "down" },
+        "description": "Move down"
+      },
+      {
+        "id": "move-up",
+        "category": "move",
+        "mod": "SUPER SHIFT",
+        "key": "K",
+        "actionType": "hypr",
+        "action": "movewindow",
+        "args": { "direction": "up" },
+        "description": "Move up"
+      },
+      {
+        "id": "move-right",
+        "category": "move",
+        "mod": "SUPER SHIFT",
+        "key": "L",
+        "actionType": "hypr",
+        "action": "movewindow",
+        "args": { "direction": "right" },
+        "description": "Move right"
+      },
+
+      {
+        "id": "resize-left",
+        "category": "resize",
+        "mod": "SUPER CTRL",
+        "key": "H",
+        "actionType": "hypr",
+        "action": "resizeactive",
+        "args": { "params": "-30 0" },
+        "description": "Shrink width"
+      },
+      {
+        "id": "resize-down",
+        "category": "resize",
+        "mod": "SUPER CTRL",
+        "key": "J",
+        "actionType": "hypr",
+        "action": "resizeactive",
+        "args": { "params": "0 30" },
+        "description": "Grow height"
+      },
+      {
+        "id": "resize-up",
+        "category": "resize",
+        "mod": "SUPER CTRL",
+        "key": "K",
+        "actionType": "hypr",
+        "action": "resizeactive",
+        "args": { "params": "0 -30" },
+        "description": "Shrink height"
+      },
+      {
+        "id": "resize-right",
+        "category": "resize",
+        "mod": "SUPER CTRL",
+        "key": "L",
+        "actionType": "hypr",
+        "action": "resizeactive",
+        "args": { "params": "30 0" },
+        "description": "Grow width"
+      },
+
+      {
+        "id": "ws-1",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "1",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 1 },
+        "description": "Workspace 1"
+      },
+      {
+        "id": "ws-2",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "2",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 2 },
+        "description": "Workspace 2"
+      },
+      {
+        "id": "ws-3",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "3",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 3 },
+        "description": "Workspace 3"
+      },
+      {
+        "id": "ws-4",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "4",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 4 },
+        "description": "Workspace 4"
+      },
+      {
+        "id": "ws-5",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "5",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 5 },
+        "description": "Workspace 5"
+      },
+      {
+        "id": "ws-6",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "6",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 6 },
+        "description": "Workspace 6"
+      },
+      {
+        "id": "ws-7",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "7",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 7 },
+        "description": "Workspace 7"
+      },
+      {
+        "id": "ws-8",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "8",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 8 },
+        "description": "Workspace 8"
+      },
+      {
+        "id": "ws-9",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "9",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 9 },
+        "description": "Workspace 9"
+      },
+      {
+        "id": "ws-10",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "0",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": 10 },
+        "description": "Workspace 10"
+      },
+      {
+        "id": "ws-move-1",
+        "category": "workspaces",
+        "mod": "SUPER SHIFT",
+        "key": "1",
+        "actionType": "hypr",
+        "action": "movetoworkspace",
+        "args": { "id": 1 },
+        "description": "Move to workspace 1"
+      },
+      {
+        "id": "ws-move-2",
+        "category": "workspaces",
+        "mod": "SUPER SHIFT",
+        "key": "2",
+        "actionType": "hypr",
+        "action": "movetoworkspace",
+        "args": { "id": 2 },
+        "description": "Move to workspace 2"
+      },
+      {
+        "id": "ws-move-6",
+        "category": "workspaces",
+        "mod": "SUPER SHIFT",
+        "key": "6",
+        "actionType": "hypr",
+        "action": "movetoworkspace",
+        "args": { "id": 6 },
+        "description": "Move to workspace 6"
+      },
+      {
+        "id": "ws-move-7",
+        "category": "workspaces",
+        "mod": "SUPER SHIFT",
+        "key": "7",
+        "actionType": "hypr",
+        "action": "movetoworkspace",
+        "args": { "id": 7 },
+        "description": "Move to workspace 7"
+      },
+      {
+        "id": "ws-move-8",
+        "category": "workspaces",
+        "mod": "SUPER SHIFT",
+        "key": "8",
+        "actionType": "hypr",
+        "action": "movetoworkspace",
+        "args": { "id": 8 },
+        "description": "Move to workspace 8"
+      },
+      {
+        "id": "ws-move-9",
+        "category": "workspaces",
+        "mod": "SUPER SHIFT",
+        "key": "9",
+        "actionType": "hypr",
+        "action": "movetoworkspace",
+        "args": { "id": 9 },
+        "description": "Move to workspace 9"
+      },
+      {
+        "id": "ws-move-10",
+        "category": "workspaces",
+        "mod": "SUPER SHIFT",
+        "key": "0",
+        "actionType": "hypr",
+        "action": "movetoworkspace",
+        "args": { "id": 10 },
+        "description": "Move to workspace 10"
+      },
+      {
+        "id": "ws-special",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "S",
+        "actionType": "hypr",
+        "action": "togglespecialworkspace",
+        "args": { "name": "magic" },
+        "description": "Special workspace"
+      },
+      {
+        "id": "ws-move-special",
+        "category": "workspaces",
+        "mod": "SUPER SHIFT",
+        "key": "S",
+        "actionType": "hypr",
+        "action": "movetoworkspace",
+        "args": { "id": "special:magic" },
+        "description": "Move to special workspace"
+      },
+      {
+        "id": "ws-next",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "Up",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": "e+1" },
+        "description": "Next workspace"
+      },
+      {
+        "id": "ws-prev",
+        "category": "workspaces",
+        "mod": "SUPER",
+        "key": "Down",
+        "actionType": "hypr",
+        "action": "workspace",
+        "args": { "id": "e-1" },
+        "description": "Previous workspace"
+      },
+
+      {
+        "id": "vol-up",
+        "category": "media",
+        "mod": "",
+        "key": "XF86AudioRaiseVolume",
+        "actionType": "custom",
+        "action": "~/.config/features/system/volume.sh up",
+        "description": "Volume up",
+        "locked": true,
+        "repeating": true
+      },
+      {
+        "id": "vol-down",
+        "category": "media",
+        "mod": "",
+        "key": "XF86AudioLowerVolume",
+        "actionType": "custom",
+        "action": "~/.config/features/system/volume.sh down",
+        "description": "Volume down",
+        "locked": true,
+        "repeating": true
+      },
+      {
+        "id": "vol-mute",
+        "category": "media",
+        "mod": "",
+        "key": "XF86AudioMute",
+        "actionType": "custom",
+        "action": "~/.config/features/system/volume.sh toggle-mute",
+        "description": "Mute",
+        "locked": true
+      },
+      {
+        "id": "mic-mute",
+        "category": "media",
+        "mod": "",
+        "key": "XF86AudioMicMute",
+        "actionType": "custom",
+        "action": "~/.config/features/system/volume.sh toggle-mic",
+        "description": "Mic mute",
+        "locked": true
+      },
+      {
+        "id": "bright-up",
+        "category": "media",
+        "mod": "",
+        "key": "XF86MonBrightnessUp",
+        "actionType": "shell",
+        "action": "brightness.brighter",
+        "description": "Brightness up",
+        "locked": true,
+        "repeating": true
+      },
+      {
+        "id": "bright-down",
+        "category": "media",
+        "mod": "",
+        "key": "XF86MonBrightnessDown",
+        "actionType": "shell",
+        "action": "brightness.dimmer",
+        "description": "Brightness down",
+        "locked": true,
+        "repeating": true
+      },
+
+      {
+        "id": "ss-screen",
+        "category": "screenshots",
+        "mod": "",
+        "key": "Print",
+        "actionType": "shell",
+        "action": "screenshot.screen",
+        "description": "Screenshot screen"
+      },
+      {
+        "id": "ss-area",
+        "category": "screenshots",
+        "mod": "SHIFT",
+        "key": "Print",
+        "actionType": "shell",
+        "action": "screenshot.region",
+        "description": "Screenshot area"
+      },
+      {
+        "id": "ss-output",
+        "category": "screenshots",
+        "mod": "SUPER",
+        "key": "Print",
+        "actionType": "shell",
+        "action": "screenshot.output",
+        "description": "Screenshot output"
+      },
+
+      {
+        "id": "exit",
+        "category": "system",
+        "mod": "SUPER CTRL",
+        "key": "Q",
+        "actionType": "hypr",
+        "action": "exit",
+        "description": "Exit Hyprland"
+      },
+      {
+        "id": "reload",
+        "category": "system",
+        "mod": "SUPER",
+        "key": "R",
+        "actionType": "hypr",
+        "action": "exec",
+        "args": { "cmd": "hyprctl reload" },
+        "description": "Reload config"
+      }
+    ]
+  },
+  "deps": {
+    "system": [
+      {
+        "bin": "hyprland",
+        "pkg": "hyprland",
+        "version": "0.55.4"
+      },
+      {
+        "bin": "wpctl",
+        "pkg": "wireplumber",
+        "version": "0.5.14"
+      },
+      {
+        "bin": "brightnessctl",
+        "pkg": "brightnessctl",
+        "version": "0.5.1"
+      },
+      {
+        "bin": "dunstify",
+        "pkg": "dunst",
+        "version": "1.13.2"
+      },
+      {
+        "bin": "fuzzel",
+        "pkg": "fuzzel",
+        "version": "1.14.1"
+      },
+      {
+        "bin": "kitty",
+        "pkg": "kitty",
+        "version": "0.47.1"
+      },
+      {
+        "bin": "pfetch",
+        "pkg": "pfetch",
+        "version": "2.11.1"
+      },
+      {
+        "bin": "tlpctl",
+        "pkg": "tlp",
+        "version": "1.10.1"
+      },
+      {
+        "bin": "nmcli",
+        "pkg": "networkmanager",
+        "version": "1.56.1"
+      },
+      {
+        "bin": "blueman-manager",
+        "pkg": "blueman",
+        "version": "2.4.6"
+      },
+      {
+        "bin": "magick",
+        "pkg": "imagemagick",
+        "version": "7.1.2.25"
+      },
+      {
+        "bin": "fc-list",
+        "pkg": "fontconfig",
+        "version": "2.18.1"
+      },
+      {
+        "bin": "xsettingsd",
+        "pkg": "xsettingsd",
+        "version": "1.0.2"
+      },
+      {
+        "bin": "kvantum",
+        "pkg": "kvantum",
+        "version": "1.1.8"
+      },
+      {
+        "bin": "kvantummanager",
+        "pkg": "kvantum",
+        "version": "1.1.8"
+      },
+      {
+        "bin": "file:/usr/share/themes/adw-gtk3-dark/index.theme",
+        "pkg": "adw-gtk-theme"
+      },
+      {
+        "bin": "dconf",
+        "pkg": "dconf",
+        "version": "0.49.0"
+      },
+      {
+        "bin": "file:/usr/share/icons/Papirus-Dark/index.theme",
+        "pkg": "papirus-icon-theme"
+      },
+      {
+        "bin": "cava",
+        "pkg": "cava",
+        "version": "0.10.4"
+      },
+      {
+        "bin": "xdg-desktop-portal",
+        "pkg": "xdg-desktop-portal",
+        "version": "1.22.1-2"
+      },
+      {
+        "bin": "wl-copy",
+        "pkg": "wl-clipboard"
+      },
+      {
+        "bin": "cliphist",
+        "pkg": "cliphist"
+      },
+      {
+        "bin": "grim",
+        "pkg": "grim"
+      },
+      {
+        "bin": "slurp",
+        "pkg": "slurp"
+      },
+      {
+        "bin": "curl",
+        "pkg": "curl"
+      },
+      {
+        "bin": "hyprsunset",
+        "pkg": "hyprsunset"
+      },
+      {
+        "bin": "awww-daemon",
+        "pkg": "awww"
+      },
+      {
+        "bin": "file:/usr/lib/polkit-kde-authentication-agent-1",
+        "pkg": "polkit-kde-agent"
+      },
+      {
+        "bin": "nm-applet",
+        "pkg": "network-manager-applet"
+      },
+      {
+        "bin": "kdeconnect-indicator",
+        "pkg": "kdeconnect"
+      },
+      {
+        "bin": "pipewire",
+        "pkg": "pipewire"
+      },
+      {
+        "bin": "mkdir",
+        "pkg": "coreutils"
+      },
+      {
+        "bin": "grep",
+        "pkg": "grep"
+      },
+      {
+        "bin": "sed",
+        "pkg": "sed"
+      },
+      {
+        "bin": "awk",
+        "pkg": "gawk"
+      },
+      {
+        "bin": "find",
+        "pkg": "findutils"
+      },
+      {
+        "bin": "pgrep",
+        "pkg": "procps-ng"
+      }
+    ],
+    "screenshare": [
+      { "pkg": "xdg-desktop-portal-hyprland", "source": "repo" },
+      { "pkg": "xdg-desktop-portal-gtk", "source": "repo" },
+      { "pkg": "qt6-wayland", "source": "repo" },
+      { "pkg": "xwaylandvideobridge", "source": "aur" }
+    ],
+    "gpu": {
+      "nvidia": ["nvidia-utils"],
+      "amd": ["mesa", "vulkan-radeon", "libva-mesa-driver"],
+      "intel": ["mesa", "vulkan-intel"]
+    },
+    "aur": [
+      {
+        "bin": "qs",
+        "pkg": "quickshell",
+        "type": "aur",
+        "version": "0.3.0"
+      },
+      {
+        "bin": "hyprpaper",
+        "pkg": "hyprpaper",
+        "type": "aur",
+        "version": "0.8.4"
+      },
+      {
+        "bin": "grimblast",
+        "pkg": "grimblast-git",
+        "type": "aur"
+      },
+      {
+        "bin": "wleave",
+        "pkg": "wleave-git",
+        "type": "aur"
+      }
+    ],
+    "fonts": [
+      {
+        "fcName": "Space Mono",
+        "pkg": "ttf-space-mono-nerd"
+      },
+      {
+        "fcName": "JetBrainsMono Nerd Font",
+        "pkg": "ttf-jetbrains-mono-nerd"
+      }
+    ],
+    "syncFonts": [
+      {
+        "ofl": "spacegrotesk",
+        "file": "SpaceGrotesk[wght].ttf",
+        "fcName": "Space Grotesk"
+      },
+      {
+        "ofl": "doto",
+        "file": "Doto[ROND,wght].ttf",
+        "fcName": "Doto"
+      }
+    ]
+  },
+  "apps": [
+    { "id": "discord", "name": "Discord", "category": "comms", "pkg": "discord", "source": "repo", "description": "Voice, video and text chat" },
+    { "id": "telegram", "name": "Telegram", "category": "comms", "pkg": "telegram-desktop", "source": "repo", "description": "Messaging client" },
+    { "id": "slack", "name": "Slack", "category": "comms", "pkg": "slack-desktop", "source": "aur", "description": "Team messaging" },
+
+    { "id": "chromium", "name": "Chromium", "category": "browsers", "pkg": "chromium", "source": "repo", "description": "Open-source web browser" },
+    { "id": "brave", "name": "Brave", "category": "browsers", "pkg": "brave-origin-bin", "source": "aur", "description": "Privacy-focused browser (official Origin build)" },
+    { "id": "chrome", "name": "Google Chrome", "category": "browsers", "pkg": "google-chrome", "source": "aur", "description": "Google's web browser" },
+
+    { "id": "vscode", "name": "VS Code", "category": "dev", "pkg": "code", "source": "repo", "description": "Code editor (OSS build)" },
+    { "id": "docker", "name": "Docker", "category": "dev", "pkg": "docker", "source": "repo", "description": "Container runtime" },
+    { "id": "git", "name": "Git", "category": "dev", "pkg": "git", "source": "repo", "description": "Version control" },
+    { "id": "neovim", "name": "Neovim", "category": "dev", "pkg": "neovim", "source": "repo", "description": "Vim-based text editor" },
+
+    { "id": "spotify", "name": "Spotify", "category": "media", "pkg": "spotify", "source": "aur", "description": "Music streaming" },
+    { "id": "obs", "name": "OBS Studio", "category": "media", "pkg": "obs-studio", "source": "repo", "description": "Screen recording and streaming" },
+    { "id": "vlc", "name": "VLC", "category": "media", "pkg": "vlc", "source": "repo", "description": "Media player" },
+    { "id": "steam", "name": "Steam", "category": "media", "pkg": "steam", "source": "repo", "description": "Game platform (needs multilib)" },
+    { "id": "bitwarden", "name": "Bitwarden", "category": "media", "pkg": "bitwarden", "source": "repo", "description": "Password manager" }
+  ],
+  "credits": [
+    {
+      "name": "herc",
+      "role": "creator"
+    },
+    {
+      "name": "Nothing Technology",
+      "role": "design inspiration"
+    },
+    {
+      "name": "end-4/dots-hyprland",
+      "role": "source of inspiration",
+      "url": "https://github.com/end-4/dots-hyprland"
+    },
+    {
+      "name": "uiriansan/SilentSDDM",
+      "role": "source of inspiration for sddm theme",
+      "url": "https://github.com/uiriansan/SilentSDDM"
+    }
+  ]
+}

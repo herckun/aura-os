@@ -1,0 +1,4 @@
+module appearance
+singleton AppearanceService 1.0 AppearanceService.qml
+singleton IconService 1.0 IconService.qml
+singleton WallpaperService 1.0 WallpaperService.qml
