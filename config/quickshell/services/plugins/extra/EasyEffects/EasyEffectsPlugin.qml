@@ -23,6 +23,7 @@ BasePlugin {
     name: "EasyEffects",
     description: "Audio effects and presets",
     icon: "speaker-high",
+    dependencies: [{ bin: "easyeffects", install: "sudo pacman -S --noconfirm easyeffects" }],
     locations: ["audio"],
     settings: [
       { key: "autoStart",     label: "AUTO START",            type: "toggle", default: true },

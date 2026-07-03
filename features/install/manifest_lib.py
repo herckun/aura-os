@@ -16,6 +16,54 @@ def _load(path):
         return json.load(handle)
 
 
+def _manifest_block(text):
+    """Return the balanced `manifest: ({ ... })` object literal from a plugin QML."""
+    i = text.find("manifest:")
+    if i < 0:
+        return ""
+    b = text.find("{", i)
+    if b < 0:
+        return ""
+    depth = 0
+    for j in range(b, len(text)):
+        if text[j] == "{":
+            depth += 1
+        elif text[j] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[b:j + 1]
+    return text[b:]
+
+
+def _plugin_meta(base, kind, rel_file):
+    """Read name/description/first-dependency from a plugin's own QML manifest.
+    The manifest.json only stores {id, file}; everything else lives in the plugin."""
+    meta = {"name": "", "description": "", "dep": "", "install": ""}
+    if not rel_file:
+        return meta
+    path = os.path.join(base, "quickshell", "services", "plugins", kind, rel_file)
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            block = _manifest_block(handle.read())
+    except OSError:
+        return meta
+    m = re.search(r'\bname\s*:\s*"([^"]*)"', block)
+    if m:
+        meta["name"] = m.group(1)
+    m = re.search(r'\bdescription\s*:\s*"([^"]*)"', block)
+    if m:
+        meta["description"] = m.group(1)
+    dm = re.search(r'\bdependencies\s*:\s*\[(.*?)\]', block, re.S)
+    if dm:
+        bm = re.search(r'\bbin\s*:\s*"([^"]*)"', dm.group(1))
+        im = re.search(r'\binstall\s*:\s*"([^"]*)"', dm.group(1))
+        if bm:
+            meta["dep"] = bm.group(1)
+        if im:
+            meta["install"] = im.group(1)
+    return meta
+
+
 def cmd_installvars(manifest_path):
     d = _load(manifest_path)
 
@@ -26,13 +74,16 @@ def cmd_installvars(manifest_path):
     print(f'APP_ENV_PREFIX="{app.get("name", "aura-os").upper().replace("-", "_")}"')
 
     plugins = d.get('plugins', {})
+    base = os.path.dirname(manifest_path)
     for kind in ('core', 'extra'):
         var = 'CORE_PLUGINS' if kind == 'core' else 'EXTRA_PLUGINS'
         entries = []
         for p in plugins.get(kind, []):
+            # manifest holds only {id, file}; name/description/deps come from the plugin QML
+            meta = _plugin_meta(base, kind, p.get('file', ''))
             # Fields: 1=id 2=name 3=description 4=dep 5=install 6=file
-            parts = [p['id'], p['name'], p['description'],
-                     p.get('dep', ''), p.get('install', ''), p.get('file', '')]
+            parts = [p['id'], meta['name'], meta['description'],
+                     meta['dep'], meta['install'], p.get('file', '')]
             entries.append('|'.join(parts))
         print(f'{var}="')
         for e in entries:

@@ -20,6 +20,7 @@ BasePlugin {
     name: "Power Profile",
     description: "CPU power profile switcher",
     icon: "bolt",
+    dependencies: [{ bin: "tlp", install: "sudo pacman -S --noconfirm tlp" }],
     locations: ["controlcenter_row"],
     settings: []
   })

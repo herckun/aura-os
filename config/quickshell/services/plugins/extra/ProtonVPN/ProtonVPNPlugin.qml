@@ -20,6 +20,7 @@ BasePlugin {
     name: "ProtonVPN",
     description: "ProtonVPN secure core",
     icon: "shield",
+    dependencies: [{ bin: "protonvpn", install: "yay -S --noconfirm protonvpn" }],
     locations: ["connectivity", "controlcenter_toggle"],
     settings: [
       { key: "killSwitch", label: "KILL SWITCH", type: "toggle", default: false, shared: true },

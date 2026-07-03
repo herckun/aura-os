@@ -20,6 +20,7 @@ BasePlugin {
     name: "Windscribe",
     description: "Windscribe VPN client",
     icon: "shield",
+    dependencies: [{ bin: "windscribe-cli", install: "yay -S --noconfirm windscribe-cli" }],
     locations: ["connectivity", "controlcenter_toggle"],
     settings: [],
     controlCenterToggle: {

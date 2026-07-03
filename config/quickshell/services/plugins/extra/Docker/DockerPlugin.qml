@@ -20,6 +20,7 @@ BasePlugin {
     name: "Docker",
     description: "Container management",
     icon: "container",
+    dependencies: [{ bin: "docker", install: "sudo pacman -S --noconfirm docker" }],
     locations: ["controlcenter_row"],
     settings: [
       { key: "pollInterval", label: "POLL INTERVAL (S)", type: "stepper", default: 10, min: 5, max: 60, step: 5 }
