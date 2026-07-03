@@ -64,6 +64,25 @@ def _plugin_meta(base, kind, rel_file):
     return meta
 
 
+def _plugin_icons(base, kind, rel_file):
+    """Every string `icon:` prop anywhere in a plugin's QML — manifest fields
+    (icon/overviewTab.icon/controlCenterToggle.icon) and UI (buttons, toggles).
+    The manifest.json only stores {id, file}, so plugin icons to download live here.
+    Only literal `icon: "name"` is captured; expression bindings (icon: root.foo)
+    and sibling props (iconKind:, iconFallback:) don't match `\\bicon\\s*:\\s*"`.
+    Captures are constrained to tabler-style names (lowercase/digits/hyphens) so
+    runtime image URLs (e.g. favicon sources on iconKind:"image") are excluded."""
+    if not rel_file:
+        return []
+    path = os.path.join(base, "quickshell", "services", "plugins", kind, rel_file)
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            text = handle.read()
+    except OSError:
+        return []
+    return [m.group(1) for m in re.finditer(r'\bicon\s*:\s*"([a-z0-9-]+)"', text)]
+
+
 def cmd_installvars(manifest_path):
     d = _load(manifest_path)
 
@@ -183,8 +202,8 @@ def cmd_icons(manifest_path):
 
     for cat in ('core', 'extra'):
         for p in d.get('plugins', {}).get(cat, []):
-            consider(p.get('icon', ''))
-            consider(p.get('overviewTab', {}).get('icon', ''))
+            for name in _plugin_icons(_base, cat, p.get('file', '')):
+                consider(name)
 
     for k, v in sorted(icons.items()):
         print(f'{k}={v}')

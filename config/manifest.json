@@ -255,20 +255,96 @@
     ],
     "extra": [
       {
+        "id": "archpackages",
+        "file": "ArchPackages/ArchPackagesPlugin.qml"
+      },
+      {
+        "id": "color",
+        "file": "Color/ColorPlugin.qml"
+      },
+      {
+        "id": "crypto",
+        "file": "Crypto/CryptoPlugin.qml"
+      },
+      {
+        "id": "currency",
+        "file": "Currency/CurrencyPlugin.qml"
+      },
+      {
+        "id": "devpackages",
+        "file": "DevPackages/DevPackagesPlugin.qml"
+      },
+      {
+        "id": "dictionary",
+        "file": "Dictionary/DictionaryPlugin.qml"
+      },
+      {
         "id": "docker",
         "file": "Docker/DockerPlugin.qml"
+      },
+      {
+        "id": "duckduckgo",
+        "file": "DuckDuckGo/DuckDuckGoPlugin.qml"
       },
       {
         "id": "easyeffects",
         "file": "EasyEffects/EasyEffectsPlugin.qml"
       },
       {
+        "id": "files",
+        "file": "Files/FilesPlugin.qml"
+      },
+      {
+        "id": "hackernews",
+        "file": "HackerNews/HackerNewsPlugin.qml"
+      },
+      {
+        "id": "hash",
+        "file": "Hash/HashPlugin.qml"
+      },
+      {
+        "id": "httpstatus",
+        "file": "HttpStatus/HttpStatusPlugin.qml"
+      },
+      {
+        "id": "power",
+        "file": "Power/PowerPlugin.qml"
+      },
+      {
         "id": "powerprofile",
         "file": "PowerProfile/PowerProfilePlugin.qml"
       },
       {
+        "id": "processes",
+        "file": "Processes/ProcessesPlugin.qml"
+      },
+      {
         "id": "protonvpn",
         "file": "ProtonVPN/ProtonVPNPlugin.qml"
+      },
+      {
+        "id": "runcommand",
+        "file": "RunCommand/RunCommandPlugin.qml"
+      },
+      {
+        "id": "ssh",
+        "file": "Ssh/SshPlugin.qml"
+      },
+      {
+        "id": "systemd",
+        "file": "Systemd/SystemdPlugin.qml"
+      },
+      {
+        "id": "tldr",
+        "file": "Tldr/TldrPlugin.qml"
+      },
+      {
+        "id": "wikipedia",
+        "file": "Wikipedia/WikipediaPlugin.qml"
+      },
+      {
+        "id": "windows",
+        "file": "Windows/WindowsPlugin.qml"
       },
       {
         "id": "windscribe",
