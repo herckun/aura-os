@@ -11,21 +11,39 @@ BasePlugin {
   pluginId: "duckduckgo"
   manifest: ({
     author: "herckun",
-    version: "1.0",
+    version: "1.1",
     shellVersion: "2.0",
     name: "DuckDuckGo",
-    description: "Web search results in the launcher",
+    description: "Web search, site favicons and !bangs in the launcher",
     icon: "search",
     locations: [],
     icons: {},
     settings: []
   })
 
-  // ── Public state ─────────────────────────────────────────────────
-
   // ── Internal state ───────────────────────────────────────────────
+  readonly property string _ddgIcon: "https://icons.duckduckgo.com/ip3/duckduckgo.com.ico"
 
-  // ── Signal handlers ──────────────────────────────────────────────
+  // Curated bangs — only for a friendly label + favicon; the redirect itself
+  // is handled by DuckDuckGo, which knows all 13k+ bangs.
+  readonly property var _bangs: ({
+    g:      { d: "google.com",            n: "Google" },
+    ddg:    { d: "duckduckgo.com",        n: "DuckDuckGo" },
+    w:      { d: "wikipedia.org",         n: "Wikipedia" },
+    gh:     { d: "github.com",            n: "GitHub" },
+    gl:     { d: "gitlab.com",            n: "GitLab" },
+    yt:     { d: "youtube.com",           n: "YouTube" },
+    so:     { d: "stackoverflow.com",     n: "Stack Overflow" },
+    r:      { d: "reddit.com",            n: "Reddit" },
+    a:      { d: "amazon.com",            n: "Amazon" },
+    aur:    { d: "aur.archlinux.org",     n: "AUR" },
+    aw:     { d: "wiki.archlinux.org",    n: "Arch Wiki" },
+    npm:    { d: "npmjs.com",             n: "npm" },
+    crates: { d: "crates.io",             n: "crates.io" },
+    mdn:    { d: "developer.mozilla.org", n: "MDN" },
+    maps:   { d: "maps.google.com",       n: "Google Maps" },
+    x:      { d: "x.com",                 n: "X" }
+  })
 
   // ── Public API ───────────────────────────────────────────────────
   readonly property var searchProvider: ({
@@ -35,6 +53,17 @@ BasePlugin {
       var q = (text || "").trim()
       if (q.length < 2 || q.indexOf("=") === 0) return []
 
+      // Typing a bang ("!" + partial, no search terms yet) → suggest bangs.
+      if (/^![A-Za-z0-9.+_-]*$/.test(q)) {
+        var sugg = root._bangSuggestions(q.slice(1).toLowerCase())
+        return sugg.length ? sugg : [root._bangRow({ key: q.slice(1).toLowerCase(), terms: "" }, q)]
+      }
+
+      // A bang with terms ("!gh quickshell") → a single redirect row, no API.
+      var bang = root._parseBang(q)
+      if (bang) return [root._bangRow(bang, q)]
+
+      // Plain query → instant answers + related web rows (async) + catch-all.
       var url = "https://api.duckduckgo.com/?q=" + encodeURIComponent(q)
               + "&format=json&no_html=1&no_redirect=1&skip_disambig=1"
       RequestService.get(url, function(resp) {
@@ -62,13 +91,30 @@ BasePlugin {
     ProcessPool.runDetached(["xdg-open", url])
   }
 
+  function _hostOf(url: string): string {
+    var m = (url || "").match(/^[a-z]+:\/\/([^\/]+)/i)
+    return m ? m[1].replace(/^www\./, "") : ""
+  }
+
+  function _favicon(host: string): string {
+    return host ? "https://icons.duckduckgo.com/ip3/" + host + ".ico" : root._ddgIcon
+  }
+
+  function _parseBang(q: string): var {
+    var m = q.match(/(?:^|\s)!([A-Za-z0-9.+_-]+)/)
+    if (!m) return null
+    return { key: m[1].toLowerCase(), terms: q.replace(m[0], " ").trim() }
+  }
+
   function _webRow(label, sublabel, url): var {
+    var host = root._hostOf(url)
     return {
       id: "ddg:" + url,
       label: label,
-      sublabel: sublabel,
-      icon: "world",
-      iconKind: "symbolic",
+      sublabel: sublabel || host,
+      icon: root._favicon(host),
+      iconKind: "image",
+      iconFallback: "world",
       priority: -10,
       source: "duckduckgo",
       groupLabel: "DuckDuckGo",
@@ -81,8 +127,9 @@ BasePlugin {
       id: "ddg:search",
       label: "Search DuckDuckGo for \"" + q + "\"",
       sublabel: "",
-      icon: "search",
-      iconKind: "symbolic",
+      icon: root._ddgIcon,
+      iconKind: "image",
+      iconFallback: "search",
       priority: -20,
       source: "duckduckgo",
       groupLabel: "DuckDuckGo",
@@ -90,7 +137,46 @@ BasePlugin {
     }
   }
 
-  // ── Timers ───────────────────────────────────────────────────────
+  function _bangRow(bang, fullQuery): var {
+    var info = root._bangs[bang.key]
+    var name = info ? info.n : "!" + bang.key
+    var host = info ? info.d : "duckduckgo.com"
+    return {
+      id: "ddg:bang:" + bang.key,
+      label: bang.terms.length ? "Search " + name + " for \"" + bang.terms + "\"" : "Open " + name,
+      sublabel: "!" + bang.key + " bang",
+      icon: root._favicon(host),
+      iconKind: "image",
+      iconFallback: "search",
+      priority: 50,
+      source: "duckduckgo",
+      groupLabel: "DuckDuckGo",
+      action: function() { root._open("https://duckduckgo.com/?q=" + encodeURIComponent(fullQuery)) }
+    }
+  }
 
-  // ── Lifecycle ────────────────────────────────────────────────────
+  function _bangSuggestions(prefix): var {
+    var out = []
+    var keys = Object.keys(root._bangs)
+    for (var i = 0; i < keys.length && out.length < 8; i++) {
+      var k = keys[i]
+      if (prefix.length !== 0 && k.indexOf(prefix) !== 0) continue
+      out.push((function(bk) {
+        var info = root._bangs[bk]
+        return {
+          id: "ddg:bangsug:" + bk,
+          label: "!" + bk + " — " + info.n,
+          sublabel: info.d,
+          icon: root._favicon(info.d),
+          iconKind: "image",
+          iconFallback: "search",
+          priority: -5,
+          source: "duckduckgo",
+          groupLabel: "DuckDuckGo bangs",
+          action: function() { root._open("https://duckduckgo.com/?q=!" + bk) }
+        }
+      })(k))
+    }
+    return out
+  }
 }

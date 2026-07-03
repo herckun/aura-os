@@ -9,6 +9,7 @@ Item {
   property int size: 16
   property color color: Theme.textPrimary
   property bool byPassColorOverlay: false
+  readonly property alias status: image.status
 
   implicitWidth: size
   implicitHeight: size

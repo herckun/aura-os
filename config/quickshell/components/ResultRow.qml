@@ -59,19 +59,30 @@ Rectangle {
         visible: root.result.iconKind === "app" && status === Image.Ready
       }
       Icon {
+        id: urlIcon
+        anchors.centerIn: parent
+        size: 18
+        byPassColorOverlay: true
+        source: (root.result.iconKind === "image" && root.result.icon)
+                ? root.result.icon : ""
+        visible: root.result.iconKind === "image" && status === Image.Ready
+      }
+      Icon {
         id: symIcon
         anchors.centerIn: parent
         size: 18
         color: root.selected ? Theme.accent : Theme.textSecondary
-        source: (root.result.iconKind !== "app" && root.result.icon)
-                ? Icons.get(root.result.icon) : ""
-        visible: root.result.iconKind !== "app" && source !== ""
+        // symbolic kind → the icon itself; image kind → the fallback while the image loads/fails
+        source: root.result.iconKind === "image"
+                ? (!urlIcon.visible && root.result.iconFallback ? Icons.get(root.result.iconFallback) : "")
+                : (root.result.iconKind !== "app" && root.result.icon ? Icons.get(root.result.icon) : "")
+        visible: source !== ""
       }
       Grid {
         anchors.centerIn: parent
         columns: 3
         spacing: Theme.space2
-        visible: !appIcon.visible && !symIcon.visible
+        visible: !appIcon.visible && !urlIcon.visible && !symIcon.visible
         Repeater {
           model: 9
           Rectangle {
