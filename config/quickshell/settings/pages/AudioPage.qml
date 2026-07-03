@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Services.Pipewire
 import "../../styles"
+import "../../core"
 import "../../services"
 import "../../components"
 
@@ -12,29 +14,68 @@ Column {
   PageHeader { title: "AUDIO" }
 
   // ── Output ─────────────────────────────────────────────────────────
-  Card {
+  Surface {
     width: parent.width
-    title: "OUTPUT"
-    description: AudioService.sinkName
+    height: outputCol.implicitHeight + Theme.spaceLg * 2
+    radius: Theme.radiusMedium
+    border.color: Theme.border
+    padding: Theme.spaceLg
 
     Column {
+      id: outputCol
       width: parent.width
-      spacing: Theme.spaceSm
+      spacing: Theme.spaceMd
 
       RowLayout {
         width: parent.width
         spacing: Theme.spaceSm
 
-        Button {
-          shape: "default"
-          size: "sm"
-          text: AudioService.muted ? "MUTED" : "ACTIVE"
-          bgColor: AudioService.muted ? Theme.warning : Theme.success
-          color: Theme.background
-          onClicked: AudioService.toggleMute()
+        Surface {
+          Layout.preferredWidth: 36
+          Layout.preferredHeight: 36
+          level: 2
+          bordered: false
+          radius: Theme.radiusMedium
+
+          Icon {
+            anchors.centerIn: parent
+            source: Icons.get(AudioService.muted ? "volume-mute" : "speaker-high")
+            size: 16
+            color: AudioService.muted ? Theme.warning : Theme.accent
+          }
         }
 
-        Item { Layout.fillWidth: true }
+        Column {
+          Layout.fillWidth: true
+          spacing: Theme.spaceXxs
+
+          Text {
+            width: parent.width
+            text: "OUTPUT"
+            color: Theme.textPrimary
+            font.pixelSize: Theme.fontSizeLabel
+            font.family: Theme.fontFamilyMono
+            font.weight: Font.Bold
+            font.letterSpacing: 0.08
+          }
+
+          Text {
+            width: parent.width
+            text: AudioService.sinkName
+            color: Theme.textDisabled
+            font.pixelSize: Theme.fontSizeMicro
+            font.family: Theme.fontFamilyMono
+            elide: Text.ElideRight
+          }
+        }
+
+        Button {
+          text: AudioService.muted ? "UNMUTE" : "MUTE"
+          size: "sm"
+          icon: AudioService.muted ? "volume" : "volume-mute"
+          variant: AudioService.muted ? "accent" : "default"
+          onClicked: AudioService.toggleMute()
+        }
       }
 
       SliderControl {
@@ -53,13 +94,12 @@ Column {
 
       SectionLabel {
         label: "DEVICES"
-        visible: AudioService.outputDevices.length > 1
+        visible: AudioService.outputDevices.length > 0
       }
 
       Column {
         width: parent.width
         spacing: Theme.space2
-        visible: AudioService.outputDevices.length > 1
 
         Repeater {
           model: AudioService.outputDevices
@@ -68,7 +108,7 @@ Column {
             width: parent.width
             icon: "speaker-high"
             name: modelData.name
-            subtitle: modelData.isDefault ? "DEFAULT" : (modelData.isEasyEffects ? "EE" : "")
+            subtitle: modelData.isDefault ? "DEFAULT" : (modelData.isVirtual ? "VIRTUAL" : "")
             active: modelData.isDefault
             onClicked: {
               if (!modelData.isDefault) {
@@ -81,30 +121,207 @@ Column {
     }
   }
 
-  // ── Input ──────────────────────────────────────────────────────────
-  Card {
+  // ── Mixer ──────────────────────────────────────────────────────────
+  Surface {
     width: parent.width
-    title: "INPUT"
-    description: AudioService.sourceName
+    height: mixerCol.implicitHeight + Theme.spaceLg * 2
+    radius: Theme.radiusMedium
+    border.color: Theme.border
+    padding: Theme.spaceLg
+    visible: AudioService.playbackStreams.length > 0
 
     Column {
+      id: mixerCol
       width: parent.width
-      spacing: Theme.spaceSm
+      spacing: Theme.spaceMd
 
       RowLayout {
         width: parent.width
         spacing: Theme.spaceSm
 
-        Button {
-          shape: "default"
-          size: "sm"
-          text: AudioService.micMuted ? "MUTED" : "ACTIVE"
-          bgColor: AudioService.micMuted ? Theme.warning : Theme.success
-          color: Theme.background
-          onClicked: AudioService.toggleMicMute()
+        Surface {
+          Layout.preferredWidth: 36
+          Layout.preferredHeight: 36
+          level: 2
+          bordered: false
+          radius: Theme.radiusMedium
+
+          Icon {
+            anchors.centerIn: parent
+            source: Icons.get("music-note")
+            size: 16
+            color: Theme.accent
+          }
         }
 
-        Item { Layout.fillWidth: true }
+        Column {
+          Layout.fillWidth: true
+          spacing: Theme.spaceXxs
+
+          Text {
+            text: "MIXER"
+            color: Theme.textPrimary
+            font.pixelSize: Theme.fontSizeLabel
+            font.family: Theme.fontFamilyMono
+            font.weight: Font.Bold
+            font.letterSpacing: 0.08
+          }
+
+          Text {
+            text: "Per-application volume"
+            color: Theme.textDisabled
+            font.pixelSize: Theme.fontSizeMicro
+            font.family: Theme.fontFamilyMono
+          }
+        }
+
+        Badge {
+          text: AudioService.playbackStreams.length + " STREAM" + (AudioService.playbackStreams.length !== 1 ? "S" : "")
+          size: "sm"
+        }
+      }
+
+      Repeater {
+        model: AudioService.playbackStreams
+
+        Column {
+          id: streamRow
+          width: parent.width
+          spacing: Theme.spaceXs
+
+          property var streamNode: modelData.node
+          readonly property real streamVolume: streamNode && streamNode.audio ? streamNode.audio.volume : 0
+          readonly property bool streamMuted: streamNode && streamNode.audio ? streamNode.audio.muted : false
+
+          PwObjectTracker { objects: streamRow.streamNode ? [streamRow.streamNode] : [] }
+
+          RowLayout {
+            width: parent.width
+            spacing: Theme.spaceSm
+
+            Button {
+              shape: "icon"
+              width: 26
+              height: 26
+              size: "xs"
+              showBackground: false
+              icon: streamRow.streamMuted ? "volume-mute" : "volume"
+              color: streamRow.streamMuted ? Theme.warning : Theme.textSecondary
+              onClicked: AudioService.toggleNodeMute(streamRow.streamNode)
+            }
+
+            Column {
+              Layout.fillWidth: true
+              spacing: Theme.space2
+
+              Text {
+                width: parent.width
+                text: modelData.name.toUpperCase()
+                color: streamRow.streamMuted ? Theme.textDisabled : Theme.textPrimary
+                font.pixelSize: Theme.fontSizeCaption
+                font.family: Theme.fontFamilyMono
+                font.letterSpacing: 0.04
+                elide: Text.ElideRight
+              }
+
+              Text {
+                width: parent.width
+                text: modelData.media
+                color: Theme.textDisabled
+                font.pixelSize: Theme.fontSizeMicro
+                font.family: Theme.fontFamilyMono
+                elide: Text.ElideRight
+                visible: modelData.media !== "" && modelData.media !== modelData.name
+              }
+            }
+          }
+
+          SliderControl {
+            width: parent.width
+            label: ""
+            from: 0
+            to: 1
+            value: streamRow.streamVolume
+            displayMin: 0
+            displayMax: 100
+            unit: "%"
+            onMoved: (v) => AudioService.setNodeVolume(streamRow.streamNode, v)
+          }
+        }
+      }
+    }
+  }
+
+  // ── Input ──────────────────────────────────────────────────────────
+  Surface {
+    width: parent.width
+    height: inputCol.implicitHeight + Theme.spaceLg * 2
+    radius: Theme.radiusMedium
+    border.color: Theme.border
+    padding: Theme.spaceLg
+
+    Column {
+      id: inputCol
+      width: parent.width
+      spacing: Theme.spaceMd
+
+      RowLayout {
+        width: parent.width
+        spacing: Theme.spaceSm
+
+        Surface {
+          Layout.preferredWidth: 36
+          Layout.preferredHeight: 36
+          level: 2
+          bordered: false
+          radius: Theme.radiusMedium
+
+          Icon {
+            anchors.centerIn: parent
+            source: Icons.get("phone")
+            size: 16
+            color: AudioService.micMuted ? Theme.warning : Theme.accent
+          }
+        }
+
+        Column {
+          Layout.fillWidth: true
+          spacing: Theme.spaceXxs
+
+          Text {
+            width: parent.width
+            text: "INPUT"
+            color: Theme.textPrimary
+            font.pixelSize: Theme.fontSizeLabel
+            font.family: Theme.fontFamilyMono
+            font.weight: Font.Bold
+            font.letterSpacing: 0.08
+          }
+
+          Text {
+            width: parent.width
+            text: AudioService.sourceName
+            color: Theme.textDisabled
+            font.pixelSize: Theme.fontSizeMicro
+            font.family: Theme.fontFamilyMono
+            elide: Text.ElideRight
+          }
+        }
+
+        Badge {
+          text: "IN USE"
+          variant: "accent"
+          size: "sm"
+          visible: AudioService.recordingStreams.length > 0
+        }
+
+        Button {
+          text: AudioService.micMuted ? "UNMUTE" : "MUTE"
+          size: "sm"
+          icon: AudioService.micMuted ? "volume" : "volume-mute"
+          variant: AudioService.micMuted ? "accent" : "default"
+          onClicked: AudioService.toggleMicMute()
+        }
       }
 
       SliderControl {
@@ -121,13 +338,12 @@ Column {
 
       SectionLabel {
         label: "DEVICES"
-        visible: AudioService.inputDevices.length > 1
+        visible: AudioService.inputDevices.length > 0
       }
 
       Column {
         width: parent.width
         spacing: Theme.space2
-        visible: AudioService.inputDevices.length > 1
 
         Repeater {
           model: AudioService.inputDevices
@@ -136,11 +352,75 @@ Column {
             width: parent.width
             icon: "phone"
             name: modelData.name
-            subtitle: modelData.isDefault ? "DEFAULT" : ""
+            subtitle: modelData.isDefault ? "DEFAULT" : (modelData.isVirtual ? "VIRTUAL" : "")
             active: modelData.isDefault
             onClicked: {
               if (!modelData.isDefault) {
                 AudioService.setInputDevice(modelData.node)
+              }
+            }
+          }
+        }
+      }
+
+      SectionLabel {
+        label: "IN USE BY"
+        visible: AudioService.recordingStreams.length > 0
+      }
+
+      Column {
+        width: parent.width
+        spacing: Theme.space2
+        visible: AudioService.recordingStreams.length > 0
+
+        Repeater {
+          model: AudioService.recordingStreams
+
+          Rectangle {
+            id: recRow
+            width: parent.width
+            height: Theme.controlHeight + Theme.spaceSm
+            radius: Theme.radiusSmall
+            color: recHover.containsMouse ? Theme.controlBackgroundHover : "transparent"
+
+            property var streamNode: modelData.node
+            readonly property bool streamMuted: streamNode && streamNode.audio ? streamNode.audio.muted : false
+
+            PwObjectTracker { objects: recRow.streamNode ? [recRow.streamNode] : [] }
+
+            MouseArea {
+              id: recHover
+              anchors.fill: parent
+              hoverEnabled: true
+              acceptedButtons: Qt.NoButton
+              z: -1
+            }
+
+            RowLayout {
+              anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: Theme.spaceSm }
+              spacing: Theme.spaceSm
+
+              Rectangle {
+                width: 6
+                height: 6
+                radius: 3
+                color: recRow.streamMuted ? Theme.textDisabled : Theme.error
+              }
+
+              Text {
+                Layout.fillWidth: true
+                text: modelData.name.toUpperCase()
+                color: recRow.streamMuted ? Theme.textDisabled : Theme.textPrimary
+                font.pixelSize: Theme.fontSizeCaption
+                font.family: Theme.fontFamilyMono
+                font.letterSpacing: 0.04
+                elide: Text.ElideRight
+              }
+
+              Button {
+                text: recRow.streamMuted ? "UNMUTE" : "MUTE"
+                size: "sm"
+                onClicked: AudioService.toggleNodeMute(recRow.streamNode)
               }
             }
           }

@@ -27,11 +27,14 @@ Singleton {
   readonly property var outputDevices: _getDevices(true)
   readonly property var inputDevices: _getDevices(false)
 
+  readonly property var playbackStreams: _getStreams(true)
+  readonly property var recordingStreams: _getStreams(false)
+
   // ═══════════════════════════════════════════════════════════════
   //  SYSTEM INTEGRATION
   // ═══════════════════════════════════════════════════════════════
   PwObjectTracker {
-    objects: [Pipewire.defaultAudioSink, Pipewire.defaultAudioSource, Pipewire.nodes]
+    objects: Pipewire.nodes.values
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -44,9 +47,10 @@ Singleton {
   function _getDevices(isOutput: bool): var {
     if (!Pipewire.ready) return []
     var devices = []
-    for (var i = 0; i < Pipewire.nodes.count; i++) {
-      var node = Pipewire.nodes.get(i)
-      if (!node.ready || !node.audio) continue
+    var nodes = Pipewire.nodes.values
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i]
+      if (!node.ready || !node.audio || node.isStream) continue
       if (isOutput && !node.isSink) continue
       if (!isOutput && node.isSink) continue
       var name = node.description || node.nickname || node.name || ""
@@ -57,10 +61,31 @@ Singleton {
       devices.push({
         name: name,
         node: node,
-        isDefault: isDefault
+        isDefault: isDefault,
+        isVirtual: !(node.properties && node.properties["device.api"])
       })
     }
     return devices
+  }
+
+  function _getStreams(sinkSide: bool): var {
+    if (!Pipewire.ready) return []
+    var streams = []
+    var nodes = Pipewire.nodes.values
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i]
+      if (!node.ready || !node.audio || !node.isStream) continue
+      if (node.isSink !== sinkSide) continue
+      if (!sinkSide && node.properties && node.properties["stream.monitor"] === "true") continue
+      var app = node.properties ? (node.properties["application.name"] || "") : ""
+      var media = node.properties ? (node.properties["media.name"] || "") : ""
+      streams.push({
+        name: app || node.nickname || node.description || node.name || "Unknown",
+        media: media,
+        node: node
+      })
+    }
+    return streams
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -97,6 +122,19 @@ Singleton {
     if (source?.ready && source?.audio) {
       source.audio.muted = false
       source.audio.volume = Math.max(0, Math.min(1.5, v))
+    }
+  }
+
+  function setNodeVolume(node: PwNode, v: real): void {
+    if (node?.ready && node?.audio) {
+      node.audio.muted = false
+      node.audio.volume = Math.max(0, Math.min(1.5, v))
+    }
+  }
+
+  function toggleNodeMute(node: PwNode): void {
+    if (node?.ready && node?.audio) {
+      node.audio.muted = !node.audio.muted
     }
   }
 

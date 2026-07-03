@@ -295,12 +295,11 @@ Item {
       Repeater {
         model: _conflicts
 
-        Rectangle {
+        Surface {
           width: parent.width
           height: conflictRow.implicitHeight + Theme.spaceMd * 2
           radius: Theme.radiusMedium
           color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.08)
-          border.width: Theme.borderWidth
           border.color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.3)
 
           RowLayout {
@@ -463,14 +462,13 @@ Item {
               { label: "CUSTOM", value: "custom", icon: "code", desc: "Any command" }
             ]
 
-            delegate: Rectangle {
+            delegate: Surface {
               width: (parent.width - Theme.spaceSm * 2) / 3
               height: 60
               radius: Theme.radiusMedium
               color: root._editActionType === modelData.value
                 ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1)
                 : Theme.backgroundTertiary
-              border.width: Theme.borderWidth
               border.color: root._editActionType === modelData.value ? Theme.accent : Theme.border
 
               Behavior on color {
@@ -716,12 +714,11 @@ Item {
           Repeater {
             model: root._conflictToResolve || []
 
-            Rectangle {
+            Surface {
               width: parent.width
               height: conflictItemRow.implicitHeight + Theme.spaceMd * 2
               radius: Theme.radiusMedium
-              color: Theme.backgroundTertiary
-              border.width: Theme.borderWidth
+              level: 2
               border.color: Theme.border
 
               RowLayout {
@@ -760,12 +757,11 @@ Item {
           }
         }
 
-        Rectangle {
+        Surface {
           width: parent.width
           height: newItemRow.implicitHeight + Theme.spaceMd * 2
           radius: Theme.radiusMedium
           color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.08)
-          border.width: Theme.borderWidth
           border.color: Theme.accent
 
           RowLayout {
