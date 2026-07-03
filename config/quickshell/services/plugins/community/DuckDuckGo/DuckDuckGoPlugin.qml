@@ -63,24 +63,19 @@ BasePlugin {
       var bang = root._parseBang(q)
       if (bang) return [root._bangRow(bang, q)]
 
-      // Plain query → instant answers + related web rows (async) + catch-all.
-      var url = "https://api.duckduckgo.com/?q=" + encodeURIComponent(q)
-              + "&format=json&no_html=1&no_redirect=1&skip_disambig=1"
-      RequestService.get(url, function(resp) {
-        var rows = []
-        if (resp && resp.ok && resp.data && typeof resp.data === "object") {
-          var d = resp.data
-          if (d.AbstractText && d.AbstractURL)
-            rows.push(root._webRow(d.Heading || q, d.AbstractText, d.AbstractURL))
-          var topics = d.RelatedTopics || []
-          for (var i = 0; i < topics.length && rows.length < 5; i++) {
-            var t = topics[i]
-            if (t && t.Text && t.FirstURL) rows.push(root._webRow(t.Text, "", t.FirstURL))
-          }
-        }
-        rows.push(root._searchRow(q))
-        SearchService.submit(qid, "duckduckgo", rows)
-      }, undefined)
+      // Plain query → instant answers (sparse) merged with autocomplete
+      // suggestions (reliable), then the catch-all. Both are async.
+      var acc = ({ info: [], sugg: [] })
+      function flush() {
+        SearchService.submit(qid, "duckduckgo", acc.info.concat(acc.sugg).concat([root._searchRow(q)]))
+      }
+
+      RequestService.get("https://api.duckduckgo.com/?q=" + encodeURIComponent(q)
+                       + "&format=json&no_html=1&no_redirect=1&skip_disambig=1",
+        function(resp) { acc.info = root._parseInstant(resp, q); flush() }, undefined)
+
+      RequestService.get("https://duckduckgo.com/ac/?q=" + encodeURIComponent(q) + "&type=list",
+        function(resp) { acc.sugg = root._parseSuggestions(resp, q); flush() }, undefined)
 
       return [root._searchRow(q)]
     }
@@ -134,6 +129,74 @@ BasePlugin {
       source: "duckduckgo",
       groupLabel: "DuckDuckGo",
       action: function() { root._open("https://duckduckgo.com/?q=" + encodeURIComponent(q)) }
+    }
+  }
+
+  function _flattenTopics(list): var {
+    var out = []
+    for (var i = 0; i < list.length; i++) {
+      var t = list[i]
+      if (t && t.Topics) out = out.concat(t.Topics)
+      else if (t) out.push(t)
+    }
+    return out
+  }
+
+  function _parseInstant(resp, q): var {
+    var rows = []
+    if (!(resp && resp.ok && resp.data && typeof resp.data === "object")) return rows
+    var d = resp.data
+    if (d.Answer)
+      rows.push(root._answerRow(String(d.Answer), d.AnswerType || "answer",
+                                d.AbstractURL || "https://duckduckgo.com/?q=" + encodeURIComponent(q)))
+    if (d.Definition && d.DefinitionURL)
+      rows.push(root._webRow(d.Definition, d.DefinitionSource || "Definition", d.DefinitionURL))
+    if (d.AbstractText && d.AbstractURL)
+      rows.push(root._webRow(d.Heading || q, d.AbstractText, d.AbstractURL))
+    var topics = root._flattenTopics(d.RelatedTopics || [])
+    for (var i = 0; i < topics.length && rows.length < 5; i++) {
+      var t = topics[i]
+      if (t && t.Text && t.FirstURL) rows.push(root._webRow(t.Text, "", t.FirstURL))
+    }
+    return rows
+  }
+
+  function _parseSuggestions(resp, q): var {
+    var rows = []
+    var list = (resp && resp.ok && resp.data && resp.data.length > 1) ? resp.data[1] : []
+    var ql = q.toLowerCase()
+    for (var i = 0; i < list.length && rows.length < 6; i++) {
+      var s = list[i]
+      if (!s || s.toLowerCase() === ql) continue
+      rows.push((function(term) {
+        return {
+          id: "ddg:ac:" + term,
+          label: term,
+          sublabel: "",
+          icon: "search",
+          iconKind: "symbolic",
+          priority: -15,
+          source: "duckduckgo",
+          groupLabel: "DuckDuckGo suggestions",
+          action: function() { root._open("https://duckduckgo.com/?q=" + encodeURIComponent(term)) }
+        }
+      })(s))
+    }
+    return rows
+  }
+
+  function _answerRow(text, type, url): var {
+    return {
+      id: "ddg:answer",
+      label: text,
+      sublabel: type,
+      icon: root._ddgIcon,
+      iconKind: "image",
+      iconFallback: "search",
+      priority: 60,
+      source: "duckduckgo",
+      groupLabel: "DuckDuckGo",
+      action: function() { root._open(url) }
     }
   }
 
