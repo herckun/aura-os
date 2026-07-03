@@ -104,6 +104,7 @@ RUN_KITTY=true
 RUN_FISH=true
 RUN_SDDM=true
 RUN_WLEAVE=true
+RUN_CAVA=true
 RUN_SCRIPTS=true
 RUN_THEME=true
 RUN_PLUGINS=true
@@ -206,6 +207,7 @@ count_install_steps() {
   $RUN_FISH && (( TUI_STEP_TOTAL++ )) || true
   $RUN_SDDM && (( TUI_STEP_TOTAL++ )) || true
   $RUN_WLEAVE && (( TUI_STEP_TOTAL++ )) || true
+  $RUN_CAVA && (( TUI_STEP_TOTAL++ )) || true
   $RUN_SCRIPTS && (( TUI_STEP_TOTAL++ )) || true
   $RUN_SCRIPTS && $RUN_THEME && (( TUI_STEP_TOTAL++ )) || true
   $RUN_PLUGINS && (( TUI_STEP_TOTAL++ )) || true
@@ -236,6 +238,7 @@ do_install() {
   $RUN_FISH && run_step "Fish shell config" "deploy_fish_config"
   $RUN_SDDM && run_step "SDDM greeter theme" "deploy_sddm_theme"
   $RUN_WLEAVE && run_step "wleave config" "deploy_wleave_config"
+  $RUN_CAVA && run_step "cava config" "deploy_cava_config"
   $RUN_SCRIPTS && run_step "Desktop scripts" "deploy_desktop_scripts"
   $RUN_SCRIPTS && $RUN_THEME && run_step "Generate GTK/Qt themes" "generate_gtk_qt_themes"
   $RUN_PLUGINS && run_step "Plugins" "deploy_plugins_step"

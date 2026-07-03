@@ -157,6 +157,11 @@ deploy_wleave_config() {
   log_ok "wleave config deployed"
 }
 
+deploy_cava_config() {
+  copy_config "$REPO_DIR/config/cava" "$CONFIG_DIR/cava"
+  log_ok "cava config deployed"
+}
+
 deploy_desktop_scripts() {
   mkdir -p "$CONFIG_DIR/core" "$CONFIG_DIR/features" "$CONFIG_DIR/dev"
 
