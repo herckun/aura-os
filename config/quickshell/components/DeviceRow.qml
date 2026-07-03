@@ -15,12 +15,18 @@ Rectangle {
   property bool toggleChecked: false
   property string actionLabel: ""
   property bool showAction: false
+  property string secondaryActionLabel: ""
+  property bool showSecondaryAction: false
+  property string tagLabel: ""
+  property string tagIcon: ""
+  property real meter: -1
   property bool busy: false
   property string busyLabel: "CONNECTING"
 
   signal clicked()
   signal toggled(bool checked)
   signal actionClicked()
+  signal secondaryActionClicked()
 
   height: Theme.controlHeight + Theme.spaceSm
   radius: Theme.radiusSmall
@@ -67,6 +73,39 @@ Rectangle {
       }
     }
 
+    Item {
+      visible: root.meter >= 0
+      Layout.alignment: Qt.AlignVCenter
+      Layout.preferredWidth: 18
+      Layout.preferredHeight: 13
+
+      Row {
+        anchors.bottom: parent.bottom
+        spacing: 2
+
+        Repeater {
+          model: 4
+
+          Rectangle {
+            required property int index
+            width: 3
+            height: 4 + index * 3
+            radius: 1
+            anchors.bottom: parent.bottom
+            color: root.active ? Theme.accent : Theme.textSecondary
+            opacity: root.meter >= [15, 40, 65, 85][index] ? 1 : 0.25
+          }
+        }
+      }
+    }
+
+    Tag {
+      visible: root.tagLabel !== "" && !root.busy
+      label: root.tagLabel
+      icon: root.tagIcon
+      Layout.alignment: Qt.AlignVCenter
+    }
+
     Text {
       visible: root.active && !root.showToggle && !root.showAction && !root.busy
       text: "ACTIVE"
@@ -95,6 +134,14 @@ Rectangle {
         font.letterSpacing: 0.06
         Layout.alignment: Qt.AlignVCenter
       }
+    }
+
+    Button {
+      visible: root.showSecondaryAction && !root.busy
+      text: root.secondaryActionLabel
+      shape: "link"
+      size: "sm"
+      onClicked: root.secondaryActionClicked()
     }
 
     Button {

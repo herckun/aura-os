@@ -22,6 +22,7 @@ Singleton {
   property bool wifiEnabled: false
   property bool hasWifi: false
   property var availableNetworks: []
+  property var savedWifiNetworks: []
   property bool scanning: false
   property bool connecting: false
   property string pendingConnectSsid: ""
@@ -32,6 +33,7 @@ Singleton {
 
   signal networkConnected(string ssid)
   signal networkFailed(string msg)
+  signal passwordRequired(string ssid, bool savedFailed)
 
   // ═══════════════════════════════════════════════════════════════
   //  INTERNAL STATE
@@ -140,11 +142,29 @@ Singleton {
     return last
   }
 
-  function _onConnectResult(code: int, output: string, isAuto: bool, ssid: string): void {
+  function _isSecretsError(msg: string): bool {
+    return /secrets were required|no secrets|passwords or encryption keys are required|authentication required/i.test(msg)
+  }
+
+  function isKnownNetwork(ssid: string): bool {
+    return savedWifiNetworks.indexOf(ssid) !== -1
+  }
+
+  function _shellQuote(s: string): string {
+    return "'" + s.replace(/'/g, "'\\''") + "'"
+  }
+
+  function _onConnectResult(code: int, output: string, isAuto: bool, ssid: string, promptOnSecrets: bool): void {
     svc.connecting = false
     svc.pendingConnectSsid = ""
     if (code !== 0) {
       var msg = svc._cleanError(output) || "Connection failed"
+      if (promptOnSecrets && svc._isSecretsError(msg)) {
+        svc.lastError = ""
+        svc._emitUpdated()
+        svc.passwordRequired(ssid, svc.isKnownNetwork(ssid))
+        return
+      }
       svc.lastError = msg
       svc.networkFailed(msg)
       svc._emitUpdated()
@@ -190,6 +210,7 @@ Singleton {
           svc.wifiEnabled = radioText === "enabled"
 
           var conns = []
+          var savedWifi = []
           if (wiredText) {
             var lines = wiredText.split("\n")
             for (var i = 0; i < lines.length; i++) {
@@ -201,10 +222,13 @@ Singleton {
                   device: parts.length > 2 ? parts[2] : "",
                   active: parts.length > 2 && parts[2] !== ""
                 })
+              } else if (parts[1] === "802-11-wireless") {
+                savedWifi.push(parts[0])
               }
             }
           }
           svc.wiredConnections = conns
+          svc.savedWifiNetworks = savedWifi
 
           if (svc.primarySsid !== "") {
             ProcessPool.runTracked(
@@ -287,12 +311,17 @@ Singleton {
     )
   }
 
-  function connectNetwork(ssid: string, password: string): void {
+  function connectNetwork(ssid: string, secured: bool): void {
+    if (connecting) return
+    if (secured && !isKnownNetwork(ssid)) {
+      passwordRequired(ssid, false)
+      return
+    }
     lastError = ""
     connecting = true
     pendingConnectSsid = ssid
-    var cmd = password !== ""
-      ? ["nmcli", "dev", "wifi", "connect", ssid, "password", password]
+    var cmd = isKnownNetwork(ssid)
+      ? ["nmcli", "connection", "up", ssid]
       : ["nmcli", "dev", "wifi", "connect", ssid]
     var capturedSsid = ssid
     ProcessPool.runQueued(
@@ -302,7 +331,30 @@ Singleton {
         id: "wifi-connect",
         silent: true,
         callback: function(r) {
-          svc._onConnectResult(r.exitCode, r.stderr || r.stdout, false, capturedSsid)
+          svc._onConnectResult(r.exitCode, r.stderr || r.stdout, false, capturedSsid, true)
+        }
+      }
+    )
+  }
+
+  function submitPassword(ssid: string, password: string): void {
+    lastError = ""
+    connecting = true
+    pendingConnectSsid = ssid
+    var capturedSsid = ssid
+    var q = svc._shellQuote
+    var cmd = isKnownNetwork(ssid)
+      ? "nmcli connection delete " + q(ssid) + " >/dev/null 2>&1; nmcli dev wifi connect " + q(ssid) + " password " + q(password)
+      : "nmcli dev wifi connect " + q(ssid) + " password " + q(password)
+    ProcessPool.runQueued(
+      "WiFi connect",
+      cmd,
+      {
+        id: "wifi-connect",
+        shell: true,
+        silent: true,
+        callback: function(r) {
+          svc._onConnectResult(r.exitCode, r.stderr || r.stdout, false, capturedSsid, false)
         }
       }
     )
@@ -321,7 +373,7 @@ Singleton {
         id: "wifi-auto",
         silent: true,
         callback: function(r) {
-          svc._onConnectResult(r.exitCode, r.stderr || r.stdout, true, capturedSsid)
+          svc._onConnectResult(r.exitCode, r.stderr || r.stdout, true, capturedSsid, false)
         }
       }
     )
@@ -438,6 +490,12 @@ Singleton {
             if (svc.lastSsid === ssid) {
               svc.lastSsid = ""
               Store.set("network.lastSsid", "")
+            }
+            var idx = svc.savedWifiNetworks.indexOf(ssid)
+            if (idx !== -1) {
+              var saved = svc.savedWifiNetworks.slice()
+              saved.splice(idx, 1)
+              svc.savedWifiNetworks = saved
             }
             NotificationService.systemNotify("WI-FI", ssid + " forgotten", 1)
             svc.poll()

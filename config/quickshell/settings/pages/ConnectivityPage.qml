@@ -12,6 +12,35 @@ Item {
   height: content.implicitHeight
 
   property string _pendingSsid: ""
+  property bool _savedFailed: false
+
+  readonly property var _wifiNetworks: {
+    var nets = NetworkService.availableNetworks.slice()
+    var saved = NetworkService.savedWifiNetworks
+    var current = NetworkService.primarySsid
+    nets.sort(function(a, b) {
+      var aActive = a.ssid === current ? 1 : 0
+      var bActive = b.ssid === current ? 1 : 0
+      if (aActive !== bActive) return bActive - aActive
+      var aKnown = saved.indexOf(a.ssid) !== -1 ? 1 : 0
+      var bKnown = saved.indexOf(b.ssid) !== -1 ? 1 : 0
+      if (aKnown !== bKnown) return bKnown - aKnown
+      return b.signal - a.signal
+    })
+    return nets
+  }
+
+  readonly property var _savedOutOfRange: {
+    var inRange = {}
+    var nets = NetworkService.availableNetworks
+    for (var i = 0; i < nets.length; i++) inRange[nets[i].ssid] = true
+    var out = []
+    var saved = NetworkService.savedWifiNetworks
+    for (var j = 0; j < saved.length; j++) {
+      if (!inRange[saved[j]]) out.push(saved[j])
+    }
+    return out
+  }
 
   Connections {
     target: NetworkService
@@ -25,6 +54,9 @@ Item {
       if (passwordModal.open) {
         passwordError.text = msg
       }
+    }
+    function onPasswordRequired(ssid, savedFailed) {
+      root._openPassword(ssid, savedFailed)
     }
   }
 
@@ -50,48 +82,100 @@ Item {
       }
 
       Text {
-        text: NetworkService.online
-          ? (NetworkService.primarySsid !== "" ? "ONLINE · " + NetworkService.primarySsid : "ONLINE")
-          : "OFFLINE"
+        text: {
+          if (!NetworkService.online) return "OFFLINE"
+          var parts = []
+          if (NetworkService.ethernetConnected) {
+            parts.push("WIRED" + (NetworkService.ethernetDevice ? " (" + NetworkService.ethernetDevice + ")" : ""))
+          }
+          if (NetworkService.primarySsid !== "") {
+            parts.push(NetworkService.primarySsid + " " + NetworkService.signalStrength + "%")
+          }
+          return parts.length > 0 ? "ONLINE · " + parts.join(" · ") : "ONLINE"
+        }
         color: NetworkService.online ? Theme.success : Theme.textDisabled
         font.pixelSize: Theme.fontSizeCaption
         font.family: Theme.fontFamilyMono
         font.letterSpacing: 0.08
+        elide: Text.ElideRight
         Layout.fillWidth: true
+        Layout.alignment: Qt.AlignVCenter
+      }
+
+      Button {
+        shape: "circle"
+        icon: "refresh"
+        size: 24
+        iconSize: 10
+        onClicked: NetworkService.poll()
         Layout.alignment: Qt.AlignVCenter
       }
     }
 
     // ── Wired ───────────────────────────────────────────────────────────
-    Card {
+    Surface {
       width: parent.width
-      title: "WIRED"
-      description: {
-        if (NetworkService.ethernetConnected) {
-          return "Connected" + (NetworkService.ethernetDevice ? " (" + NetworkService.ethernetDevice + ")" : "")
-        }
-        if (NetworkService.lastWiredName !== "" && NetworkService.lastConnectionType === "wired") {
-          return "Last: " + NetworkService.lastWiredName
-        }
-        return NetworkService.hasEthernet ? "Not connected" : "No wired devices"
-      }
+      height: wiredCol.implicitHeight + Theme.spaceLg * 2
+      radius: Theme.radiusMedium
+      border.color: Theme.border
+      padding: Theme.spaceLg
+      visible: NetworkService.hasEthernet || NetworkService.wiredConnections.length > 0
 
       Column {
+        id: wiredCol
         width: parent.width
-        spacing: Theme.spaceSm
+        spacing: Theme.spaceMd
 
         RowLayout {
           width: parent.width
-          ButtonGroup {
-            Button { shape: "circle";
-              icon: "refresh"
-              size: 24
-              iconSize: 10
-              onClicked: NetworkService.poll()
+          spacing: Theme.spaceSm
+
+          Surface {
+            Layout.preferredWidth: 36
+            Layout.preferredHeight: 36
+            level: 2
+            bordered: false
+            radius: Theme.radiusMedium
+
+            Icon {
+              anchors.centerIn: parent
+              source: Icons.get("globe")
+              size: 16
+              color: NetworkService.ethernetConnected ? Theme.accent : Theme.textDisabled
             }
           }
 
-          Item { Layout.fillWidth: true }
+          Column {
+            Layout.fillWidth: true
+            spacing: Theme.spaceXxs
+
+            Text {
+              width: parent.width
+              text: "WIRED"
+              color: Theme.textPrimary
+              font.pixelSize: Theme.fontSizeLabel
+              font.family: Theme.fontFamilyMono
+              font.weight: Font.Bold
+              font.letterSpacing: 0.08
+            }
+
+            Text {
+              width: parent.width
+              text: {
+                if (NetworkService.ethernetConnected) {
+                  return "Connected" + (NetworkService.ethernetDevice ? " (" + NetworkService.ethernetDevice + ")" : "")
+                }
+                if (NetworkService.lastWiredName !== "" && NetworkService.lastConnectionType === "wired") {
+                  return "Last: " + NetworkService.lastWiredName
+                }
+                return "Not connected"
+              }
+              color: Theme.textDisabled
+              font.pixelSize: Theme.fontSizeMicro
+              font.family: Theme.fontFamilyMono
+              elide: Text.ElideRight
+            }
+          }
 
           Button {
             text: "RECONNECT"
@@ -101,7 +185,6 @@ Item {
               && !NetworkService.ethernetConnected
               && NetworkService.lastConnectionType === "wired"
             onClicked: NetworkService.autoConnectLastWired()
-            Layout.alignment: Qt.AlignVCenter
           }
         }
 
@@ -110,7 +193,7 @@ Item {
           spacing: Theme.space2
           visible: NetworkService.wiredConnections.length > 0
 
-          Divider {}
+          SectionLabel { label: "PROFILES" }
 
           Repeater {
             model: NetworkService.wiredConnections
@@ -153,91 +236,92 @@ Item {
     }
 
     // ── Wi-Fi ─────────────────────────────────────────────────────────
-    Card {
+    Surface {
       width: parent.width
-      title: "WI-FI"
-      description: {
-        if (NetworkService.connecting) {
-          return "Connecting to " + NetworkService.pendingConnectSsid + "..."
-        }
-        if (NetworkService.primarySsid !== "") {
-          return "Connected to " + NetworkService.primarySsid + " · " + NetworkService.signalStrength + "%"
-        }
-        if (NetworkService.lastSsid !== "" && NetworkService.wifiEnabled && NetworkService.lastConnectionType === "wifi") {
-          return "Last: " + NetworkService.lastSsid
-        }
-        return "Not connected"
-      }
+      height: wifiCol.implicitHeight + Theme.spaceLg * 2
+      radius: Theme.radiusMedium
+      border.color: Theme.border
+      padding: Theme.spaceLg
       visible: NetworkService.hasWifi
 
       Column {
+        id: wifiCol
         width: parent.width
-        spacing: Theme.spaceSm
-
-        SettingRow {
-          label: "ENABLED"
-          Toggle {
-            toggleWidth: 38
-            toggleHeight: 20
-            checked: NetworkService.wifiEnabled
-            onToggled: (v) => NetworkService.toggleWifi()
-          }
-        }
+        spacing: Theme.spaceMd
 
         RowLayout {
           width: parent.width
           spacing: Theme.spaceSm
 
-          ButtonGroup {
-            Button { shape: "circle";
-              icon: "refresh"
-              size: 24
-              iconSize: 10
-              enabled: NetworkService.wifiEnabled && !NetworkService.scanning
-              busy: NetworkService.scanning
-              onClicked: NetworkService.scan()
-            }
+          Surface {
+            Layout.preferredWidth: 36
+            Layout.preferredHeight: 36
+            level: 2
+            bordered: false
+            radius: Theme.radiusMedium
 
-            Button { shape: "circle";
-              icon: "wifi-off"
-              size: 24
-              iconSize: 10
-              visible: NetworkService.primarySsid !== ""
-              onClicked: NetworkService.disconnectNetwork()
+            Icon {
+              anchors.centerIn: parent
+              source: Icons.get(NetworkService.wifiEnabled ? "wifi" : "wifi-off")
+              size: 16
+              color: !NetworkService.wifiEnabled ? Theme.textDisabled
+                : NetworkService.primarySsid !== "" ? Theme.accent
+                : Theme.textSecondary
             }
           }
 
-          Item { Layout.fillWidth: true }
+          Column {
+            Layout.fillWidth: true
+            spacing: Theme.spaceXxs
 
-          Text {
-            visible: NetworkService.primarySsid !== ""
-            text: NetworkService.signalStrength + "%"
-            color: Theme.textSecondary
-            font.pixelSize: Theme.fontSizeCaption
-            font.family: Theme.fontFamilyMono
-            Layout.alignment: Qt.AlignVCenter
+            Text {
+              width: parent.width
+              text: "WI-FI"
+              color: Theme.textPrimary
+              font.pixelSize: Theme.fontSizeLabel
+              font.family: Theme.fontFamilyMono
+              font.weight: Font.Bold
+              font.letterSpacing: 0.08
+            }
+
+            Text {
+              width: parent.width
+              text: {
+                if (!NetworkService.wifiEnabled) return "Disabled"
+                if (NetworkService.connecting) {
+                  return "Connecting to " + NetworkService.pendingConnectSsid + "..."
+                }
+                if (NetworkService.primarySsid !== "") {
+                  return "Connected to " + NetworkService.primarySsid + " · " + NetworkService.signalStrength + "%"
+                }
+                if (NetworkService.scanning) return "Scanning..."
+                if (NetworkService.availableNetworks.length > 0) {
+                  return NetworkService.availableNetworks.length + " network(s) in range"
+                }
+                return "Not connected"
+              }
+              color: Theme.textDisabled
+              font.pixelSize: Theme.fontSizeMicro
+              font.family: Theme.fontFamilyMono
+              elide: Text.ElideRight
+            }
           }
 
           Button {
-            text: "RECONNECT"
+            text: "SCAN"
             size: "sm"
+            icon: "refresh"
             visible: NetworkService.wifiEnabled
-              && NetworkService.lastSsid !== ""
-              && NetworkService.primarySsid === ""
-              && !NetworkService.connecting
-            onClicked: NetworkService.autoConnectLast()
-            Layout.alignment: Qt.AlignVCenter
+            enabled: !NetworkService.scanning
+            busy: NetworkService.scanning
+            onClicked: NetworkService.scan()
           }
 
-          Button {
-            text: "FORGET"
-            shape: "link"
-            size: "sm"
-            visible: NetworkService.wifiEnabled
-              && NetworkService.lastSsid !== ""
-              && NetworkService.primarySsid === ""
-              && !NetworkService.connecting
-            onClicked: NetworkService.forgetNetwork(NetworkService.lastSsid)
+          Toggle {
+            toggleWidth: 38
+            toggleHeight: 20
+            checked: NetworkService.wifiEnabled
+            onToggled: (v) => NetworkService.toggleWifi()
             Layout.alignment: Qt.AlignVCenter
           }
         }
@@ -245,36 +329,65 @@ Item {
         Column {
           width: parent.width
           spacing: Theme.space2
-          visible: NetworkService.availableNetworks.length > 0
+          visible: NetworkService.wifiEnabled && root._wifiNetworks.length > 0
 
-          Divider {}
+          SectionLabel { label: "IN RANGE (" + root._wifiNetworks.length + ")" }
 
           Repeater {
-            model: NetworkService.availableNetworks
+            model: root._wifiNetworks
+
+            DeviceRow {
+              readonly property bool isActive: modelData.ssid === NetworkService.primarySsid
+              readonly property bool isKnown: NetworkService.savedWifiNetworks.indexOf(modelData.ssid) !== -1
+
+              width: parent.width
+              icon: modelData.secured ? "lock" : "wifi"
+              name: modelData.ssid
+              subtitle: modelData.security !== "" ? modelData.security : "OPEN"
+              active: isActive
+              meter: modelData.signal
+              tagLabel: isKnown && !isActive ? "SAVED" : ""
+              busy: modelData.ssid === NetworkService.pendingConnectSsid && NetworkService.connecting
+              showAction: !NetworkService.connecting
+              actionLabel: isActive ? "DISCONNECT" : "CONNECT"
+              showSecondaryAction: isKnown && !NetworkService.connecting
+              secondaryActionLabel: "FORGET"
+              onActionClicked: {
+                if (isActive) {
+                  NetworkService.disconnectNetwork()
+                } else {
+                  NetworkService.connectNetwork(modelData.ssid, modelData.secured)
+                }
+              }
+              onSecondaryActionClicked: NetworkService.forgetNetwork(modelData.ssid)
+            }
+          }
+        }
+
+        Column {
+          width: parent.width
+          spacing: Theme.space2
+          visible: NetworkService.wifiEnabled && root._savedOutOfRange.length > 0
+
+          SectionLabel { label: "SAVED · OUT OF RANGE" }
+
+          Repeater {
+            model: root._savedOutOfRange
 
             DeviceRow {
               width: parent.width
-              icon: "wifi"
-              name: modelData.ssid
-              subtitle: (modelData.security !== "" ? modelData.security + " · " : "") + modelData.signal + "%"
-              active: modelData.ssid === NetworkService.primarySsid
-              busy: modelData.ssid === NetworkService.pendingConnectSsid && NetworkService.connecting
-              showAction: modelData.ssid !== NetworkService.primarySsid
-                && !(modelData.ssid === NetworkService.pendingConnectSsid && NetworkService.connecting)
-              actionLabel: "CONNECT"
-              onActionClicked: {
-                if (modelData.security === "") {
-                  NetworkService.connectNetwork(modelData.ssid, "")
-                } else {
-                  root._openPassword(modelData.ssid)
-                }
-              }
+              icon: "wifi-off"
+              name: modelData
+              showSecondaryAction: !NetworkService.connecting
+              secondaryActionLabel: "FORGET"
+              onSecondaryActionClicked: NetworkService.forgetNetwork(modelData)
             }
           }
         }
 
         EmptyState {
           visible: NetworkService.availableNetworks.length === 0
+          icon: NetworkService.wifiEnabled ? "wifi" : "wifi-off"
           stateText: NetworkService.wifiEnabled
             ? (NetworkService.scanning ? "SCANNING..." : "NO NETWORKS FOUND")
             : "WI-FI IS DISABLED"
@@ -285,49 +398,79 @@ Item {
     }
 
     // ── Bluetooth ─────────────────────────────────────────────────────
-    Card {
+    Surface {
       width: parent.width
-      title: "BLUETOOTH"
-      description: BluetoothService.enabled ? BluetoothService.pairedDevices.length + " paired device(s)" : "Disabled"
+      height: btCol.implicitHeight + Theme.spaceLg * 2
+      radius: Theme.radiusMedium
+      border.color: Theme.border
+      padding: Theme.spaceLg
       visible: BluetoothService.hasBluetooth
 
       Column {
+        id: btCol
         width: parent.width
-        spacing: Theme.spaceSm
+        spacing: Theme.spaceMd
 
-        SettingRow {
-          label: "ENABLED"
+        RowLayout {
+          width: parent.width
+          spacing: Theme.spaceSm
+
+          Surface {
+            Layout.preferredWidth: 36
+            Layout.preferredHeight: 36
+            level: 2
+            bordered: false
+            radius: Theme.radiusMedium
+
+            Icon {
+              anchors.centerIn: parent
+              source: Icons.get("bluetooth")
+              size: 16
+              color: BluetoothService.enabled ? Theme.accent : Theme.textDisabled
+            }
+          }
+
+          Column {
+            Layout.fillWidth: true
+            spacing: Theme.spaceXxs
+
+            Text {
+              width: parent.width
+              text: "BLUETOOTH"
+              color: Theme.textPrimary
+              font.pixelSize: Theme.fontSizeLabel
+              font.family: Theme.fontFamilyMono
+              font.weight: Font.Bold
+              font.letterSpacing: 0.08
+            }
+
+            Text {
+              width: parent.width
+              text: BluetoothService.enabled
+                ? BluetoothService.pairedDevices.length + " paired device(s)"
+                : "Disabled"
+              color: Theme.textDisabled
+              font.pixelSize: Theme.fontSizeMicro
+              font.family: Theme.fontFamilyMono
+              elide: Text.ElideRight
+            }
+          }
+
+          Button {
+            text: "SCAN"
+            size: "sm"
+            icon: "refresh"
+            visible: BluetoothService.enabled
+            enabled: !BluetoothService.scanning
+            busy: BluetoothService.scanning
+            onClicked: BluetoothService.scan()
+          }
+
           Toggle {
             toggleWidth: 38
             toggleHeight: 20
             checked: BluetoothService.enabled
             onToggled: BluetoothService.toggle()
-          }
-        }
-
-        RowLayout {
-          width: parent.width
-          spacing: Theme.spaceSm
-          visible: BluetoothService.enabled
-
-          ButtonGroup {
-            Button { shape: "circle";
-              icon: "refresh"
-              size: 24
-              iconSize: 10
-              enabled: !BluetoothService.scanning
-              busy: BluetoothService.scanning
-              onClicked: BluetoothService.scan()
-            }
-          }
-
-          Item { Layout.fillWidth: true }
-
-          Text {
-            text: BluetoothService.devices.length + " FOUND"
-            color: Theme.textDisabled
-            font.pixelSize: Theme.fontSizeCaption
-            font.family: Theme.fontFamilyMono
             Layout.alignment: Qt.AlignVCenter
           }
         }
@@ -337,7 +480,7 @@ Item {
           spacing: Theme.space2
           visible: BluetoothService.pairedDevices.length > 0
 
-          Divider {}
+          SectionLabel { label: "PAIRED" }
 
           Repeater {
             model: BluetoothService.pairedDevices
@@ -365,7 +508,7 @@ Item {
           spacing: Theme.space2
           visible: BluetoothService.enabled && BluetoothService.devices.length > 0
 
-          Divider {}
+          SectionLabel { label: "DISCOVERED (" + BluetoothService.devices.length + ")" }
 
           Repeater {
             model: BluetoothService.devices
@@ -384,6 +527,7 @@ Item {
 
         EmptyState {
           visible: BluetoothService.devices.length === 0 && BluetoothService.pairedDevices.length === 0
+          icon: "bluetooth"
           stateText: BluetoothService.enabled
             ? (BluetoothService.scanning ? "SCANNING..." : "NO DEVICES FOUND")
             : "BLUETOOTH IS DISABLED"
@@ -402,7 +546,9 @@ Item {
   Modal {
     id: passwordModal
     title: "WI-FI PASSWORD"
-    description: "Enter password for " + root._pendingSsid
+    description: root._savedFailed
+      ? "Saved password for " + root._pendingSsid + " was rejected. Enter a new one."
+      : "Enter password for " + root._pendingSsid
     iconName: "lock"
     confirmLabel: "CONNECT"
     confirmIcon: "wifi"
@@ -436,7 +582,7 @@ Item {
 
     onConfirmed: {
       passwordError.text = ""
-      NetworkService.connectNetwork(root._pendingSsid, pwdInput.text)
+      NetworkService.submitPassword(root._pendingSsid, pwdInput.text)
     }
 
     onRejected: {
@@ -458,8 +604,11 @@ Item {
     }
   }
 
-  function _openPassword(ssid: string): void {
+  function _openPassword(ssid: string, savedFailed: bool): void {
     root._pendingSsid = ssid
-    passwordModal.openDialog()
+    root._savedFailed = savedFailed
+    if (!passwordModal.open) {
+      passwordModal.openDialog()
+    }
   }
 }
