@@ -214,6 +214,15 @@ def cmd_cdn(manifest_path):
         'cdn', 'https://raw.githubusercontent.com/tabler/tabler-icons/main/icons/outline'))
 
 
+def cmd_sfx(manifest_path):
+    for k, v in sorted(_load(manifest_path).get('sfx', {}).get('map', {}).items()):
+        print(f'{k}={v}')
+
+
+def cmd_sfxcdn(manifest_path):
+    print(_load(manifest_path).get('sfx', {}).get('cdn', ''))
+
+
 def cmd_fonts(manifest_path):
     data = _load(manifest_path)
     for entry in data.get("deps", {}).get("syncFonts", []):
@@ -228,13 +237,15 @@ _DISPATCH = {
     "installvars": cmd_installvars,
     "icons": cmd_icons,
     "cdn": cmd_cdn,
+    "sfx": cmd_sfx,
+    "sfxcdn": cmd_sfxcdn,
     "fonts": cmd_fonts,
 }
 
 
 def main():
     if len(sys.argv) < 3 or sys.argv[1] not in _DISPATCH:
-        sys.exit("usage: manifest_lib.py <installvars|icons|cdn|fonts> <manifest.json>")
+        sys.exit("usage: manifest_lib.py <installvars|icons|cdn|sfx|sfxcdn|fonts> <manifest.json>")
     _DISPATCH[sys.argv[1]](sys.argv[2])
 
 

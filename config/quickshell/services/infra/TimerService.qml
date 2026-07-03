@@ -4,6 +4,7 @@ import QtQml
 import QtQuick
 import Quickshell
 import "../../core"
+import "../"
 
 Singleton {
   id: svc
@@ -19,6 +20,8 @@ Singleton {
   property string label: "TIMER"
 
   readonly property string formattedTime: formatTime(remaining)
+
+  signal finished()
 
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
@@ -127,13 +130,14 @@ Singleton {
     onTriggered: {
       if (svc.paused) return
 
+      if (svc.remaining > 0) svc.remaining--
+
       if (svc.remaining <= 0) {
         timer.stop()
         svc.running = false
-        return
+        svc.finished()
+        NotificationService.systemNotify("TIMER", "Time's up", 1)
       }
-
-      svc.remaining--
     }
   }
 

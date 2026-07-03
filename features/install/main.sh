@@ -99,6 +99,7 @@ RUN_SCREENSHARE=true
 RUN_HYPR=true
 RUN_QS=true
 RUN_ICONS=true
+RUN_SFX=true
 RUN_KITTY=true
 RUN_FISH=true
 RUN_SDDM=true
@@ -167,6 +168,7 @@ _show_help() {
     --no-deps            Skip package installation
     --no-backup          Skip config snapshot
     --skip-icons         Skip icon sync
+    --skip-sfx           Skip sound effects sync
 
 EOF
   exit 0
@@ -176,13 +178,14 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --express)        MODE="install"; INSTALL_MODE="express"; shift ;;
     --expert)         MODE="install"; INSTALL_MODE="expert"; shift ;;
-    --quick)          MODE="install"; INSTALL_MODE="express"; NONINTERACTIVE=true; NO_DEPS=true; NO_BACKUP=true; RUN_DEPS=false; RUN_GPU=false; RUN_SCREENSHARE=false; RUN_BACKUP=false; RUN_ICONS=false; RUN_FONTS=false; RUN_SDDM=false; RUN_THEME=false; RUN_PLUGINS=false; shift ;;
+    --quick)          MODE="install"; INSTALL_MODE="express"; NONINTERACTIVE=true; NO_DEPS=true; NO_BACKUP=true; RUN_DEPS=false; RUN_GPU=false; RUN_SCREENSHARE=false; RUN_BACKUP=false; RUN_ICONS=false; RUN_SFX=false; RUN_FONTS=false; RUN_SDDM=false; RUN_THEME=false; RUN_PLUGINS=false; shift ;;
     --uninstall)      MODE="uninstall"; shift ;;
     --add-community)  MODE="community"; COMMUNITY_URL="${2:-}"; shift 2 ;;
     --help|-h)        _show_help ;;
     --no-deps)        NO_DEPS=true; RUN_DEPS=false; RUN_GPU=false; RUN_SCREENSHARE=false; shift ;;
     --no-backup)      NO_BACKUP=true; RUN_BACKUP=false; shift ;;
     --skip-icons)     RUN_ICONS=false; shift ;;
+    --skip-sfx)       RUN_SFX=false; shift ;;
     *) _err "Unknown option: $1"; exit 1 ;;
   esac
 done
@@ -198,6 +201,7 @@ count_install_steps() {
   $RUN_HYPR && (( TUI_STEP_TOTAL += 2 )) || true
   $RUN_QS && (( TUI_STEP_TOTAL++ )) || true
   $RUN_ICONS && (( TUI_STEP_TOTAL++ )) || true
+  $RUN_SFX && (( TUI_STEP_TOTAL++ )) || true
   $RUN_KITTY && (( TUI_STEP_TOTAL++ )) || true
   $RUN_FISH && (( TUI_STEP_TOTAL++ )) || true
   $RUN_SDDM && (( TUI_STEP_TOTAL++ )) || true
@@ -227,6 +231,7 @@ do_install() {
   $RUN_HYPR && run_step "Qt styling env" "deploy_qt_styling_env"
   $RUN_QS && run_step "QuickShell configuration" "deploy_quickshell_config"
   $RUN_ICONS && run_step "Tabler icon set" "sync_tabler_icons"
+  $RUN_SFX && run_step "Sound effects" "sync_sfx"
   $RUN_KITTY && run_step "Kitty terminal profile" "deploy_kitty_profile"
   $RUN_FISH && run_step "Fish shell config" "deploy_fish_config"
   $RUN_SDDM && run_step "SDDM greeter theme" "deploy_sddm_theme"

@@ -32,6 +32,11 @@ deploy_quickshell_config() {
     _icons_bak="$(mktemp -d "/tmp/${APP_NAME}-icons-XXXXXX")"
     cp -a "$CONFIG_DIR/quickshell/icons/"*.svg "$_icons_bak/"
   fi
+  local _sfx_bak=""
+  if [[ -d "$CONFIG_DIR/quickshell/sfx" ]] && compgen -G "$CONFIG_DIR/quickshell/sfx/*.oga" >/dev/null 2>&1; then
+    _sfx_bak="$(mktemp -d "/tmp/${APP_NAME}-sfx-XXXXXX")"
+    cp -a "$CONFIG_DIR/quickshell/sfx/"*.oga "$_sfx_bak/"
+  fi
   copy_config "$REPO_DIR/config/quickshell" "$CONFIG_DIR/quickshell"
   mkdir -p "$CONFIG_DIR/$APP_NAME"
   cp "$REPO_DIR/config/manifest.json" "$CONFIG_DIR/$APP_NAME/manifest.json"
@@ -45,12 +50,22 @@ deploy_quickshell_config() {
     cp -a "$_icons_bak/"*.svg "$CONFIG_DIR/quickshell/icons/" 2>/dev/null || true
     rm -rf "$_icons_bak"
   fi
+  if [[ -n "$_sfx_bak" ]]; then
+    mkdir -p "$CONFIG_DIR/quickshell/sfx"
+    cp -a "$_sfx_bak/"*.oga "$CONFIG_DIR/quickshell/sfx/" 2>/dev/null || true
+    rm -rf "$_sfx_bak"
+  fi
   log_ok "QuickShell deployed"
 }
 
 sync_tabler_icons() {
   "$REPO_DIR/features/install/sync-icons.sh" --dir "$CONFIG_DIR/quickshell/icons"
   log_ok "Icons synced"
+}
+
+sync_sfx() {
+  "$REPO_DIR/features/install/sync-sfx.sh" --dir "$CONFIG_DIR/quickshell/sfx"
+  log_ok "Sound effects synced"
 }
 
 deploy_kitty_profile() {

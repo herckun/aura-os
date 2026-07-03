@@ -170,6 +170,14 @@
       "chevron.right": "chevron-right"
     }
   },
+  "sfx": {
+    "source": "yaru",
+    "cdn": "https://raw.githubusercontent.com/ubuntu/yaru/master/sounds/src/stereo",
+    "map": {
+      "volume": "audio-volume-change.oga",
+      "timer-done": "complete.oga"
+    }
+  },
   "plugins": {
     "core": [
       {
@@ -1344,6 +1352,10 @@
         "pkg": "pipewire"
       },
       {
+        "bin": "pw-play",
+        "pkg": "pipewire-audio"
+      },
+      {
         "bin": "mkdir",
         "pkg": "coreutils"
       },
@@ -1587,6 +1599,11 @@
       "name": "uiriansan/SilentSDDM",
       "role": "source of inspiration for sddm theme",
       "url": "https://github.com/uiriansan/SilentSDDM"
+    },
+    {
+      "name": "Ubuntu Yaru sound theme",
+      "role": "sound effects (CC-BY-SA-4.0)",
+      "url": "https://github.com/ubuntu/yaru"
     }
   ]
 }

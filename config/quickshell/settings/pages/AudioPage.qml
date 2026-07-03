@@ -390,6 +390,28 @@ Column {
     }
   }
 
+  // ── Sound effects ────────────────────────────────────────────────────
+  Surface {
+    width: parent.width
+    height: sfxRow.height + Theme.spaceLg * 2
+    radius: Theme.radiusMedium
+    border.color: Theme.border
+    padding: Theme.spaceLg
+
+    SettingRow {
+      id: sfxRow
+      label: "SOUND EFFECTS"
+      description: "Plays on volume change and timer end"
+
+      Toggle {
+        toggleWidth: 38
+        toggleHeight: 20
+        checked: SfxService.enabled
+        onToggled: (v) => SfxService.setEnabled(v)
+      }
+    }
+  }
+
   // ── Plugin-hosted content ───────────────────────────────────────────
   PluginHost { location: "audio" }
 }

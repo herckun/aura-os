@@ -308,6 +308,7 @@ ShellRoot {
         MediaService.snapshot();
         TimerService.snapshot();
         AudioService.snapshot();
+        SfxService.init();
 
         Logger.info("shell", AppInfo.displayName + " Shell v" + AppInfo.version);
         Logger.info("shell", "Monitors: " + Quickshell.screens.length);

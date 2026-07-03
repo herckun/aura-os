@@ -38,6 +38,16 @@ Singleton {
     objects: Pipewire.nodes.values
   }
 
+  Timer {
+    id: streamGraceTimer
+    interval: 400
+    repeat: false
+    onTriggered: {
+      svc._pruneStreamSeen()
+      svc._streamRev++
+    }
+  }
+
   property string _eeTargetName: ""
 
   on_DefaultSinkChanged: _refreshEeTarget()
@@ -111,8 +121,24 @@ Singleton {
     return devices
   }
 
+  property var _streamSeen: ({})
+  readonly property int _streamGraceMs: 2000
+  property int _streamRev: 0
+
+  function _pruneStreamSeen(): void {
+    var alive = {}
+    var nodes = Pipewire.nodes.values
+    for (var i = 0; i < nodes.length; i++) alive[nodes[i].id] = true
+    var seen = svc._streamSeen
+    for (var k in seen) {
+      if (!alive[k]) delete seen[k]
+    }
+  }
+
   function _getStreams(sinkSide: bool): var {
     if (!Pipewire.ready) return []
+    var rev = svc._streamRev
+    var now = Date.now()
     var streams = []
     var nodes = Pipewire.nodes.values
     for (var i = 0; i < nodes.length; i++) {
@@ -120,6 +146,16 @@ Singleton {
       if (!node.ready || !node.audio || !node.isStream) continue
       if (node.isSink !== sinkSide) continue
       if (!sinkSide && node.properties && node.properties["stream.monitor"] === "true") continue
+      var seen = svc._streamSeen[node.id]
+      if (!seen) {
+        svc._streamSeen[node.id] = now
+        streamGraceTimer.restart()
+        continue
+      }
+      if (now - seen < svc._streamGraceMs) {
+        streamGraceTimer.restart()
+        continue
+      }
       var app = node.properties ? (node.properties["application.name"] || "") : ""
       var media = node.properties ? (node.properties["media.name"] || "") : ""
       streams.push({
