@@ -207,8 +207,10 @@ PanelWindow {
         rowSpacing: Theme.spaceXs
 
         StatCell { label: "TIME"; value: Helpers.formatDurationHm(BatteryService.discharging ? BatteryService.timeToEmpty : BatteryService.timeToFull) }
+        StatCell { label: "TIME AVG"; value: BatteryService.avgTimeToEmpty > 0 ? Helpers.formatDurationHm(BatteryService.avgTimeToEmpty) : "—" }
         StatCell { label: "POWER"; value: (BatteryService.discharging || BatteryService.charging) ? Helpers.formatWatts(BatteryService.changeRate) : "—" }
-        StatCell { label: "CAPACITY"; value: BatteryService.energyCapacity > 0 ? BatteryService.energy.toFixed(0) + " Wh" : "—" }
+        StatCell { label: "POWER AVG"; value: BatteryService.avgPowerRate > 0 ? Helpers.formatWatts(BatteryService.avgPowerRate) : "—" }
+        StatCell { label: "CAPACITY"; value: BatteryService.energyCapacity > 0 ? BatteryService.energy.toFixed(0) + " / " + BatteryService.energyCapacity.toFixed(0) + " Wh" : "—" }
         StatCell { label: "HEALTH"; value: BatteryService.healthSupported ? BatteryService.healthPercentage.toFixed(0) + "%" : "—" }
       }
 
