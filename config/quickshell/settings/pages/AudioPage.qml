@@ -187,7 +187,6 @@ Column {
         Column {
           id: streamRow
           width: parent.width
-          spacing: Theme.spaceXs
 
           property var streamNode: modelData.node
           readonly property real streamVolume: streamNode && streamNode.audio ? streamNode.audio.volume : 0
@@ -195,50 +194,12 @@ Column {
 
           PwObjectTracker { objects: streamRow.streamNode ? [streamRow.streamNode] : [] }
 
-          RowLayout {
-            width: parent.width
-            spacing: Theme.spaceSm
-
-            Button {
-              shape: "icon"
-              width: 26
-              height: 26
-              size: "xs"
-              showBackground: false
-              icon: streamRow.streamMuted ? "volume-mute" : "volume"
-              color: streamRow.streamMuted ? Theme.warning : Theme.textSecondary
-              onClicked: AudioService.toggleNodeMute(streamRow.streamNode)
-            }
-
-            Column {
-              Layout.fillWidth: true
-              spacing: Theme.space2
-
-              Text {
-                width: parent.width
-                text: modelData.name.toUpperCase()
-                color: streamRow.streamMuted ? Theme.textDisabled : Theme.textPrimary
-                font.pixelSize: Theme.fontSizeCaption
-                font.family: Theme.fontFamilyMono
-                font.letterSpacing: 0.04
-                elide: Text.ElideRight
-              }
-
-              Text {
-                width: parent.width
-                text: modelData.media
-                color: Theme.textDisabled
-                font.pixelSize: Theme.fontSizeMicro
-                font.family: Theme.fontFamilyMono
-                elide: Text.ElideRight
-                visible: modelData.media !== "" && modelData.media !== modelData.name
-              }
-            }
-          }
-
           SliderControl {
             width: parent.width
-            label: ""
+            label: modelData.name.toUpperCase() + (modelData.media !== "" && modelData.media !== modelData.name ? "  ·  " + modelData.media : "")
+            iconName: streamRow.streamMuted ? "volume-mute" : "volume"
+            iconColor: streamRow.streamMuted ? Theme.warning : Theme.textSecondary
+            onIconClicked: AudioService.toggleNodeMute(streamRow.streamNode)
             from: 0
             to: 1
             value: streamRow.streamVolume

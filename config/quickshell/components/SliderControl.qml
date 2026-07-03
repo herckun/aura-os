@@ -20,7 +20,10 @@ Column {
     property color normalColor: "transparent"
     property color dangerColor: Theme.warning
     property color criticalColor: Theme.error
+    property string iconName: ""
+    property color iconColor: Theme.textSecondary
     signal moved(real newValue)
+    signal iconClicked()
 
     readonly property color _vn: normalColor.a > 0 ? normalColor : Theme.variantColor(variant)
 
@@ -65,13 +68,34 @@ Column {
     Row {
         width: parent.width
 
-        Text {
-            text: root.label
-            color: Theme.textSecondary
-            font.pixelSize: Theme.fontSizeCaption
-            font.family: Theme.fontFamilyMono
-            font.letterSpacing: 0.08
+        Row {
             width: parent.width * 0.7
+            spacing: Theme.spaceXs
+
+            Button {
+                id: labelIconBtn
+                shape: "icon"
+                width: 18
+                height: 18
+                size: "xs"
+                showBackground: false
+                icon: root.iconName
+                color: root.iconColor
+                visible: root.iconName !== ""
+                anchors.verticalCenter: parent.verticalCenter
+                onClicked: root.iconClicked()
+            }
+
+            Text {
+                text: root.label
+                color: Theme.textSecondary
+                font.pixelSize: Theme.fontSizeCaption
+                font.family: Theme.fontFamilyMono
+                font.letterSpacing: 0.08
+                width: parent.width - (labelIconBtn.visible ? labelIconBtn.width + parent.spacing : 0)
+                elide: Text.ElideRight
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
 
         Text {
@@ -81,6 +105,7 @@ Column {
             font.family: Theme.fontFamilyMono
             width: parent.width * 0.3
             horizontalAlignment: Text.AlignRight
+            anchors.verticalCenter: parent.verticalCenter
 
             Behavior on color {
                 enabled: Theme.animationsEnabled

@@ -10,7 +10,8 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC STATE
   // ═══════════════════════════════════════════════════════════════
-  readonly property PwNode sink: Pipewire.defaultAudioSink
+  readonly property PwNode _defaultSink: Pipewire.defaultAudioSink
+  readonly property PwNode sink: _resolveSink(_defaultSink, _eeTargetName, Pipewire.nodes.values)
   readonly property PwNode source: Pipewire.defaultAudioSource
 
   readonly property real volume: sink?.audio?.volume ?? 0
@@ -35,6 +36,48 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   PwObjectTracker {
     objects: Pipewire.nodes.values
+  }
+
+  property string _eeTargetName: ""
+
+  on_DefaultSinkChanged: _refreshEeTarget()
+
+  function _resolveSink(def: PwNode, targetName: string, nodes: var): PwNode {
+    if (def && def.name === "easyeffects_sink" && targetName) {
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i]
+        if (n.isSink && !n.isStream && n.name === targetName) return n
+      }
+    }
+    return def
+  }
+
+  function _refreshEeTarget(): void {
+    if (!_defaultSink || _defaultSink.name !== "easyeffects_sink") {
+      svc._eeTargetName = ""
+      return
+    }
+    var script = "pw-dump | python3 -c \"" +
+      "import json,sys\n" +
+      "d=json.load(sys.stdin)\n" +
+      "props={}\n" +
+      "for o in d:\n" +
+      "    if str(o.get('type','')).endswith('Node'): props[o['id']]=(o.get('info') or {}).get('props') or {}\n" +
+      "ee={i for i,p in props.items() if p.get('application.id')=='com.github.wwmm.easyeffects' or str(p.get('node.name','')).startswith('ee_')}\n" +
+      "sinks={i for i,p in props.items() if p.get('media.class')=='Audio/Sink' and p.get('node.name')!='easyeffects_sink'}\n" +
+      "for o in d:\n" +
+      "    if not str(o.get('type','')).endswith('Link'): continue\n" +
+      "    info=o.get('info') or {}\n" +
+      "    if info.get('output-node-id') in ee and info.get('input-node-id') in sinks:\n" +
+      "        print(props[info.get('input-node-id')].get('node.name','')); break\n" +
+      "\""
+    ProcessPool.runTracked("Resolve EE target", script, {
+      id: "ee-target-resolve",
+      shell: true,
+      callback: function(r) {
+        svc._eeTargetName = (r.stdout || "").trim()
+      }
+    })
   }
 
   // ═══════════════════════════════════════════════════════════════
