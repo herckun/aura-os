@@ -43,16 +43,17 @@ BasePlugin {
           for (var i = 0; i < lines.length; i++) {
             rows.push((function(path) {
               var parts = path.split("/")
+              var dir = parts.slice(0, -1).join("/") || "/"
               return {
                 id: "file:" + path,
                 label: parts[parts.length - 1],
-                sublabel: parts.slice(0, -1).join("/"),
+                sublabel: dir,
                 icon: "file",
                 iconKind: "symbolic",
                 priority: 20,
                 source: "files",
                 groupLabel: "Files",
-                action: function() { ProcessPool.runDetached(["xdg-open", path]) }
+                action: function() { ProcessPool.runDetached(["xdg-open", dir]) }
               }
             })(lines[i]))
           }

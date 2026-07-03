@@ -37,11 +37,23 @@ Singleton {
 
   function search(text: string): void {
     svc.query = text
+    if (!text || text.length === 0) {
+      svc._debounce.stop()
+      svc._queryId++          // invalidate any in-flight async responses
+      svc._buffer = ({})
+      svc._rebuild()
+      return
+    }
+    // Debounce provider execution: old results stay visible until the new run
+    // produces them, so fast typing neither flickers nor spams HTTP providers.
+    svc._debounce.restart()
+  }
+
+  function _runProviders(): void {
     svc._queryId++
     var qid = svc._queryId
+    var text = svc.query
     svc._buffer = ({})
-    if (!text || text.length === 0) { svc._rebuild(); return }
-
     for (var i = 0; i < svc._providers.length; i++) {
       var p = svc._providers[i]
       var out = null
@@ -69,6 +81,12 @@ Singleton {
   property var _providers: ([])
   property int _queryId: 0
   property var _buffer: ({})
+
+  property Timer _debounce: Timer {
+    interval: 150
+    repeat: false
+    onTriggered: svc._runProviders()
+  }
 
   // ═══════════════════════════════════════════════════════════════
   //  PRIVATE HELPERS
