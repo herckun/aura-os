@@ -25,5 +25,6 @@ PowerProfilePlugin 1.0 extra/PowerProfile/PowerProfilePlugin.qml
 ProtonVPNPlugin 1.0 extra/ProtonVPN/ProtonVPNPlugin.qml
 WindscribePlugin 1.0 extra/Windscribe/WindscribePlugin.qml
 DuckDuckGoPlugin 1.0 community/DuckDuckGo/DuckDuckGoPlugin.qml
+WikipediaPlugin 1.0 community/Wikipedia/WikipediaPlugin.qml
 BasePlugin 1.0 _BasePlugin.qml
 PluginService 1.0 PluginService.qml
