@@ -53,13 +53,29 @@ Singleton {
   on_DefaultSinkChanged: _refreshEeTarget()
 
   function _resolveSink(def: PwNode, targetName: string, nodes: var): PwNode {
-    if (def && def.name === "easyeffects_sink" && targetName) {
+    if (def && def.name === "easyeffects_sink") {
+      if (targetName) {
+        for (var i = 0; i < nodes.length; i++) {
+          var n = nodes[i]
+          if (n.isSink && !n.isStream && n.name === targetName) {
+            return n
+          }
+        }
+      }
+      var hwSinks = []
       for (var i = 0; i < nodes.length; i++) {
         var n = nodes[i]
-        if (n.isSink && !n.isStream && n.name === targetName) return n
+        if (n.isSink && !n.isStream && n.name !== "easyeffects_sink" &&
+            n.properties && n.properties["device.api"]) {
+          hwSinks.push(n)
+        }
       }
-    }
+      if (hwSinks.length === 1) {
+        return hwSinks[0]
+      }
 
+      return null
+    }
     return def
   }
 
@@ -68,20 +84,33 @@ Singleton {
       svc._eeTargetName = ""
       return
     }
+
     var script = "pw-dump | python3 -c \"" +
       "import json,sys\n" +
       "d=json.load(sys.stdin)\n" +
-      "props={}\n" +
+      "nodes={}\n" +
       "for o in d:\n" +
-      "    if str(o.get('type','')).endswith('Node'): props[o['id']]=(o.get('info') or {}).get('props') or {}\n" +
-      "ee={i for i,p in props.items() if p.get('application.id')=='com.github.wwmm.easyeffects' or str(p.get('node.name','')).startswith('ee_')}\n" +
-      "sinks={i for i,p in props.items() if p.get('media.class')=='Audio/Sink' and p.get('node.name')!='easyeffects_sink'}\n" +
+      "    if str(o.get('type','')).endswith('Node'):\n" +
+      "        props=(o.get('info') or {}).get('props') or {}\n" +
+      "        nodes[o['id']]=props.get('node.name','')\n" +
+      "ee_id=None\n" +
+      "for nid,name in nodes.items():\n" +
+      "    if name=='easyeffects_sink':\n" +
+      "        ee_id=nid\n" +
+      "        break\n" +
+      "if ee_id is None:\n" +
+      "    sys.exit(0)\n" +
       "for o in d:\n" +
-      "    if not str(o.get('type','')).endswith('Link'): continue\n" +
+      "    if not str(o.get('type','')).endswith('Link'):\n" +
+      "        continue\n" +
       "    info=o.get('info') or {}\n" +
-      "    if info.get('output-node-id') in ee and info.get('input-node-id') in sinks:\n" +
-      "        print(props[info.get('input-node-id')].get('node.name','')); break\n" +
+      "    if info.get('output-node-id')==ee_id:\n" +
+      "        target_id=info.get('input-node-id')\n" +
+      "        if target_id in nodes:\n" +
+      "            print(nodes[target_id])\n" +
+      "            break\n" +
       "\""
+
     ProcessPool.runTracked("Resolve EE target", script, {
       id: "ee-target-resolve",
       shell: true,
@@ -180,26 +209,26 @@ Singleton {
   }
 
   function volumeUp(): void {
-    if (sink?.ready && sink?.audio) {
+    if (sink?.ready && sink?.audio && sink.name !== "easyeffects_sink") {
       sink.audio.volume = Math.min(1.5, sink.audio.volume + 0.1)
     }
   }
 
   function volumeDown(): void {
-    if (sink?.ready && sink?.audio) {
+    if (sink?.ready && sink?.audio && sink.name !== "easyeffects_sink") {
       sink.audio.volume = Math.max(0, sink.audio.volume - 0.1)
     }
   }
 
   function setVolume(v: real): void {
-    if (sink?.ready && sink?.audio) {
+    if (sink?.ready && sink?.audio && sink.name !== "easyeffects_sink") {
       sink.audio.muted = false
       sink.audio.volume = Math.max(0, Math.min(1.5, v))
     }
   }
 
   function toggleMute(): void {
-    if (sink?.ready && sink?.audio) {
+    if (sink?.ready && sink?.audio && sink.name !== "easyeffects_sink") {
       sink.audio.muted = !sink.audio.muted
     }
   }
@@ -218,14 +247,16 @@ Singleton {
   }
 
   function setNodeVolume(node: PwNode, v: real): void {
-    if (node?.ready && node?.audio) {
+    // NEVER apply volume to easyeffects_sink - it doesn't affect actual output
+    if (node?.ready && node?.audio && node.name !== "easyeffects_sink") {
       node.audio.muted = false
       node.audio.volume = Math.max(0, Math.min(1.5, v))
     }
   }
 
   function toggleNodeMute(node: PwNode): void {
-    if (node?.ready && node?.audio) {
+    // NEVER apply mute to easyeffects_sink - it doesn't affect actual output
+    if (node?.ready && node?.audio && node.name !== "easyeffects_sink") {
       node.audio.muted = !node.audio.muted
     }
   }

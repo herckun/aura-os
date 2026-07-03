@@ -365,8 +365,6 @@ Singleton {
                 Logger.warn("display", "Failed to write monitors.lua: " + (r.stderr || ""));
             }
 
-            Quickshell.reload();
-
             if (callback)
                 callback();
         });

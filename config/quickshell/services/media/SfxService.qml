@@ -1,25 +1,20 @@
 pragma Singleton
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import "../../core"
 import "../"
 
 Singleton {
   id: svc
 
-  // ═══════════════════════════════════════════════════════════════
-  //  PUBLIC STATE
-  // ═══════════════════════════════════════════════════════════════
   property bool enabled: true
 
-  // ═══════════════════════════════════════════════════════════════
-  //  INTERNAL STATE
-  // ═══════════════════════════════════════════════════════════════
   property bool _ready: false
   property var _lastPlayed: ({})
   property real _lastSpecificAt: 0
 
-  readonly property int _throttleMs: 120
+  readonly property int _throttleMs: 80
   readonly property int _suppressMs: 1200
   readonly property string _sfxDir: {
     var p = Qt.resolvedUrl("../../sfx/").toString()
@@ -27,21 +22,94 @@ Singleton {
   }
 
   // ═══════════════════════════════════════════════════════════════
+  //  SOUND SLOT
+  // ═══════════════════════════════════════════════════════════════
+  Component {
+    id: slotComponent
+
+    Item {
+      id: slot
+
+      Process {
+        id: proc
+
+        onExited: function (code) {
+          if (slot._pending) {
+            slot._pending = false
+            retryTimer.file = slot._pendingFile
+            retryTimer.start()
+          }
+        }
+      }
+
+      Timer {
+        id: retryTimer
+        interval: 10
+        repeat: false
+        property string file: ""
+        onTriggered: slot._startPlayback(file)
+      }
+
+      property string _pendingFile: ""
+      property bool _pending: false
+
+      function _startPlayback(file: string): void {
+        proc.command = [
+          "canberra-gtk-play",
+          "-f", file,
+          "-d", "quickshell"
+        ]
+        proc.running = true
+      }
+
+      function play(file: string): void {
+        retryTimer.stop()
+        _pending = false
+
+        if (proc.running) {
+          proc.running = false
+          _pendingFile = file
+          _pending = true
+        } else {
+          _startPlayback(file)
+        }
+      }
+
+      function stop(): void {
+        retryTimer.stop()
+        _pending = false
+        if (proc.running) proc.running = false
+      }
+    }
+  }
+
+  property var _slots: ({})
+
+  // ═══════════════════════════════════════════════════════════════
   //  PRIVATE HELPERS
   // ═══════════════════════════════════════════════════════════════
   function _group(name: string): string {
-    return name === "volume" || name === "mute" ? "audio" : name
+    return (name === "volume" || name === "mute") ? "audio" : name
+  }
+
+  function _getSlot(group: string): var {
+    if (!_slots[group]) {
+      _slots[group] = slotComponent.createObject(svc)
+    }
+    return _slots[group]
   }
 
   function _spawn(name: string): void {
-    ProcessPool.runDetached(["pw-play", svc._sfxDir + name + ".oga"])
+    var group = svc._group(name)
+    var file = svc._sfxDir + name + ".oga"
+    var slot = _getSlot(group)
+    if (slot) slot.play(file)
   }
 
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
   // ═══════════════════════════════════════════════════════════════
-  function init(): void {
-  }
+  function init(): void {}
 
   function setEnabled(v: bool): void {
     svc.enabled = v
@@ -106,24 +174,27 @@ Singleton {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  //  TIMERS
+  //  TIMERS & LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
   Timer {
-    id: readyTimer
     interval: 2500
     running: true
     repeat: false
     onTriggered: svc._ready = true
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  //  LIFECYCLE
-  // ═══════════════════════════════════════════════════════════════
   Component.onCompleted: {
     svc.enabled = Store.getBool("sfx.enabled", true)
-    Store.loadedLater(100, function() {
+    Store.loadedLater(100, function () {
       svc.enabled = Store.getBool("sfx.enabled", true)
       if (svc.enabled) svc._spawn("startup")
     })
+  }
+
+  Component.onDestruction: {
+    for (var g in _slots) {
+      if (_slots[g]) { _slots[g].stop(); _slots[g].destroy() }
+    }
+    _slots = {}
   }
 }
