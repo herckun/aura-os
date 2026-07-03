@@ -127,6 +127,10 @@ OverlayPanel {
         overview.activeTab = 0;
         _clearSearch();
         overviewSearch.forceFocus();
+        // Re-scan .desktop files each open so apps installed since the last
+        // scan are searchable; index() no-ops while a scan is in flight and
+        // keeps the current entries until the fresh list arrives (no flicker).
+        LauncherService.index();
     }
 
     Component.onCompleted: _refreshOverviewPlugins()

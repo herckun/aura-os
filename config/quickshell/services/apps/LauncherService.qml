@@ -93,6 +93,10 @@ Singleton {
         if (svc._pendingQuery !== null) {
           svc.search(svc._pendingQuery)
           svc._pendingQuery = null
+        } else if (svc.searchQuery !== "") {
+          // A re-scan finished while a query was active — recompute against the
+          // fresh entries so a just-installed app shows without another keystroke.
+          svc.search(svc.searchQuery)
         }
       }
     })
