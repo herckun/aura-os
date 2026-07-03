@@ -103,7 +103,11 @@ Singleton {
     var result = []
     for (var i = 0; i < notifActions.length; i++) {
       var a = notifActions[i]
-      result.push({ identifier: a.identifier || "", text: a.text || "" })
+      // The freedesktop "default" action fires on body-click and carries no
+      // display label — skip it (and any label-less action) so it isn't
+      // rendered as an empty button.
+      if (!a || !a.text || a.identifier === "default") continue
+      result.push({ identifier: a.identifier, text: a.text })
     }
     return result
   }
