@@ -79,9 +79,9 @@ BasePlugin {
       {
         key: "clockLayout",
         label: "LAYOUT",
-        description: "Vertical or horizontal arrangement",
+        description: "Vertical, minimal, or horizontal arrangement",
         type: "select",
-        options: ["vertical", "horizontal"],
+        options: ["vertical", "minimal", "horizontal"],
         default: "vertical",
         controlSize: "sm"
       },
@@ -113,12 +113,16 @@ BasePlugin {
   property Component desktopComponent: Item {
     id: clockContainer
     width: clockContainer._isAnalog ? analogCol.implicitWidth
+      : clockContainer._isMinimal ? minimalCol.implicitWidth
       : (clockContainer._isVertical ? clockCol.implicitWidth : clockRow.implicitWidth)
     height: clockContainer._isAnalog ? analogCol.implicitHeight
+      : clockContainer._isMinimal ? minimalCol.implicitHeight
       : (clockContainer._isVertical ? clockCol.implicitHeight : clockRow.implicitHeight)
 
     property bool _isAnalog: PluginService.getPluginSetting("desktopclock", "clockStyle", "desktop") === "analog"
-    property bool _isVertical: PluginService.getPluginSetting("desktopclock", "clockLayout", "desktop") !== "horizontal"
+    property string _layout: PluginService.getPluginSetting("desktopclock", "clockLayout", "desktop") ?? "vertical"
+    property bool _isMinimal: _layout === "minimal"
+    property bool _isVertical: _layout !== "horizontal" && _layout !== "minimal"
     property bool _format24h: PluginService.getPluginSetting("desktopclock", "format24h", "desktop") ?? true
     property bool _showSeconds: PluginService.getPluginSetting("desktopclock", "showSeconds", "desktop") ?? false
     property bool _showDate: PluginService.getPluginSetting("desktopclock", "showDate", "desktop") ?? true
@@ -145,24 +149,33 @@ BasePlugin {
     function _updateClockText() {
       var now = DateTimeService.currentDate
       var is24 = clockContainer._format24h
+      var h12 = now.getHours() % 12
+      if (h12 === 0) h12 = 12
+      var mm = Qt.formatDateTime(now, "mm")
+      var hh = is24 ? Qt.formatDateTime(now, "HH") : String(h12).padStart(2, "0")
 
       if (!clockContainer._isAnalog && clockContainer._isVertical) {
-        timeHH.text = Qt.formatDateTime(now, is24 ? "HH" : "h")
-        timeMM.text = Qt.formatDateTime(now, "mm")
+        timeHH.text = hh
+        timeMM.text = mm
         if (clockContainer._showSeconds) timeSS.text = Qt.formatDateTime(now, "ss")
         if (!is24) timeAMPM.text = Qt.formatDateTime(now, "AP")
         dayText.text = Qt.formatDateTime(now, "dddd").toUpperCase()
         if (clockContainer._showDate) dateText.text = Qt.formatDateTime(now, "MMMM d").toUpperCase()
       }
 
-      if (!clockContainer._isAnalog && !clockContainer._isVertical) {
+      if (!clockContainer._isAnalog && clockContainer._isMinimal) {
+        timeTextM.text = hh + ":" + mm
+        if (clockContainer._showSeconds) timeSSM.text = Qt.formatDateTime(now, "ss")
+        if (!is24) timeAMPMM.text = Qt.formatDateTime(now, "AP")
+        dayTextM.text = Qt.formatDateTime(now, "dddd").toUpperCase()
+        if (clockContainer._showDate) dateTextM.text = Qt.formatDateTime(now, "MMMM d").toUpperCase()
+      }
+
+      if (!clockContainer._isAnalog && !clockContainer._isVertical && !clockContainer._isMinimal) {
         dayTextH.text = Qt.formatDateTime(now, "dddd").toUpperCase()
         if (clockContainer._showDate) dateTextH.text = Qt.formatDateTime(now, "MMMM d").toUpperCase()
-        timeLabelH.text = Qt.formatDateTime(now, is24 ? "HH:mm" : "h:mm")
-        if (!is24) {
-          var ampmText = Qt.formatDateTime(now, "AP")
-          ampmLabelH.text = ampmText
-        }
+        timeLabelH.text = hh + ":" + mm
+        if (!is24) ampmLabelH.text = Qt.formatDateTime(now, "AP")
         if (clockContainer._showSeconds) secLabelH.text = Qt.formatDateTime(now, "ss")
       }
     }
@@ -191,7 +204,6 @@ BasePlugin {
       }
       return accent
     }
-    readonly property color _surfaceColor: clockContainer._accentContrast
 
     ColumnLayout {
       id: clockCol
@@ -231,6 +243,7 @@ BasePlugin {
           font.weight: Font.Bold
           font.letterSpacing: 4
           Layout.alignment: Qt.AlignHCenter
+          Layout.topMargin: -Math.round(timeHH.font.pixelSize * 0.22)
           property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
           color: _c ? _c.textColor : "white"
 
@@ -253,8 +266,7 @@ BasePlugin {
           font.letterSpacing: 8
           Layout.alignment: Qt.AlignHCenter
           Layout.topMargin: Theme.spaceXs
-          property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
-          color: _c ? _c.textColor : "white"
+          color: clockContainer._accentContrast
         }
 
         Text {
@@ -270,6 +282,15 @@ BasePlugin {
           property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
           color: _c ? Qt.rgba(_c.textColor.r, _c.textColor.g, _c.textColor.b, 0.45) : "white"
         }
+      }
+
+      Rectangle {
+        Layout.alignment: Qt.AlignHCenter
+        Layout.bottomMargin: Theme.spaceSm
+        width: Math.round(36 * clockContainer._scale)
+        height: 3
+        radius: 1.5
+        color: clockContainer._accentContrast
       }
 
       Text {
@@ -301,10 +322,95 @@ BasePlugin {
       }
     }
 
+    ColumnLayout {
+      id: minimalCol
+      visible: !clockContainer._isAnalog && clockContainer._isMinimal
+      spacing: 0
+
+      Text {
+        id: timeTextM
+        text: ""
+        font.family: Theme.fontFamilyDisplay
+        font.pixelSize: Math.round(Theme.fontSizeDisplayXl * clockContainer._scale)
+        font.weight: Font.Bold
+        font.letterSpacing: 2
+        Layout.alignment: Qt.AlignHCenter
+        property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
+        color: _c ? _c.textColor : "white"
+
+        Text {
+          x: 1; y: 2
+          text: timeTextM.text
+          font: timeTextM.font
+          color: timeTextM._c ? timeTextM._c.shadowColor : "black"
+          z: -1
+        }
+      }
+
+      Row {
+        Layout.alignment: Qt.AlignHCenter
+        Layout.topMargin: Theme.spaceXs
+        spacing: Theme.spaceSm
+        visible: clockContainer._showSeconds || !clockContainer._format24h
+
+        Text {
+          id: timeSSM
+          visible: clockContainer._showSeconds
+          text: ""
+          font.family: Theme.fontFamilyMono
+          font.pixelSize: Math.round(Theme.fontSizeSubhead * clockContainer._scale)
+          font.weight: Font.Medium
+          font.letterSpacing: 8
+          color: clockContainer._accentContrast
+        }
+
+        Text {
+          id: timeAMPMM
+          visible: !clockContainer._format24h
+          text: ""
+          font.family: Theme.fontFamilyMono
+          font.pixelSize: Math.round(Theme.fontSizeSubhead * clockContainer._scale)
+          font.weight: Font.Medium
+          font.letterSpacing: 2
+          property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
+          color: _c ? Qt.rgba(_c.textColor.r, _c.textColor.g, _c.textColor.b, 0.45) : "white"
+        }
+      }
+
+      Text {
+        id: dayTextM
+        text: ""
+        font.family: Theme.fontFamilyDisplay
+        font.pixelSize: Math.round(Theme.fontSizeHeading * clockContainer._scale)
+        font.weight: Font.Bold
+        font.letterSpacing: 8
+        horizontalAlignment: Text.AlignHCenter
+        Layout.alignment: Qt.AlignHCenter
+        Layout.topMargin: Theme.spaceSm
+        Layout.bottomMargin: Theme.spaceXs
+        property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
+        color: _c ? _c.textColor : "white"
+      }
+
+      Text {
+        id: dateTextM
+        visible: clockContainer._showDate
+        text: ""
+        font.family: Theme.fontFamilyMono
+        font.pixelSize: Math.round(Theme.fontSizeLabel * clockContainer._scale)
+        font.weight: Font.Medium
+        font.letterSpacing: 6
+        horizontalAlignment: Text.AlignHCenter
+        Layout.alignment: Qt.AlignHCenter
+        property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
+        color: _c ? Qt.rgba(_c.textColor.r, _c.textColor.g, _c.textColor.b, 0.45) : "white"
+      }
+    }
+
     // ── Digital horizontal ─────────────────────────────────────
     RowLayout {
       id: clockRow
-      visible: !clockContainer._isAnalog && !clockContainer._isVertical
+      visible: !clockContainer._isAnalog && !clockContainer._isVertical && !clockContainer._isMinimal
       spacing: Theme.spaceLg
       Layout.alignment: Qt.AlignHCenter
 
@@ -347,11 +453,11 @@ BasePlugin {
 
       Rectangle {
         visible: clockContainer._showDate
-        width: 1
+        width: 3
+        radius: 1.5
         Layout.fillHeight: true
         Layout.preferredHeight: Theme.fontSizeDisplay * clockContainer._scale
-        property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
-        color: _c ? Qt.rgba(_c.textColor.r, _c.textColor.g, _c.textColor.b, 0.45) : "white"
+        color: clockContainer._accentContrast
         Layout.alignment: Qt.AlignVCenter
       }
 
@@ -364,16 +470,6 @@ BasePlugin {
           Layout.alignment: Qt.AlignHCenter
 
           Text {
-            id: dashLeft
-            text: "-"
-            font.family: Theme.fontFamilyMono
-            font.pixelSize: Math.round(Theme.fontSizeHeading * clockContainer._scale)
-            font.weight: Font.Light
-            property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
-            color: _c ? Qt.rgba(_c.textColor.r, _c.textColor.g, _c.textColor.b, 0.45) : "white"
-          }
-
-          Text {
             id: timeLabelH
             text: ""
             font.family: Theme.fontFamilyMono
@@ -382,16 +478,6 @@ BasePlugin {
             font.letterSpacing: 4
             property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
             color: _c ? _c.textColor : "white"
-          }
-
-          Text {
-            id: dashRight
-            text: "-"
-            font.family: Theme.fontFamilyMono
-            font.pixelSize: Math.round(Theme.fontSizeHeading * clockContainer._scale)
-            font.weight: Font.Light
-            property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
-            color: _c ? Qt.rgba(_c.textColor.r, _c.textColor.g, _c.textColor.b, 0.45) : "white"
           }
 
           Text {
@@ -454,46 +540,32 @@ BasePlugin {
           var seconds = now.getSeconds()
           var millis = now.getMilliseconds()
 
-          var _c = clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(analogCol) : null
-          var text = _c ? _c.textColor : "white"
-          var dim = _c ? Qt.rgba(_c.textColor.r, _c.textColor.g, _c.textColor.b, 0.45) : "white"
-          var accent = clockContainer._accentContrast
+          var face = Theme.backgroundSecondary
+          var text = Theme.contrastTextColor(face)
+          var dim = Qt.rgba(text.r, text.g, text.b, 0.35)
+          var accent = Theme.accent
 
           ctx.save()
-          ctx.shadowColor = "rgba(0,0,0,0.25)"
-          ctx.shadowBlur = 12
+          ctx.shadowColor = "rgba(0,0,0,0.35)"
+          ctx.shadowBlur = 16
           ctx.shadowOffsetX = 0
           ctx.shadowOffsetY = 4
 
           ctx.beginPath()
           ctx.arc(cx, cy, R, 0, 2 * Math.PI)
-          ctx.fillStyle = clockContainer._surfaceColor
+          ctx.fillStyle = Qt.rgba(face.r, face.g, face.b, 0.96)
           ctx.fill()
           ctx.restore()
 
-          ctx.beginPath()
-          ctx.arc(cx, cy, R - 1, 0, 2 * Math.PI)
-          ctx.strokeStyle = Qt.rgba(text.r, text.g, text.b, 0.08)
-          ctx.lineWidth = 1
-          ctx.stroke()
-
-          var tickR = R - Theme.spaceXs
-          for (var i = 0; i < 60; i++) {
-            var a = (i * 6 - 90) * Math.PI / 180
-            var isHour = i % 5 === 0
-            var innerR = tickR - (isHour ? Theme.spaceSm : Theme.spaceXs)
-            var x1 = cx + innerR * Math.cos(a)
-            var y1 = cy + innerR * Math.sin(a)
-            var x2 = cx + tickR * Math.cos(a)
-            var y2 = cy + tickR * Math.sin(a)
-
+          var dotRing = R * 0.85
+          for (var i = 0; i < 12; i++) {
+            var a = (i * 30 - 90) * Math.PI / 180
+            var isQuarter = i % 3 === 0
             ctx.beginPath()
-            ctx.moveTo(x1, y1)
-            ctx.lineTo(x2, y2)
-            ctx.strokeStyle = isHour ? text : dim
-            ctx.lineWidth = isHour ? 2 : 1
-            ctx.lineCap = "round"
-            ctx.stroke()
+            ctx.arc(cx + dotRing * Math.cos(a), cy + dotRing * Math.sin(a),
+                    R * (isQuarter ? 0.035 : 0.02), 0, 2 * Math.PI)
+            ctx.fillStyle = isQuarter ? text : dim
+            ctx.fill()
           }
 
           var smoothSeconds = seconds + millis / 1000
@@ -508,58 +580,41 @@ BasePlugin {
           ctx.translate(cx, cy)
           ctx.rotate(hourAngle)
           ctx.beginPath()
-          ctx.moveTo(-Theme.spaceXs, 0)
-          ctx.lineTo(R * 0.06, -3)
-          ctx.lineTo(R * 0.5, -1.5)
-          ctx.lineTo(R * 0.5, 1.5)
-          ctx.lineTo(R * 0.06, 3)
-          ctx.closePath()
-          ctx.fillStyle = text
-          ctx.fill()
+          ctx.moveTo(0, 0)
+          ctx.lineTo(R * 0.42, 0)
+          ctx.strokeStyle = text
+          ctx.lineWidth = Math.max(5, R * 0.075)
+          ctx.lineCap = "round"
+          ctx.stroke()
           ctx.restore()
 
           ctx.save()
           ctx.translate(cx, cy)
           ctx.rotate(minuteAngle)
           ctx.beginPath()
-          ctx.moveTo(-5, 0)
-          ctx.lineTo(R * 0.06, -2.2)
-          ctx.lineTo(R * 0.75, -1)
-          ctx.lineTo(R * 0.75, 1)
-          ctx.lineTo(R * 0.06, 2.2)
-          ctx.closePath()
-          ctx.fillStyle = text
-          ctx.fill()
+          ctx.moveTo(0, 0)
+          ctx.lineTo(R * 0.62, 0)
+          ctx.strokeStyle = text
+          ctx.lineWidth = Math.max(4, R * 0.055)
+          ctx.lineCap = "round"
+          ctx.stroke()
           ctx.restore()
 
           ctx.save()
           ctx.translate(cx, cy)
           ctx.rotate(secondAngle)
-
           ctx.beginPath()
-          ctx.moveTo(0, 0)
-          ctx.lineTo(-R * 0.15, 0)
+          ctx.moveTo(-R * 0.1, 0)
+          ctx.lineTo(R * 0.72, 0)
           ctx.strokeStyle = accent
-          ctx.lineWidth = 1.5
-          ctx.lineCap = "round"
-          ctx.stroke()
-
-          ctx.beginPath()
-          ctx.moveTo(0, 0)
-          ctx.lineTo(R * 0.82, 0)
-          ctx.strokeStyle = accent
-          ctx.lineWidth = 1.5
+          ctx.lineWidth = Math.max(1.5, R * 0.012)
           ctx.lineCap = "round"
           ctx.stroke()
           ctx.restore()
 
           ctx.beginPath()
-          ctx.arc(cx, cy, Theme.spaceXs, 0, 2 * Math.PI)
-          ctx.fillStyle = accent
-          ctx.fill()
-          ctx.beginPath()
-          ctx.arc(cx, cy, Theme.spaceXs / 2, 0, 2 * Math.PI)
-          ctx.fillStyle = text
+          ctx.arc(cx, cy, Math.max(5, R * 0.055), 0, 2 * Math.PI)
+          ctx.fillStyle = Qt.rgba(text.r, text.g, text.b, 0.9)
           ctx.fill()
         }
 
