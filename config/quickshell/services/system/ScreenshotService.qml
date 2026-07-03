@@ -15,6 +15,8 @@ Singleton {
   property bool available: false
   property bool capturing: false
 
+  signal captured()
+
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
   // ═══════════════════════════════════════════════════════════════
@@ -77,6 +79,7 @@ Singleton {
       callback: function(r) {
         capturing = false
         if (r.exitCode === 0) {
+          svc.captured()
           NotificationService.systemNotify("SCREENSHOT", "Screenshot saved to clipboard", 1)
         } else {
           NotificationService.systemNotify("SCREENSHOT", "Screenshot failed", 2)
@@ -93,6 +96,7 @@ Singleton {
       callback: function(r) {
         capturing = false
         if (r.exitCode === 0) {
+          svc.captured()
           NotificationService.systemNotify("SCREENSHOT", "Screenshot saved: " + path, 1)
         } else {
           NotificationService.systemNotify("SCREENSHOT", "Screenshot failed", 2)

@@ -401,7 +401,7 @@ Column {
     SettingRow {
       id: sfxRow
       label: "SOUND EFFECTS"
-      description: "Plays on volume change and timer end"
+      description: "System sounds for volume, notifications, battery, devices and more"
 
       Toggle {
         toggleWidth: 38

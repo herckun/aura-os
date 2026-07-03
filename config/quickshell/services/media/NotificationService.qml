@@ -17,6 +17,8 @@ Singleton {
   property var notifications: ([])
   property int unreadCount: 0
 
+  signal posted(int urgency)
+
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
   // ═══════════════════════════════════════════════════════════════
@@ -33,6 +35,7 @@ Singleton {
 
     svc.notifications = updated
     _recalcUnread()
+    svc.posted(urgency ?? 1)
   }
 
   function notify(label: string, message: string, icon: string, urgency: int): void {

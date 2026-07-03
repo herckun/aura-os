@@ -175,7 +175,18 @@
     "cdn": "https://raw.githubusercontent.com/ubuntu/yaru/master/sounds/src/stereo",
     "map": {
       "volume": "audio-volume-change.oga",
-      "timer-done": "complete.oga"
+      "mute": "dialog-question.oga",
+      "timer-done": "complete.oga",
+      "notification": "message-new-email.oga",
+      "notification-urgent": "dialog-warning.oga",
+      "battery-low": "battery-low.oga",
+      "power-plug": "device-added.oga",
+      "power-unplug": "device-removed.oga",
+      "device-connect": "device-added.oga",
+      "device-disconnect": "device-removed.oga",
+      "network-error": "dialog-error.oga",
+      "screenshot": "bell.oga",
+      "startup": "desktop-login.oga"
     }
   },
   "plugins": {

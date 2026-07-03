@@ -73,6 +73,15 @@ while IFS='=' read -r local_name remote_name; do
 
   tmp_file="$(mktemp)"
   if curl -fsSL "${CDN}/${remote_name}" -o "$tmp_file" 2>/dev/null; then
+    link_target="$(head -c 128 "$tmp_file" | grep -oExm1 '[A-Za-z0-9._-]+\.(oga|ogg|wav)' || true)"
+    if [[ -n "$link_target" && "$(head -c 4 "$tmp_file")" != "OggS" && "$(head -c 4 "$tmp_file")" != "RIFF" ]]; then
+      if ! curl -fsSL "${CDN}/${link_target}" -o "$tmp_file" 2>/dev/null; then
+        rm -f "$tmp_file"
+        log_warn "Failed to download: ${remote_name} -> ${link_target} (for ${local_name})"
+        (( errors++ )) || true
+        continue
+      fi
+    fi
     mv "$tmp_file" "$dest"
     (( synced++ )) || true
   else

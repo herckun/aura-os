@@ -18,6 +18,9 @@ Singleton {
   property bool scanning: false
   property string lastError: ""
 
+  signal deviceConnected(string mac)
+  signal deviceDisconnected(string mac)
+
   // ═══════════════════════════════════════════════════════════════
   //  INTERNAL STATE
   // ═══════════════════════════════════════════════════════════════
@@ -88,6 +91,7 @@ Singleton {
       id: "bt-connect",
       callback: function(r) {
         if (r.exitCode !== 0) lastError = "Connection failed"
+        else svc.deviceConnected(mac)
         poll()
       }
     })
@@ -99,6 +103,7 @@ Singleton {
       id: "bt-disconnect",
       callback: function(r) {
         if (r.exitCode !== 0) lastError = "Disconnect failed"
+        else svc.deviceDisconnected(mac)
         poll()
       }
     })
