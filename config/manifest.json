@@ -174,121 +174,121 @@
     "core": [
       {
         "id": "bar-workspaces",
-        "file": "BarWorkspacesPlugin.qml",
+        "file": "BarWorkspaces/BarWorkspacesPlugin.qml",
         "name": "Workspaces",
         "description": "Workspace indicators and window title"
       },
       {
         "id": "clipboard",
-        "file": "ClipboardPlugin.qml",
+        "file": "Clipboard/ClipboardPlugin.qml",
         "name": "Clipboard",
         "description": "Clipboard history"
       },
       {
         "id": "desktopclock",
-        "file": "DesktopClockPlugin.qml",
+        "file": "DesktopClock/DesktopClockPlugin.qml",
         "name": "Desktop Clock",
         "description": "Large clock widget for the desktop"
       },
       {
         "id": "desktopEq",
-        "file": "DesktopEqPlugin.qml",
+        "file": "DesktopEq/DesktopEqPlugin.qml",
         "name": "Desktop Equalizer",
         "description": "Audio equalizer for the desktop"
       },
       {
         "id": "resourcemonitor",
-        "file": "ResourceMonitorPlugin.qml",
+        "file": "ResourceMonitor/ResourceMonitorPlugin.qml",
         "name": "Resource Monitor",
         "description": "CPU, memory, and GPU usage display"
       },
       {
         "id": "lyrics",
-        "file": "LyricsPlugin.qml",
+        "file": "Lyrics/LyricsPlugin.qml",
         "name": "Lyrics",
         "description": "Synced lyrics from currently playing track"
       },
       {
         "id": "disk",
-        "file": "DiskPlugin.qml",
+        "file": "Disk/DiskPlugin.qml",
         "name": "Disk",
         "description": "Storage usage"
       },
       {
         "id": "launchgroups",
-        "file": "LaunchGroupsPlugin.qml",
+        "file": "LaunchGroups/LaunchGroupsPlugin.qml",
         "name": "Quick Launch",
         "description": "App launcher groups"
       },
       {
         "id": "media",
-        "file": "MediaPlugin.qml",
+        "file": "Media/MediaPlugin.qml",
         "name": "Media",
         "description": "Now playing controls"
       },
       {
         "id": "nightlight",
-        "file": "NightLightPlugin.qml",
+        "file": "NightLight/NightLightPlugin.qml",
         "name": "Night Light",
         "description": "Blue light filter"
       },
       {
         "id": "notes",
-        "file": "NotesPlugin.qml",
+        "file": "Notes/NotesPlugin.qml",
         "name": "Notes",
         "description": "Quick markdown scratchpad"
       },
       {
         "id": "notifications",
-        "file": "NotificationsPlugin.qml",
+        "file": "Notifications/NotificationsPlugin.qml",
         "name": "Notifications",
         "description": "Recent notifications and badge"
       },
       {
         "id": "screenshot",
-        "file": "ScreenshotPlugin.qml",
+        "file": "Screenshot/ScreenshotPlugin.qml",
         "name": "Screenshots",
         "description": "Screen capture"
       },
       {
         "id": "clock",
-        "file": "SmartIslandPlugin.qml",
+        "file": "SmartIsland/SmartIslandPlugin.qml",
         "name": "Clock",
         "description": "Clock and media/timer island"
       },
       {
         "id": "bar-status",
-        "file": "StatusPlugin.qml",
+        "file": "Status/StatusPlugin.qml",
         "name": "Status",
         "description": "Weather, network, keyboard, and battery indicators"
       },
       {
         "id": "system",
-        "file": "SystemPlugin.qml",
+        "file": "System/SystemPlugin.qml",
         "name": "System",
         "description": "CPU, memory, GPU, and updates"
       },
       {
         "id": "timer",
-        "file": "TimerPlugin.qml",
+        "file": "Timer/TimerPlugin.qml",
         "name": "Timer",
         "description": "Pomodoro and countdown timer"
       },
       {
         "id": "todo",
-        "file": "TodoPlugin.qml",
+        "file": "Todo/TodoPlugin.qml",
         "name": "Todo",
         "description": "Task manager"
       },
       {
         "id": "weather",
-        "file": "WeatherPlugin.qml",
+        "file": "Weather/WeatherPlugin.qml",
         "name": "Weather",
         "description": "Current weather conditions"
       },
       {
         "id": "workspaces",
-        "file": "WorkspacesPlugin.qml",
+        "file": "Workspaces/WorkspacesPlugin.qml",
         "name": "Workspaces",
         "description": "Hyprland workspace switcher"
       }
@@ -296,7 +296,7 @@
     "extra": [
       {
         "id": "docker",
-        "file": "DockerPlugin.qml",
+        "file": "Docker/DockerPlugin.qml",
         "name": "Docker",
         "description": "Container management",
         "dep": "docker",
@@ -304,7 +304,7 @@
       },
       {
         "id": "easyeffects",
-        "file": "EasyEffectsPlugin.qml",
+        "file": "EasyEffects/EasyEffectsPlugin.qml",
         "name": "EasyEffects",
         "description": "Audio effects and presets",
         "dep": "easyeffects",
@@ -312,7 +312,7 @@
       },
       {
         "id": "powerprofile",
-        "file": "PowerProfilePlugin.qml",
+        "file": "PowerProfile/PowerProfilePlugin.qml",
         "name": "Power Profile",
         "description": "CPU power profile switcher",
         "dep": "tlp",
@@ -320,7 +320,7 @@
       },
       {
         "id": "protonvpn",
-        "file": "ProtonVPNPlugin.qml",
+        "file": "ProtonVPN/ProtonVPNPlugin.qml",
         "name": "ProtonVPN",
         "description": "ProtonVPN secure core",
         "dep": "protonvpn",
@@ -328,7 +328,7 @@
       },
       {
         "id": "windscribe",
-        "file": "WindscribePlugin.qml",
+        "file": "Windscribe/WindscribePlugin.qml",
         "name": "Windscribe",
         "description": "Windscribe VPN client",
         "dep": "windscribe-cli",
