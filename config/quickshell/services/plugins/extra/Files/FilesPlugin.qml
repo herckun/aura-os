@@ -53,7 +53,17 @@ BasePlugin {
                 priority: 20,
                 source: "files",
                 groupLabel: "Files",
-                action: function() { ProcessPool.runDetached(["xdg-open", dir]) }
+                // Reveal in the GUI file manager with the file selected, via the
+                // freedesktop FileManager1 interface — bypasses the inode/directory
+                // mime handler, which is often a terminal (so xdg-open <dir> fails).
+                action: function() {
+                  var uri = "file://" + path.split("/").map(encodeURIComponent).join("/")
+                  ProcessPool.runDetached(["gdbus", "call", "--session",
+                    "--dest", "org.freedesktop.FileManager1",
+                    "--object-path", "/org/freedesktop/FileManager1",
+                    "--method", "org.freedesktop.FileManager1.ShowItems",
+                    '["' + uri + '"]', ""])
+                }
               }
             })(lines[i]))
           }
