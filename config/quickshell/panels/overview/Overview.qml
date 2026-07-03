@@ -373,12 +373,21 @@ OverlayPanel {
                         }
 
                         Flickable {
+                            id: resultsFlick
                             anchors.fill: parent
                             anchors.margins: Theme.spaceSm
                             contentHeight: resultsCol.implicitHeight
                             clip: true
                             boundsBehavior: Flickable.StopAtBounds
                             visible: overview.isSearching
+
+                            // Keep the arrow-selected row within the viewport.
+                            function ensureVisible(top, bottom) {
+                                if (top < contentY)
+                                    contentY = Math.max(0, top - Theme.spaceXs)
+                                else if (bottom > contentY + height)
+                                    contentY = Math.min(Math.max(0, contentHeight - height), bottom - height + Theme.spaceXs)
+                            }
 
                             Column {
                                 id: resultsCol
@@ -413,6 +422,15 @@ OverlayPanel {
                                             onClicked: {
                                                 SearchService.activate(resultGroup.index);
                                                 overview.visible = false;
+                                            }
+                                        }
+
+                                        Connections {
+                                            target: overview
+                                            function onSelectedIndexChanged() {
+                                                if (resultGroup.index !== overview.selectedIndex)
+                                                    return;
+                                                resultsFlick.ensureVisible(resultGroup.y, resultGroup.y + resultGroup.height);
                                             }
                                         }
                                     }
