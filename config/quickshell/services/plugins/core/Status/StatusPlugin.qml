@@ -17,7 +17,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Status",
-    description: "Weather, network, keyboard, and battery indicators",
+    description: "Network, keyboard, and battery indicators",
     icon: "signal",
     locations: ["bar_right"],
     settings: []
@@ -40,10 +40,6 @@ BasePlugin {
   // ── UI components ────────────────────────────────────────────────
   property Component barComponent: Row {
     spacing: Theme.spaceSm
-
-    WeatherWidget { anchors.verticalCenter: parent.verticalCenter }
-
-    Divider { vertical: true; height: 18; anchors.verticalCenter: parent.verticalCenter; visible: WeatherService.hasData }
 
     NetworkWidget { anchors.verticalCenter: parent.verticalCenter }
 

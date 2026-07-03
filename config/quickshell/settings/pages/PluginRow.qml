@@ -188,6 +188,7 @@ Column {
                 case "stepper": return stepperComp
                 case "toggle": return toggleComp
                 case "select": return selectComp
+                case "text": return textComp
                 default: null
               }
             }
@@ -293,6 +294,56 @@ Column {
           checked: PluginService.getPluginSetting(root.plugin.id, settingDef.key, parent._loc) ?? settingDef.default ?? false
           onToggled: function(v) {
             PluginService.setPluginSetting(root.plugin.id, settingDef.key, v, parent._loc)
+          }
+        }
+      }
+    }
+
+    Component {
+      id: textComp
+      Column {
+        id: textRoot
+        property string _loc: parent._loc
+        width: settingsCol ? settingsCol.width : 0
+        spacing: Theme.spaceXs
+        topPadding: Theme.spaceXs
+        bottomPadding: Theme.spaceSm
+
+        Column {
+          width: parent.width
+          leftPadding: Theme.spaceSm
+          spacing: Theme.spaceXs
+
+          Text {
+            text: settingDef.label || ""
+            color: Theme.textPrimary
+            font.pixelSize: Theme.fontSizeLabel
+            font.family: Theme.fontFamilyMono
+            font.letterSpacing: 0.04
+          }
+          Text {
+            text: settingDef.description || ""
+            color: Theme.textDisabled
+            font.pixelSize: Theme.fontSizeMicro
+            font.family: Theme.fontFamilyMono
+            visible: text !== ""
+          }
+        }
+
+        Input {
+          id: tField
+          width: parent.width
+          fontSize: Theme.fontSizeLabel
+          placeholder: settingDef.placeholder || ""
+          defaultText: PluginService.getPluginSetting(root.plugin.id, settingDef.key, textRoot._loc) ?? settingDef.default ?? ""
+          escapeClears: false
+          onCleared: PluginService.setPluginSetting(root.plugin.id, settingDef.key, "", textRoot._loc)
+
+          Connections {
+            target: tField.input
+            function onEditingFinished() {
+              PluginService.setPluginSetting(root.plugin.id, settingDef.key, tField.text, textRoot._loc)
+            }
           }
         }
       }

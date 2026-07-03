@@ -18,29 +18,37 @@ BasePlugin {
     shellVersion: "2.0",
     name: "Weather",
     description: "Current weather conditions",
-    icon: "alert",
-    locations: ["controlcenter_row"],
+    icon: "sun",
+    locations: ["controlcenter_row", "bar_right"],
     settings: [
-      { key: "showDetails", label: "SHOW DETAILS", type: "toggle", default: true }
+      { key: "showDetails", label: "SHOW DETAILS", type: "toggle", default: true },
+      { key: "location", label: "LOCATION", description: "Overrides IP-detected location", type: "text", placeholder: "City, Country", shared: true, default: "" }
     ]
   })
-
-  // ── Public state ─────────────────────────────────────────────────
 
   // ── Internal state ───────────────────────────────────────────────
   property bool _showDetails: PluginService.getPluginSetting("weather", "showDetails", "controlcenter_row") ?? true
 
-  // ── Signal handlers ──────────────────────────────────────────────
-
-  // ── Public API ───────────────────────────────────────────────────
+  readonly property bool _cfgReady: PluginService.loaded
+  on_CfgReadyChanged: _syncLocation()
 
   // ── Helpers ──────────────────────────────────────────────────────
-
-  // ── Timers ───────────────────────────────────────────────────────
+  function _syncLocation(): void {
+    WeatherService.setLocationOverride(setting("location") || "")
+  }
 
   // ── Lifecycle ────────────────────────────────────────────────────
+  function onActivated(): void {
+    _syncLocation()
+  }
+
+  function onSettingChanged(key, value): void {
+    if (key === "location") WeatherService.setLocationOverride(value || "")
+  }
 
   // ── UI components ────────────────────────────────────────────────
+  property Component barComponent: WeatherWidget {}
+
   property Component controlCenterComponent: Column {
     width: parent.width
     spacing: Theme.spaceSm
