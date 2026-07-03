@@ -49,6 +49,19 @@ ShellRoot {
         function onScreenshotWindow() {
             ScreenshotService.captureWindow();
         }
+        function onVolumeUp() {
+            AudioService.volumeUp();
+        }
+        function onVolumeDown() {
+            AudioService.volumeDown();
+        }
+        function onVolumeToggleMute() {
+            AudioService.toggleMute();
+        }
+        function onVolumeToggleMicMute() {
+            AudioService.toggleMicMute();
+        }
+
     }
 
     // ── Global Shortcuts ─────────────────────────────────────────

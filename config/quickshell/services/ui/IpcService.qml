@@ -62,6 +62,11 @@ Singleton {
   signal screenshotScreen()
   signal screenshotOutput()
   signal screenshotWindow()
+  signal volumeUp()
+  signal volumeDown()
+  signal volumeToggleMute()
+  signal volumeToggleMicMute()
+
 
   // ═══════════════════════════════════════════════════════════════
   //  IPC HANDLERS
@@ -107,6 +112,14 @@ Singleton {
     target: "brightness"
     function brighter(): void { svc.brightnessBrighter() }
     function dimmer(): void { svc.brightnessDimmer() }
+  }
+
+  IpcHandler {
+    target: "volume"
+    function up(): void { svc.volumeUp() }
+    function down(): void { svc.volumeDown() }
+    function toggleMute(): void { svc.volumeToggleMute() }
+    function setVolume(v: int): void { svc.volumeSetVolume(v) }
   }
 
   IpcHandler {

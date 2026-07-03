@@ -456,6 +456,22 @@
         "label": "Brightness Down"
       },
       {
+        "id": "volume.up",
+        "label": "Volume Up"
+      },
+      {
+        "id": "volume.down",
+        "label": "Volume Down"
+      },
+      {
+        "id": "volume.toggleMute",
+        "label": "Toggle Mute"
+      },
+      {
+        "id": "volume.setVolume",
+        "label": "Set Volume"
+      },
+      {
         "id": "mode.cycle",
         "label": "Cycle Shell Mode"
       }
@@ -1099,8 +1115,8 @@
         "category": "media",
         "mod": "",
         "key": "XF86AudioRaiseVolume",
-        "actionType": "custom",
-        "action": "~/.config/features/system/volume.sh up",
+        "actionType": "shell",
+        "action": "volume.up",
         "description": "Volume up",
         "locked": true,
         "repeating": true
@@ -1110,8 +1126,8 @@
         "category": "media",
         "mod": "",
         "key": "XF86AudioLowerVolume",
-        "actionType": "custom",
-        "action": "~/.config/features/system/volume.sh down",
+        "actionType": "shell",
+        "action": "volume.down",
         "description": "Volume down",
         "locked": true,
         "repeating": true
@@ -1121,8 +1137,8 @@
         "category": "media",
         "mod": "",
         "key": "XF86AudioMute",
-        "actionType": "custom",
-        "action": "~/.config/features/system/volume.sh toggle-mute",
+        "actionType": "shell",
+        "action": "volume.toggleMute",
         "description": "Mute",
         "locked": true
       },
@@ -1131,8 +1147,8 @@
         "category": "media",
         "mod": "",
         "key": "XF86AudioMicMute",
-        "actionType": "custom",
-        "action": "~/.config/features/system/volume.sh toggle-mic",
+        "actionType": "shell",
+        "action": "volume.toggleMicMute",
         "description": "Mic mute",
         "locked": true
       },

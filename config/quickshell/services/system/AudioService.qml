@@ -59,6 +59,7 @@ Singleton {
         if (n.isSink && !n.isStream && n.name === targetName) return n
       }
     }
+
     return def
   }
 
@@ -176,6 +177,18 @@ Singleton {
 
   function setInputDevice(node: PwNode): void {
     Pipewire.preferredDefaultAudioSource = node
+  }
+
+  function volumeUp(): void {
+    if (sink?.ready && sink?.audio) {
+      sink.audio.volume = Math.min(1.5, sink.audio.volume + 0.1)
+    }
+  }
+
+  function volumeDown(): void {
+    if (sink?.ready && sink?.audio) {
+      sink.audio.volume = Math.max(0, sink.audio.volume - 0.1)
+    }
   }
 
   function setVolume(v: real): void {
