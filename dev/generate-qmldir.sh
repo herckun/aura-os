@@ -160,6 +160,7 @@ main() {
 
   generate_dir_qmldir styles styles
   generate_dir_qmldir components components
+  generate_dir_qmldir lib lib
   generate_plugin_qmldir
   log_ok "qmldir generation complete"
 }
