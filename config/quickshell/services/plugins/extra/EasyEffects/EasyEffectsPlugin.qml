@@ -18,12 +18,15 @@ BasePlugin {
   pluginId: "easyeffects"
   manifest: ({
     author: "herckun",
-    version: "1.0",
+    version: "1.1",
     shellVersion: "2.0",
     name: "EasyEffects",
     description: "Audio effects and presets",
     icon: "speaker-high",
-    dependencies: [{ bin: "easyeffects", install: "sudo pacman -S --noconfirm easyeffects" }],
+    dependencies: [
+      { bin: "easyeffects", install: "sudo pacman -S --noconfirm easyeffects" },
+      { bin: "calfjackhost", install: "sudo pacman -S --noconfirm calf" }
+    ],
     locations: ["audio"],
     settings: [
       { key: "autoStart",     label: "AUTO START",            type: "toggle", default: true },
@@ -34,35 +37,42 @@ BasePlugin {
   // ── Public state ─────────────────────────────────────────────────
 
   property bool available: false
-  property bool running: false
+  property bool starting: false
+  property bool stopping: false
+  property bool restartPending: false
+  property bool gaveUp: false
   property bool bypass: false
-  property bool busy: false
   property string inputPreset: ""
   property string outputPreset: ""
+  property string pendingPreset: ""
   property var inputPresets: []
   property var outputPresets: []
 
+  readonly property PwNode eeSink: _findEeSink(Pipewire.nodes.values)
+  readonly property bool running: eeSink !== null
+  readonly property bool routed: running && Pipewire.defaultAudioSink === eeSink
+  readonly property bool busy: starting || stopping || restartPending || _refreshing
+
   readonly property string statusText: {
     if (!root._enabled) return ""
-    if (root._pendingRestart) return "RESTARTING..."
-    if (root.busy && !root.running) return "STARTING..."
-    if (root._transitioning) return "STABILIZING..."
+    if (root.restartPending) return "RESTARTING..."
+    if (root.starting) return "STARTING..."
+    if (root.stopping) return "STOPPING..."
     if (root.running) return root.bypass ? "BYPASSED" : "ACTIVE"
-    if (root._restartGaveUp) return "FAILED"
+    if (root.gaveUp) return "FAILED"
     return "STOPPED"
   }
 
   readonly property color statusColor: {
     if (!root._enabled) return Theme.textDisabled
-    if (root._pendingRestart || root.busy || root._transitioning) return Theme.accent
+    if (root.restartPending || root.starting || root.stopping) return Theme.accent
     if (root.running) return root.bypass ? Theme.warning : Theme.success
-    if (root._restartGaveUp) return Theme.danger
+    if (root.gaveUp) return Theme.error
     return Theme.textDisabled
   }
 
   readonly property string presetStatusText: {
     if (!root._enabled) return ""
-    if (root._transitioning) return "Waiting for stable connection..."
     if (!root.running) return "Service not running"
     if (root._refreshing) return "Loading presets..."
     if (root.inputPreset || root.outputPreset) return "Presets loaded"
@@ -71,50 +81,27 @@ BasePlugin {
 
   readonly property string routingText: {
     if (!root._enabled || !root._manageRouting || !root.running) return ""
-    if (root._transitioning) return "Waiting for stable sink before routing..."
-    if (root._eeSink) return "Output → EasyEffects → " + AudioService.sinkName
-    if (root._consideredStable) return "EE sink not detected — might be running as a filter"
-    return "Waiting for EE sink node..."
+    if (root.routed) return "Output → EasyEffects → " + AudioService.sinkName
+    return "Waiting for EE sink routing..."
   }
-
-  readonly property bool showRoutingWaiting: root._enabled && root._manageRouting && root.running && !root._eeSink && !root._consideredStable
-  readonly property bool showRoutingFailed:  root._enabled && root._manageRouting && root.running && !root._eeSink && root._consideredStable
-  readonly property bool showRoutingActive:  root._enabled && root._manageRouting && root.running && root._eeSink && root._consideredStable
 
   // ── Internal state ───────────────────────────────────────────────
 
-  property bool _started: false
-  property bool _stateLoaded: false
   property bool _autoStart: true
   property bool _manageRouting: true
-
-  property bool _transitioning: false
-  property bool _consideredStable: false
-  property bool _firstStableRefresh: false
-  property bool _pendingRestart: false
-  property int _restartAttempts: 0
-  property bool _restartGaveUp: false
-  readonly property int _maxRestartAttempts: 3
-
-  property var _checkHandle: null
+  property bool _userStopped: false
   property bool _refreshing: false
-  readonly property int _basePollInterval: 3000
-  readonly property int _pollInterval: PerformanceService.scaleInterval(_basePollInterval)
-
-  property PwNode _eeSink: null
-  property PwNode _hwSink: null
-  property int _sinkRetryCount: 0
-
-  // ── Signal handlers ────────────────────────────────
+  property bool _retriedRefresh: false
+  property int _attempts: 0
 
   // ── Public API ───────────────────────────────────────────────────
 
   function toggleBypass(): void {
-    if (!root._enabled || !root._consideredStable) return
+    if (!root._enabled || !root.running) return
     ProcessPool.runTracked("EE bypass toggle", ["easyeffects", "--bypass-toggle"], {
       id: "ee-bypass-toggle",
       callback: function() {
-        if (!root._enabled) return
+        if (!root._enabled || !root.running) return
         ProcessPool.runTracked("EE bypass", ["easyeffects", "-b", "3"], {
           id: "ee-bypass",
           callback: function(r) { root.bypass = r.stdout.trim() === "1" }
@@ -124,96 +111,98 @@ BasePlugin {
   }
 
   function refresh(): void {
-    if (!root._enabled || root._transitioning) return
-    root._started = true
-    root.busy = true
-    root._stateLoaded = false
-    if (root._checkHandle?.running) return
-    root._checkHandle = ProcessPool.runTracked("EE check running",
-      "pgrep -x easyeffects >/dev/null 2>&1 && echo RUNNING || echo STOPPED", {
-        id: "ee-check", shell: true,
-        callback: function(r) {
-          root._checkHandle = null
-          if (!root._enabled) return
-          var isRunning = r.stdout.trim() === "RUNNING"
-          var wasRunning = root.running
-          root.running = isRunning
-          if (isRunning) root._handleRunningDetected(wasRunning)
-          else root._handleStoppedDetected(wasRunning)
-        }
-      })
+    if (!root._enabled || !root.available) return
+    if (root.running) root._refreshState()
   }
 
   function startManual(): void {
-    if (!root._enabled || root.busy || root._transitioning) return
-    root._restartAttempts = 0
-    root._restartGaveUp = false
-    root._pendingRestart = false
-    root._started = true
-    root.busy = true
-    root._stateLoaded = false
-    root._eeSink = null
-    root._findHWSink()
-    ProcessPool.runTracked("EE start", ["easyeffects", "--service-mode", "--hide-window"], {
-      id: "ee-start",
-      callback: function(r) {
-        if (!root._enabled) return
-        root.busy = false
-        if (r.exitCode !== 0)
-          Logger.warn("easyeffects", "Start failed (exit " + r.exitCode + "): " + r.stderr.trim())
-      }
-    })
+    if (!root._enabled || !root.available || root.running || root.starting) return
+    root._userStopped = false
+    root.gaveUp = false
+    root.restartPending = false
+    root._attempts = 0
+    _restartTimer.stop()
+    root._start()
   }
 
   function stopManual(): void {
-    if (!root._enabled || root.busy) return
-    _stabilityTimer.stop()
-    _restartDelay.stop()
-    _sinkRetryTimer.stop()
-    _retryRefreshTimer.stop()
-    root._transitioning = false
-    root._consideredStable = false
-    root._pendingRestart = false
-    root._firstStableRefresh = false
-    root._stateLoaded = false
-    root.busy = true
-    root._eeSink = null
-    ProcessPool.runTracked("EE stop", ["easyeffects", "-q"], {
-      id: "ee-stop",
-      callback: function() {
-        root.busy = false
-        root.running = false
-        root._started = false
-        root._findHWSink()
-        root._applyRouting()
-      }
-    })
+    if (!root._enabled || !root.running || root.stopping) return
+    root._userStopped = true
+    root.restartPending = false
+    _restartTimer.stop()
+    _startTimeout.stop()
+    root.starting = false
+    root.stopping = true
+    _stopTimeout.restart()
+    root._restoreRouting()
+    _quitDelay.restart()
   }
 
   function loadPreset(name: string): void {
-    if (!root._enabled || !root._consideredStable) return
+    if (!root._enabled || !root.running || root.pendingPreset !== "") return
+    root.pendingPreset = name
     ProcessPool.runTracked("EE load preset " + name, ["easyeffects", "-l", name], {
-      id: "ee-load-" + name,
+      id: "ee-load-preset",
       callback: function(r) {
-        if (!root._enabled || r.exitCode !== 0) return
-        ProcessPool.runTracked("EE active presets", ["easyeffects", "-s"], {
-          id: "ee-presets",
-          callback: function(r2) {
-            var lines = r2.stdout.split("\n")
-            for (var i = 0; i < lines.length; i++) {
-              var line = lines[i].trim()
-              if (!line) continue
-              var lower = line.toLowerCase()
-              if (lower.indexOf("input:") === 0) root.inputPreset = line.substring(6).trim()
-              else if (lower.indexOf("output:") === 0) root.outputPreset = line.substring(7).trim()
-            }
-          }
-        })
+        if (!root._enabled || !root.running || r.exitCode !== 0) {
+          root.pendingPreset = ""
+          return
+        }
+        root._queryActivePresets()
       }
     })
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────
+  // ── Detection ────────────────────────────────────────────────────
+
+  function _isEeNode(n: PwNode): bool {
+    if (!n) return false
+    var name = (n.name || "").toLowerCase()
+    if (name.indexOf("easyeffects") === 0) return true
+    var p = n.properties || ({})
+    var blob = ((p["application.id"] || "") + " " + (p["application.name"] || "")).toLowerCase()
+    return blob.indexOf("easyeffects") !== -1
+  }
+
+  function _findEeSink(nodes: var): PwNode {
+    if (!Pipewire.ready) return null
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i]
+      if (n.isSink && !n.isStream && _isEeNode(n)) return n
+    }
+    return null
+  }
+
+  onEeSinkChanged: {
+    if (!root._enabled) return
+    if (root.eeSink) {
+      root.starting = false
+      root.restartPending = false
+      root.gaveUp = false
+      root._retriedRefresh = false
+      _restartTimer.stop()
+      _startTimeout.stop()
+      _autostartTimer.stop()
+      _uptimeTimer.restart()
+      _settleTimer.restart()
+    } else {
+      _uptimeTimer.stop()
+      _settleTimer.stop()
+      root.bypass = false
+      root.inputPreset = ""
+      root.outputPreset = ""
+      root.pendingPreset = ""
+      if (root.stopping) {
+        root.stopping = false
+        _stopTimeout.stop()
+        root._restoreRouting()
+      } else if (root._autoStart && !root._userStopped && !root.gaveUp) {
+        root._scheduleRestart()
+      }
+    }
+  }
+
+  // ── Process control ──────────────────────────────────────────────
 
   function _checkAvailability(): void {
     if (!root._enabled) return
@@ -223,106 +212,87 @@ BasePlugin {
         callback: function(r) {
           if (!root._enabled) return
           root.available = r.stdout.trim() === "AVAILABLE"
-          if (root.available) _pollTimer.start()
+          if (!root.available) return
+          if (root.running) _settleTimer.restart()
+          else if (root._autoStart) _autostartTimer.restart()
         }
       })
   }
 
-  function stopAllActivity(): void {
-    _pollTimer.stop()
-    _stabilityTimer.stop()
-    _restartDelay.stop()
-    _sinkRetryTimer.stop()
-    _retryRefreshTimer.stop()
-    _refreshGuard.stop()
-    root._refreshing = false
-    root.busy = false
-    root._transitioning = false
-    root._consideredStable = false
-    root._pendingRestart = false
-    root._firstStableRefresh = false
-    root._checkHandle = null
+  function _start(): void {
+    if (!root._enabled || !root.available || root.running || root.starting) return
+    root.starting = true
+    ProcessPool.runTracked("EE start",
+      "setsid easyeffects --service-mode --hide-window >/dev/null 2>&1 </dev/null &", {
+        id: "ee-start", shell: true
+      })
+    _startTimeout.restart()
   }
 
-  // ── Process state machine ────────────────────────────────────────
-
-  function _handleRunningDetected(wasRunning): void {
-    if (!root._transitioning && !root._consideredStable) {
-      root._transitioning = true
-      _pollTimer.stop()
-      _stabilityTimer.start()
-      root._startSinkDiscovery()
-      Logger.info("easyeffects", "Process detected, waiting for stability...")
-    }
-    if (!root._stateLoaded && root._consideredStable) root._refreshState()
-  }
-
-  function _handleStoppedDetected(wasRunning): void {
-    if (root._transitioning || root._refreshing || root._firstStableRefresh) {
-      Logger.debug("easyeffects", "Ignored stopped detection during transition")
+  function _scheduleRestart(): void {
+    root._attempts++
+    if (root._attempts > 3) {
+      root.gaveUp = true
+      root.restartPending = false
       return
     }
-    _stabilityTimer.stop()
-    _retryRefreshTimer.stop()
-    root._transitioning = false
-    root._consideredStable = false
-    root._eeSink = null
-    _sinkRetryTimer.stop()
-    var shouldRetry = root._autoStart && !root._restartGaveUp && !root._pendingRestart
-    if (wasRunning) {
-      Logger.warn("easyeffects", "Process stopped unexpectedly")
-    } else if (root._started) {
-      Logger.warn("easyeffects", "Process failed to stay running")
-    }
-    if (root._started && shouldRetry) root._handleUnexpectedStop()
-    else if (!root._started && root._autoStart) root._doAutoStart()
-    else { root._findHWSink(); root._applyRouting() }
+    root.restartPending = true
+    _restartTimer.interval = Math.round(2000 * Math.pow(2, root._attempts - 1))
+    _restartTimer.restart()
   }
 
-  function _handleUnexpectedStop(): void {
-    root._restartAttempts++
-    if (root._restartAttempts > root._maxRestartAttempts) {
-      root._restartGaveUp = true
-      root._pendingRestart = false
-      Logger.warn("easyeffects", "Gave up auto-restart after " + root._maxRestartAttempts + " attempts")
-      root._findHWSink()
-      root._applyRouting()
-      return
+  // ── Routing ──────────────────────────────────────────────────────
+
+  function _applyRouting(): void {
+    if (!root._enabled || !root._manageRouting || !root.running) return
+    if (Pipewire.defaultAudioSink !== root.eeSink) {
+      Pipewire.preferredDefaultAudioSink = root.eeSink
     }
-    root._pendingRestart = true
-    var delay = Math.round(2000 * Math.pow(2, root._restartAttempts - 1))
-    Logger.info("easyeffects",
-      "Scheduling restart in " + delay + "ms (attempt " + root._restartAttempts + "/" + root._maxRestartAttempts + ")")
-    _restartDelay.interval = delay
-    _restartDelay.start()
   }
 
-  function _doAutoStart(): void {
-    if (!root._enabled || !root._autoStart) return
-    root._started = true
-    root.startManual()
+  function _restoreRouting(): void {
+    if (!root._manageRouting) return
+    var nodes = Pipewire.nodes.values
+    var pick = null
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i]
+      if (!n.isSink || n.isStream || _isEeNode(n)) continue
+      if (!(n.properties && n.properties["device.api"])) continue
+      if ((n.name || "").toLowerCase().indexOf("bluez") === -1) { pick = n; break }
+      if (!pick) pick = n
+    }
+    if (pick) Pipewire.preferredDefaultAudioSink = pick
   }
 
   // ── State refresh ────────────────────────────────────────────────
 
+  function _queryActivePresets(): void {
+    ProcessPool.runTracked("EE active presets", ["easyeffects", "-s"], {
+      id: "ee-presets",
+      callback: function(r) {
+        var lines = r.stdout.split("\n")
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim()
+          if (!line) continue
+          var lower = line.toLowerCase()
+          if (lower.indexOf("input:") === 0) _set("inputPreset", line.substring(6).trim())
+          else if (lower.indexOf("output:") === 0) _set("outputPreset", line.substring(7).trim())
+        }
+        root.pendingPreset = ""
+      }
+    })
+  }
+
   function _refreshState(): void {
-    if (!root._enabled || root._refreshing || !root._consideredStable) return
+    if (!root._enabled || !root.running || root._refreshing) return
     root._refreshing = true
-    _refreshGuard.restart()
     var pending = 4
     function done() {
-      if (--pending === 0) {
-        root._refreshing = false
-        _refreshGuard.stop()
-        root.busy = false
-        _pollTimer.start()
-        if (!root.inputPreset && !root.outputPreset && root._firstStableRefresh) {
-          root._firstStableRefresh = false
-          _retryRefreshTimer.start()
-        } else {
-          root._firstStableRefresh = false
-          root._stateLoaded = true
-        }
+      if (--pending !== 0) return
+      root._refreshing = false
+      if (!root.inputPreset && !root.outputPreset && !root._retriedRefresh) {
+        root._retriedRefresh = true
+        _retryRefreshTimer.restart()
       }
     }
     ProcessPool.runTracked("EE bypass", ["easyeffects", "-b", "3"], {
@@ -343,7 +313,7 @@ BasePlugin {
       }
     })
     ProcessPool.runTracked("EE list input presets",
-      "ls ${XDG_CONFIG_HOME:-$HOME/.config}/easyeffects/input/*.json 2>/dev/null | xargs -n 1 basename -s .json || true",
+      "for f in ${XDG_DATA_HOME:-$HOME/.local/share}/easyeffects/input/*.json ${XDG_CONFIG_HOME:-$HOME/.config}/easyeffects/input/*.json; do [ -e \"$f\" ] && basename \"$f\" .json; done 2>/dev/null | sort -u || true",
       { id: "ee-input-presets", shell: true,
         callback: function(r) {
           var raw = r.stdout.trim()
@@ -352,7 +322,7 @@ BasePlugin {
         }
       })
     ProcessPool.runTracked("EE list output presets",
-      "ls ${XDG_CONFIG_HOME:-$HOME/.config}/easyeffects/output/*.json 2>/dev/null | xargs -n 1 basename -s .json || true",
+      "for f in ${XDG_DATA_HOME:-$HOME/.local/share}/easyeffects/output/*.json ${XDG_CONFIG_HOME:-$HOME/.config}/easyeffects/output/*.json; do [ -e \"$f\" ] && basename \"$f\" .json; done 2>/dev/null | sort -u || true",
       { id: "ee-output-presets", shell: true,
         callback: function(r) {
           var raw = r.stdout.trim()
@@ -362,195 +332,121 @@ BasePlugin {
       })
   }
 
-  // ── PipeWire discovery ───────────────────────────────────────────
-
-  function _isEENode(node): bool {
-    if (!node) return false
-    var terms = [
-      (node.name || "").toLowerCase(), (node.description || "").toLowerCase(),
-      (node.nickname || "").toLowerCase(),
-      node.properties ? (node.properties["media.name"] || "").toLowerCase() : "",
-      node.properties ? (node.properties["node.description"] || "").toLowerCase() : "",
-      node.properties ? (node.properties["application.name"] || "").toLowerCase() : ""
-    ]
-    for (var i = 0; i < terms.length; i++) {
-      var t = terms[i]
-      if (t.indexOf("easyeffects") !== -1 || t.indexOf("easy effects") !== -1 || t.indexOf("easy_effect") !== -1) return true
-    }
-    return false
-  }
-
-  function _findEESink(): void {
-    if (!root._enabled) return
-    var found = null
-    if (Pipewire.ready) {
-      var nodes = Pipewire.nodes.values || []
-      for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i]
-        if (!node.ready || !_isEENode(node)) continue
-        var mediaClass = node.properties ? (node.properties["media.class"] || "null") : "null"
-        Logger.info("easyeffects",
-          "Matched EE node: " + (node.name || "?") + " isSink=" + node.isSink +
-          " hasAudio=" + (node.audio !== null) + " mediaClass=" + mediaClass)
-        if (node.isSink && node.audio) { found = node; break }
-      }
-    }
-    if (found !== root._eeSink) {
-      if (found) Logger.info("easyeffects", "Selected EE sink: " + (found.description || found.name || "unnamed"))
-      else if (root.running) Logger.warn("easyeffects", "No suitable EE sink node found (running as filter?)")
-      root._eeSink = found
-    }
-  }
-
-  function _findHWSink(): void {
-    if (!root._enabled) return
-    var found = null
-    if (Pipewire.ready) {
-      for (var i = 0; i < Pipewire.nodes.count; i++) {
-        var node = Pipewire.nodes.get(i)
-        if (!node.isSink || !node.ready || !node.audio || _isEENode(node)) continue
-        var name = (node.name || "").toLowerCase()
-        if (name.indexOf("bluez") === -1) { found = node; break }
-        else if (!found) found = node
-      }
-    }
-    if (!found) Logger.warn("easyeffects", "No hardware sink found")
-    else Logger.debug("easyeffects", "HW sink: " + (found.description || found.name))
-    root._hwSink = found
-  }
-
-  function _applyRouting(): void {
-    if (!root._enabled || !root._manageRouting) return
-    var usingEESink = (root._eeSink !== null && Pipewire.defaultAudioSink === root._eeSink)
-    if (root.running && root._consideredStable && root._eeSink) {
-      if (!usingEESink) {
-        Logger.info("easyeffects", "Routing output through EE sink")
-        Pipewire.preferredDefaultAudioSink = root._eeSink
-      }
-    } else if (usingEESink && root._hwSink) {
-      Logger.info("easyeffects", "Restoring hardware sink routing")
-      Pipewire.preferredDefaultAudioSink = root._hwSink
-    }
-  }
-
-  function _startSinkDiscovery(): void {
-    if (!root._enabled) return
-    root._sinkRetryCount = 0
-    root._findEESink()
-    if (!root._eeSink) _sinkRetryTimer.start()
-  }
-
   // ── Timers ───────────────────────────────────────────────────────
 
   Timer {
-    id: _pollTimer
-    interval: root._pollInterval
-    repeat: true
-    running: false
+    id: _autostartTimer
+    interval: 1500
+    repeat: false
     onTriggered: {
-      if (!root._enabled || !root.available || root.busy || root._pendingRestart) return
-      if (root._transitioning || root._refreshing || root._firstStableRefresh) return
-      if (root._checkHandle?.running) return
-      root._checkHandle = ProcessPool.runTracked("EE check running",
-        "pgrep -x easyeffects >/dev/null 2>&1 && echo RUNNING || echo STOPPED", {
-          id: "ee-check", shell: true,
-          callback: function(r) {
-            root._checkHandle = null
-            if (!root._enabled) return
-            if (root._transitioning || root._refreshing || root._firstStableRefresh) {
-              Logger.debug("easyeffects", "Poll ignored during transition state")
-              return
-            }
-            var isRunning = r.stdout.trim() === "RUNNING"
-            var wasRunning = root.running
-            root.running = isRunning
-            if (isRunning) root._handleRunningDetected(wasRunning)
-            else root._handleStoppedDetected(wasRunning)
-          }
-        })
+      if (!root._enabled || !root._autoStart || root.running || root._userStopped) return
+      root._start()
     }
   }
 
   Timer {
-    id: _stabilityTimer
-    interval: 2000
+    id: _settleTimer
+    interval: 800
     repeat: false
     onTriggered: {
-      if (!root._enabled || !root.running) { root._transitioning = false; _pollTimer.start(); return }
-      root._consideredStable = true
-      root._transitioning = false
-      root._restartAttempts = 0
-      root._restartGaveUp = false
-      root._firstStableRefresh = true
-      Logger.info("easyeffects", "Process stable")
-      root._findEESink()
+      if (!root._enabled || !root.running) return
       root._applyRouting()
       root._refreshState()
     }
   }
 
   Timer {
+    id: _startTimeout
+    interval: 12000
+    repeat: false
+    onTriggered: {
+      if (!root._enabled || root.running) return
+      root.starting = false
+      root._scheduleRestart()
+    }
+  }
+
+  Timer {
+    id: _stopTimeout
+    interval: 8000
+    repeat: false
+    onTriggered: root.stopping = false
+  }
+
+  Timer {
+    id: _quitDelay
+    interval: 500
+    repeat: false
+    onTriggered: ProcessPool.runTracked("EE stop", ["easyeffects", "-q"], { id: "ee-stop" })
+  }
+
+  Timer {
+    id: _restartTimer
+    interval: 2000
+    repeat: false
+    onTriggered: {
+      root.restartPending = false
+      if (!root._enabled || root.running || root._userStopped) return
+      root._start()
+    }
+  }
+
+  Timer {
+    id: _uptimeTimer
+    interval: 30000
+    repeat: false
+    onTriggered: root._attempts = 0
+  }
+
+  Timer {
     id: _retryRefreshTimer
     interval: 2000
     repeat: false
-    onTriggered: {
-      if (root._enabled && root.running && root._consideredStable) root._refreshState()
-    }
-  }
-
-  Timer {
-    id: _restartDelay
-    interval: 2000
-    repeat: false
-    onTriggered: {
-      root._pendingRestart = false
-      if (!root._enabled) return
-      root.startManual()
-    }
-  }
-
-  Timer {
-    id: _sinkRetryTimer
-    interval: 500
-    repeat: false
-    onTriggered: {
-      if (!root._enabled || !root.running || root._eeSink) { root._sinkRetryCount = 0; return }
-      root._findEESink()
-      if (root._eeSink) {
-        root._sinkRetryCount = 0
-      } else {
-        root._sinkRetryCount++
-        if (root._sinkRetryCount < 20) _sinkRetryTimer.start()
-        else { Logger.warn("easyeffects", "EE sink not found after waiting 10s"); root._sinkRetryCount = 0 }
-      }
-    }
-  }
-
-  Timer {
-    id: _refreshGuard
-    interval: 10000
-    repeat: false
-    onTriggered: { root._refreshing = false; root.busy = false }
+    onTriggered: root._refreshState()
   }
 
   // ── Lifecycle ────────────────────────────────────────────────────
+
+  function stopAllActivity(): void {
+    _autostartTimer.stop()
+    _settleTimer.stop()
+    _startTimeout.stop()
+    _stopTimeout.stop()
+    _quitDelay.stop()
+    _restartTimer.stop()
+    _uptimeTimer.stop()
+    _retryRefreshTimer.stop()
+    root._refreshing = false
+    root.starting = false
+    root.stopping = false
+    root.restartPending = false
+    root.pendingPreset = ""
+  }
+
   function onActivated(): void {
     root._autoStart = PluginService.getPluginSetting("easyeffects", "autoStart", "audio") !== false
     root._manageRouting = PluginService.getPluginSetting("easyeffects", "manageRouting", "audio") !== false
+    root._userStopped = false
+    root.gaveUp = false
+    root._attempts = 0
     root._checkAvailability()
   }
 
   function onSettingChanged(key, value): void {
     if (key === "autoStart") {
       root._autoStart = value !== false
-      if (!root._ready || !root._enabled || root.running || root.busy) return
-      if (root._autoStart && !root._started) root._doAutoStart()
+      if (!root._ready || !root._enabled) return
+      if (root._autoStart && !root.running && !root.starting) {
+        root._userStopped = false
+        root.gaveUp = false
+        root._attempts = 0
+        root._start()
+      }
     } else if (key === "manageRouting") {
       root._manageRouting = value !== false
       if (!root._ready || !root._enabled) return
       if (root._manageRouting) root._applyRouting()
-      else if (root._hwSink && Pipewire.defaultAudioSink === root._eeSink)
-        Pipewire.preferredDefaultAudioSink = root._hwSink
+      else if (root.routed) root._restoreRouting()
     }
   }
 
@@ -612,7 +508,7 @@ BasePlugin {
               color: Theme.textSecondary
               font.pixelSize: Theme.fontSizeCaption
               font.family: Theme.fontFamilyMono
-              visible: !root.busy && !root._transitioning && !root._pendingRestart
+              visible: !root.busy
             }
           }
 
@@ -620,61 +516,62 @@ BasePlugin {
             shape: "circle"
             icon: root.bypass ? "play" : "pause"
             size: 32; iconSize: 12
-            bgColor: root.running && !root.bypass && root._consideredStable ? Theme.accent : "transparent"
+            bgColor: root.running && !root.bypass ? Theme.accent : "transparent"
             onClicked: root.toggleBypass()
-            visible: root.running && root._consideredStable
+            visible: root.running
           }
 
           Spinner {
-            visible: (root.busy && !root.running) || root._transitioning || root._pendingRestart || root._refreshing
+            visible: root.busy
             spinnerSize: 16; spinnerColor: Theme.accent
           }
 
           Button {
-            visible: !root.running && !root.busy && !root._transitioning && !root._pendingRestart
+            visible: !root.running && !root.busy
             text: "START"; variant: "accent"
             bgColor: "transparent"; bgHoverColor: Theme.controlBackgroundHover
             onClicked: root.startManual()
           }
 
           Button {
+            visible: root.running && !root.busy
+            text: "STOP"
+            bgColor: "transparent"; bgHoverColor: Theme.controlBackgroundHover
+            onClicked: root.stopManual()
+          }
+
+          Button {
             shape: "circle"; icon: "refresh"
             size: 26; iconSize: 10
             onClicked: root.refresh()
-            visible: !root._transitioning && !root._pendingRestart
+            visible: !root.busy
           }
         }
 
         // ── Routing indicator ─────────────────────────
         Text {
           width: parent.width
-          visible: root.showRoutingActive
+          visible: root._enabled && root._manageRouting && root.running && root.routed
           text: root.routingText; color: Theme.accent
           font.pixelSize: Theme.fontSizeCaption; font.family: Theme.fontFamilyMono
           wrapMode: Text.WordWrap
         }
         Text {
           width: parent.width
-          visible: root.showRoutingWaiting
+          visible: root._enabled && root._manageRouting && root.running && !root.routed
           text: root.routingText; color: Theme.textSecondary
-          font.pixelSize: Theme.fontSizeCaption; font.family: Theme.fontFamilyMono
-        }
-        Text {
-          width: parent.width
-          visible: root.showRoutingFailed
-          text: root.routingText; color: Theme.warning
           font.pixelSize: Theme.fontSizeCaption; font.family: Theme.fontFamilyMono
         }
 
         // ── Restart gave up ───────────────────────────
         RowLayout {
           width: parent.width
-          visible: root._restartGaveUp && !root.running
+          visible: root.gaveUp && !root.running
           spacing: Theme.spaceSm
 
           Text {
             text: "Auto-restart disabled after repeated failures"
-            color: Theme.danger
+            color: Theme.error
             font.pixelSize: Theme.fontSizeCaption; font.family: Theme.fontFamilyMono
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
@@ -690,7 +587,7 @@ BasePlugin {
         Column {
           width: parent.width
           spacing: Theme.spaceSm
-          visible: root.running && root._consideredStable
+          visible: root.running
 
           Divider {}
 
@@ -717,7 +614,8 @@ BasePlugin {
           title: "OUTPUT PRESETS"
           presets: root.outputPresets
           activePreset: root.outputPreset
-          visible: root.running && root._consideredStable && root.outputPresets.length > 0
+          pendingPreset: root.pendingPreset
+          visible: root.running && root.outputPresets.length > 0
           onSelected: name => root.loadPreset(name)
         }
 
@@ -726,7 +624,8 @@ BasePlugin {
           title: "INPUT PRESETS"
           presets: root.inputPresets
           activePreset: root.inputPreset
-          visible: root.running && root._consideredStable && root.inputPresets.length > 0
+          pendingPreset: root.pendingPreset
+          visible: root.running && root.inputPresets.length > 0
           onSelected: name => root.loadPreset(name)
         }
       }

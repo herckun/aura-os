@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Layouts
 import "../../../../styles"
 import "../../../../components"
 
@@ -10,6 +9,7 @@ Column {
   property string title: ""
   property var presets: []
   property string activePreset: ""
+  property string pendingPreset: ""
   signal selected(string name)
 
   width: parent.width
@@ -32,46 +32,22 @@ Column {
     Repeater {
       model: root.presets
 
-      delegate: Rectangle {
+      DeviceRow {
         id: presetRow
         required property var modelData
-        readonly property bool active: presetRow.modelData === root.activePreset
+        readonly property bool isActive: presetRow.modelData === root.activePreset
 
         width: parent.width
-        height: 32
-        radius: Theme.radiusSmall
-        color: presetRow.active ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
-          : presetHover.containsMouse ? Theme.controlBackgroundHover : "transparent"
-        border.width: Theme.borderWidth
-        border.color: presetRow.active ? Theme.accent : "transparent"
+        icon: "adjustments"
+        name: presetRow.modelData
+        active: presetRow.isActive
+        busy: presetRow.modelData === root.pendingPreset
+        busyLabel: "LOADING"
+        opacity: root.pendingPreset !== "" && !presetRow.busy ? 0.5 : 1
 
-        RowLayout {
-          anchors { left: parent.left; leftMargin: Theme.spaceSm; right: parent.right; rightMargin: Theme.spaceSm; verticalCenter: parent.verticalCenter }
-          spacing: Theme.spaceSm
-
-          Text {
-            text: presetRow.modelData
-            color: presetRow.active ? Theme.accent : Theme.textPrimary
-            font.pixelSize: Theme.fontSizeLabel
-            font.family: Theme.fontFamilyMono
-            Layout.fillWidth: true
-          }
-
-          Badge {
-            text: "ACTIVE"
-            bgColor: Theme.accent
-            textColor: Theme.background
-            size: "sm"
-            visible: presetRow.active
-          }
-        }
-
-        MouseArea {
-          id: presetHover
-          anchors.fill: parent
-          hoverEnabled: true
-          cursorShape: Qt.PointingHandCursor
-          onClicked: root.selected(presetRow.modelData)
+        onClicked: {
+          if (presetRow.isActive || root.pendingPreset !== "") return
+          root.selected(presetRow.modelData)
         }
       }
     }
