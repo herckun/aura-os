@@ -231,6 +231,22 @@ Item {
     }
   }
 
+  onScreenWidthChanged: _screenDimsTimer.restart()
+  onScreenHeightChanged: _screenDimsTimer.restart()
+
+  Timer {
+    id: _screenDimsTimer
+    interval: 250
+    repeat: false
+    onTriggered: {
+      if (root.screenWidth <= 0 || root.screenHeight <= 0) return
+      root._restorePosition()
+      root._registerMyRegion()
+      DesktopLayoutService.requestLayout(root.screenWidth, root.screenHeight)
+      Qt.callLater(root._updateContrast)
+    }
+  }
+
   // ── Loader ─────────────────────────────────────────────────
   Loader {
     id: widgetLoader
