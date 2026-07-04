@@ -468,6 +468,10 @@
         "label": "Toggle Mute"
       },
       {
+        "id": "volume.toggleMicMute",
+        "label": "Toggle Mic Mute"
+      },
+      {
         "id": "volume.setVolume",
         "label": "Set Volume"
       },
@@ -520,12 +524,7 @@
           {
             "key": "direction",
             "label": "Direction",
-            "options": [
-              "left",
-              "right",
-              "up",
-              "down"
-            ]
+            "options": ["left", "right", "up", "down"]
           }
         ]
       },
@@ -536,12 +535,7 @@
           {
             "key": "direction",
             "label": "Direction",
-            "options": [
-              "left",
-              "right",
-              "up",
-              "down"
-            ]
+            "options": ["left", "right", "up", "down"]
           }
         ]
       },
@@ -1442,18 +1436,9 @@
       }
     ],
     "gpu": {
-      "nvidia": [
-        "nvidia-utils"
-      ],
-      "amd": [
-        "mesa",
-        "vulkan-radeon",
-        "libva-mesa-driver"
-      ],
-      "intel": [
-        "mesa",
-        "vulkan-intel"
-      ]
+      "nvidia": ["nvidia-utils"],
+      "amd": ["mesa", "vulkan-radeon", "libva-mesa-driver"],
+      "intel": ["mesa", "vulkan-intel"]
     },
     "aur": [
       {
