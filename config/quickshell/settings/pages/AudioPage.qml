@@ -82,7 +82,7 @@ Column {
         width: parent.width
         label: "VOLUME"
         from: 0
-        to: 1.5
+        to: 1.0
         value: AudioService.volume
         displayMin: 0
         displayMax: 100
@@ -289,7 +289,7 @@ Column {
         width: parent.width
         label: "INPUT LEVEL"
         from: 0
-        to: 1.5
+        to: 1.0
         value: AudioService.micVolume
         displayMin: 0
         displayMax: 100

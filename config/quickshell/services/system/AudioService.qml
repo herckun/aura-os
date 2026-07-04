@@ -189,7 +189,7 @@ Singleton {
 
   function volumeUp(): void {
     if (sink?.ready && sink?.audio) {
-      sink.audio.volume = Math.min(1.5, sink.audio.volume + 0.1)
+      sink.audio.volume = Math.min(1.0, sink.audio.volume + 0.1)
     }
   }
 
@@ -202,7 +202,7 @@ Singleton {
   function setVolume(v: real): void {
     if (sink?.ready && sink?.audio) {
       sink.audio.muted = false
-      sink.audio.volume = Math.max(0, Math.min(1.5, v))
+      sink.audio.volume = Math.max(0, Math.min(1.0, v))
     }
   }
 
@@ -221,7 +221,7 @@ Singleton {
   function setMicVolume(v: real): void {
     if (source?.ready && source?.audio) {
       source.audio.muted = false
-      source.audio.volume = Math.max(0, Math.min(1.5, v))
+      source.audio.volume = Math.max(0, Math.min(1.0, v))
     }
   }
 
@@ -229,7 +229,7 @@ Singleton {
     var n = _isEeSink(node) ? svc.sink : node
     if (n?.ready && n?.audio) {
       n.audio.muted = false
-      n.audio.volume = Math.max(0, Math.min(1.5, v))
+      n.audio.volume = Math.max(0, Math.min(1.0, v))
     }
   }
 

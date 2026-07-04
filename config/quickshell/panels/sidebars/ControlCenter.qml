@@ -39,7 +39,7 @@ PanelContainer {
 
       SliderControl {
         width: parent.width
-        from: 0; to: 1.5
+        from: 0; to: 1.0
         value: AudioService.volume
         stepSize: 0.05
         label: AudioService.muted ? "VOLUME  ·  MUTED" : "VOLUME"

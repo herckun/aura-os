@@ -66,11 +66,11 @@ PanelWindow {
     target: AudioService
     function onVolumeChanged() {
       var icon = AudioService.muted ? "volume-mute" : "volume"
-      osdOverlay.show(icon, AudioService.volume / 1.5, "")
+      osdOverlay.show(icon, AudioService.volume / 1.0, "")
     }
     function onMutedChanged() {
       var icon = AudioService.muted ? "volume-mute" : "volume"
-      osdOverlay.show(icon, AudioService.volume / 1.5, "")
+      osdOverlay.show(icon, AudioService.volume / 1.0, "")
     }
   }
 
