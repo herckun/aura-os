@@ -1,5 +1,6 @@
 module apps
 singleton ClipboardService 1.0 ClipboardService.qml
+singleton DefaultAppsService 1.0 DefaultAppsService.qml
 singleton EmojiService 1.0 EmojiService.qml
 singleton LauncherService 1.0 LauncherService.qml
 singleton SearchService 1.0 SearchService.qml

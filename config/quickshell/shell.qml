@@ -61,6 +61,9 @@ ShellRoot {
         function onVolumeToggleMicMute() {
             AudioService.toggleMicMute();
         }
+        function onAppsLaunch(category) {
+            DefaultAppsService.launch(category);
+        }
 
     }
 
@@ -316,12 +319,13 @@ ShellRoot {
             if (appSwitchLoader.item)
                 appSwitchLoader.item.press();
         });
-        AppearanceService.snapshot();
-        WallpaperService.snapshot();
-        MediaService.snapshot();
-        TimerService.snapshot();
-        AudioService.snapshot();
+        AppearanceService.init();
+        WallpaperService.init();
+        MediaService.init();
+        TimerService.init();
+        AudioService.init();
         SfxService.init();
+        DefaultAppsService.init();
 
         Logger.info("shell", AppInfo.displayName + " Shell v" + AppInfo.version);
         Logger.info("shell", "Monitors: " + Quickshell.screens.length);

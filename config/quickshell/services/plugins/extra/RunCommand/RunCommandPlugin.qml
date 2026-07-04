@@ -41,7 +41,7 @@ BasePlugin {
         source: "run",
         groupLabel: "Run command",
         // Keep the terminal open after the command so output stays visible.
-        action: function() { ProcessPool.runDetached(["kitty", "--", "sh", "-c", cmd + "; exec $SHELL"]) }
+        action: function() { DefaultAppsService.runInTerminal(["sh", "-c", cmd + "; exec $SHELL"]) }
       }]
     }
   })

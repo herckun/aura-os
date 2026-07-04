@@ -66,6 +66,7 @@ Singleton {
   signal volumeDown()
   signal volumeToggleMute()
   signal volumeToggleMicMute()
+  signal appsLaunch(string category)
 
 
   // ═══════════════════════════════════════════════════════════════
@@ -125,6 +126,14 @@ Singleton {
   IpcHandler {
     target: "performance"
     function setProfile(p: int): void { svc.performanceSetProfile(p) }
+  }
+
+  IpcHandler {
+    target: "apps"
+    function terminal(): void { svc.appsLaunch("terminal") }
+    function browser(): void { svc.appsLaunch("browser") }
+    function files(): void { svc.appsLaunch("fileManager") }
+    function editor(): void { svc.appsLaunch("editor") }
   }
 
   IpcHandler {

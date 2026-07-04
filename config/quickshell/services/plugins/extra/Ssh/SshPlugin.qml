@@ -49,7 +49,7 @@ BasePlugin {
                 priority: 20,
                 source: "ssh",
                 groupLabel: "SSH",
-                action: function() { ProcessPool.runDetached(["kitty", "--", "ssh", host]) }
+                action: function() { DefaultAppsService.runInTerminal(["ssh", host]) }
               }
             })(hosts[i]))
           }

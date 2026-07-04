@@ -28,12 +28,12 @@ BasePlugin {
         type: "json",
         default: JSON.stringify([
           { name: "DEV", apps: [
-            { name: "Terminal", icon: "terminal", exec: "kitty" },
+            { name: "Terminal", icon: "terminal", exec: "@terminal" },
             { name: "VS Code", icon: "code", exec: "code" },
-            { name: "Files", icon: "folder", exec: "nautilus" }
+            { name: "Files", icon: "folder", exec: "@files" }
           ]},
           { name: "MEDIA", apps: [
-            { name: "Firefox", icon: "world", exec: "firefox" },
+            { name: "Browser", icon: "world", exec: "@browser" },
             { name: "Spotify", icon: "music", exec: "spotify" },
             { name: "VLC", icon: "player-play", exec: "vlc" }
           ]}
@@ -55,6 +55,11 @@ BasePlugin {
 
   // ── Public API ───────────────────────────────────────────────────
   function _launch(exec: string): void {
+    var tokens = { "@terminal": "terminal", "@browser": "browser", "@files": "fileManager", "@editor": "editor" }
+    if (tokens[exec]) {
+      DefaultAppsService.launch(tokens[exec])
+      return
+    }
     ProcessPool.runTracked("Launch", ["sh", "-c", "nohup " + exec + " >/dev/null 2>&1 &"], "launch-" + exec)
   }
 

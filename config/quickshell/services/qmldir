@@ -21,6 +21,7 @@ singleton MediaService 1.0 media/MediaService.qml
 singleton NotificationService 1.0 media/NotificationService.qml
 singleton SfxService 1.0 media/SfxService.qml
 singleton ClipboardService 1.0 apps/ClipboardService.qml
+singleton DefaultAppsService 1.0 apps/DefaultAppsService.qml
 singleton EmojiService 1.0 apps/EmojiService.qml
 singleton LauncherService 1.0 apps/LauncherService.qml
 singleton SearchService 1.0 apps/SearchService.qml

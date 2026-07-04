@@ -474,6 +474,22 @@
       {
         "id": "mode.cycle",
         "label": "Cycle Shell Mode"
+      },
+      {
+        "id": "apps.terminal",
+        "label": "Launch Default Terminal"
+      },
+      {
+        "id": "apps.browser",
+        "label": "Launch Default Browser"
+      },
+      {
+        "id": "apps.files",
+        "label": "Launch Default File Manager"
+      },
+      {
+        "id": "apps.editor",
+        "label": "Launch Default Editor"
       }
     ],
     "hyprActions": [
@@ -504,7 +520,12 @@
           {
             "key": "direction",
             "label": "Direction",
-            "options": ["left", "right", "up", "down"]
+            "options": [
+              "left",
+              "right",
+              "up",
+              "down"
+            ]
           }
         ]
       },
@@ -515,7 +536,12 @@
           {
             "key": "direction",
             "label": "Direction",
-            "options": ["left", "right", "up", "down"]
+            "options": [
+              "left",
+              "right",
+              "up",
+              "down"
+            ]
           }
         ]
       },
@@ -592,8 +618,8 @@
         "category": "apps",
         "mod": "SUPER",
         "key": "Return",
-        "actionType": "custom",
-        "action": "kitty",
+        "actionType": "shell",
+        "action": "apps.terminal",
         "description": "Terminal"
       },
       {
@@ -601,8 +627,8 @@
         "category": "apps",
         "mod": "SUPER",
         "key": "E",
-        "actionType": "custom",
-        "action": "nautilus",
+        "actionType": "shell",
+        "action": "apps.files",
         "description": "File manager"
       },
       {
@@ -610,8 +636,8 @@
         "category": "apps",
         "mod": "SUPER",
         "key": "B",
-        "actionType": "custom",
-        "action": "firefox",
+        "actionType": "shell",
+        "action": "apps.browser",
         "description": "Browser"
       },
       {
@@ -1416,9 +1442,18 @@
       }
     ],
     "gpu": {
-      "nvidia": ["nvidia-utils"],
-      "amd": ["mesa", "vulkan-radeon", "libva-mesa-driver"],
-      "intel": ["mesa", "vulkan-intel"]
+      "nvidia": [
+        "nvidia-utils"
+      ],
+      "amd": [
+        "mesa",
+        "vulkan-radeon",
+        "libva-mesa-driver"
+      ],
+      "intel": [
+        "mesa",
+        "vulkan-intel"
+      ]
     },
     "aur": [
       {
@@ -1613,5 +1648,11 @@
       "role": "sound effects (CC-BY-SA-4.0)",
       "url": "https://github.com/ubuntu/yaru"
     }
-  ]
+  ],
+  "defaultApps": {
+    "terminal": "kitty",
+    "browser": "",
+    "fileManager": "nautilus",
+    "editor": ""
+  }
 }
