@@ -114,7 +114,7 @@ BasePlugin {
 
   Timer {
     id: _pollTimer
-    interval: 5000
+    interval: PerformanceService.scaleInterval(5000)
     repeat: true
     running: false
     onTriggered: root._checkRunning()
@@ -122,7 +122,7 @@ BasePlugin {
 
   Timer {
     id: _autoScheduleTimer
-    interval: 60000
+    interval: PerformanceService.scaleInterval(60000)
     repeat: true
     running: root._autoSchedule && root.enabled
     onTriggered: root._autoTick()

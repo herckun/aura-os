@@ -59,7 +59,7 @@ Singleton {
   property real _avgRate: 0
 
   Timer {
-    interval: 10000
+    interval: PerformanceService.scaleInterval(10000)
     repeat: true
     triggeredOnStart: true
     running: svc.hasBattery && svc.discharging
