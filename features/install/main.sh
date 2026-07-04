@@ -351,10 +351,15 @@ prepare_install_mode() {
     fi
   fi
 
-  # Optional application catalog — expert only. Express never pre-installs apps.
-  if [[ "$INSTALL_MODE" == "expert" && "$NONINTERACTIVE" != true ]]; then
-    RUN_APPS=true
-    screen_apps
+  # Optional application catalog — express installs all, expert picks.
+  if [[ "$NONINTERACTIVE" != true ]]; then
+    if [[ "$INSTALL_MODE" == "express" ]]; then
+      RUN_APPS=true
+      populate_express_apps
+    elif [[ "$INSTALL_MODE" == "expert" ]]; then
+      RUN_APPS=true
+      screen_apps
+    fi
   fi
 
   if [[ "$NONINTERACTIVE" != true ]]; then

@@ -382,7 +382,18 @@ install_gpu_drivers() {
   log_ok "GPU drivers ready"
 }
 
-# Install user-selected optional applications (expert-mode catalog picks).
+populate_express_apps() {
+  local _IFS="$IFS" def
+  IFS=$'\n'
+  for def in ${APPS:-}; do
+    IFS="$_IFS"
+    [[ -z "$def" ]] && continue
+    selected_app_ids+=("$(pf "$def" 1)")
+  done
+  IFS="$_IFS"
+}
+
+# Install the selected optional applications (all of them in express mode).
 install_apps() {
   command -v pacman &>/dev/null || { log_warn "Not Arch — skipping optional apps"; return 0; }
   (( ${#selected_app_ids[@]} > 0 )) || { log_info "No apps selected"; return 0; }
