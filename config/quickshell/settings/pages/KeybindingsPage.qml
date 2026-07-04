@@ -58,6 +58,68 @@ Item {
     return keyLabels[key] || key
   }
 
+  function _isModifierKey(k: int): bool {
+    return k === Qt.Key_Shift || k === Qt.Key_Control || k === Qt.Key_Meta ||
+           k === Qt.Key_Alt || k === Qt.Key_AltGr || k === Qt.Key_Super_L || k === Qt.Key_Super_R
+  }
+
+  function _modsFromEvent(mods: int, pressedKey: int): string {
+    var parts = []
+    if ((mods & Qt.MetaModifier) || pressedKey === Qt.Key_Meta || pressedKey === Qt.Key_Super_L || pressedKey === Qt.Key_Super_R) parts.push("SUPER")
+    if ((mods & Qt.ControlModifier) || pressedKey === Qt.Key_Control) parts.push("CTRL")
+    if ((mods & Qt.AltModifier) || pressedKey === Qt.Key_Alt) parts.push("ALT")
+    if ((mods & Qt.ShiftModifier) || pressedKey === Qt.Key_Shift) parts.push("SHIFT")
+    return parts.join(" ")
+  }
+
+  function _qtKeyToHypr(event: var): string {
+    var k = event.key
+    if (k >= Qt.Key_A && k <= Qt.Key_Z) return String.fromCharCode(65 + (k - Qt.Key_A))
+    if (k >= Qt.Key_0 && k <= Qt.Key_9) return String.fromCharCode(48 + (k - Qt.Key_0))
+    if (k >= Qt.Key_F1 && k <= Qt.Key_F35) return "F" + (k - Qt.Key_F1 + 1)
+    var m = {}
+    m[Qt.Key_Return] = "Return"
+    m[Qt.Key_Enter] = "Return"
+    m[Qt.Key_Space] = "space"
+    m[Qt.Key_Tab] = "Tab"
+    m[Qt.Key_Backspace] = "BackSpace"
+    m[Qt.Key_Delete] = "Delete"
+    m[Qt.Key_Insert] = "Insert"
+    m[Qt.Key_Home] = "Home"
+    m[Qt.Key_End] = "End"
+    m[Qt.Key_PageUp] = "Prior"
+    m[Qt.Key_PageDown] = "Next"
+    m[Qt.Key_Up] = "Up"
+    m[Qt.Key_Down] = "Down"
+    m[Qt.Key_Left] = "Left"
+    m[Qt.Key_Right] = "Right"
+    m[Qt.Key_Comma] = "comma"
+    m[Qt.Key_Period] = "period"
+    m[Qt.Key_Slash] = "slash"
+    m[Qt.Key_Backslash] = "backslash"
+    m[Qt.Key_Minus] = "minus"
+    m[Qt.Key_Equal] = "equal"
+    m[Qt.Key_Semicolon] = "semicolon"
+    m[Qt.Key_Apostrophe] = "apostrophe"
+    m[Qt.Key_BracketLeft] = "bracketleft"
+    m[Qt.Key_BracketRight] = "bracketright"
+    m[Qt.Key_QuoteLeft] = "grave"
+    m[Qt.Key_Print] = "Print"
+    m[Qt.Key_VolumeUp] = "XF86AudioRaiseVolume"
+    m[Qt.Key_VolumeDown] = "XF86AudioLowerVolume"
+    m[Qt.Key_VolumeMute] = "XF86AudioMute"
+    m[Qt.Key_MicMute] = "XF86AudioMicMute"
+    m[Qt.Key_MonBrightnessUp] = "XF86MonBrightnessUp"
+    m[Qt.Key_MonBrightnessDown] = "XF86MonBrightnessDown"
+    m[Qt.Key_MediaPlay] = "XF86AudioPlay"
+    m[Qt.Key_MediaTogglePlayPause] = "XF86AudioPlay"
+    m[Qt.Key_MediaNext] = "XF86AudioNext"
+    m[Qt.Key_MediaPrevious] = "XF86AudioPrev"
+    if (m[k] !== undefined) return m[k]
+    if (event.text && event.text.trim() !== "") return event.text
+    return ""
+  }
+
   function getActionLabel(b: var): string {
     var actionType = b.actionType || "custom"
     var action = b.action || ""
@@ -408,14 +470,88 @@ Item {
 
           Input {
             id: modInput
-            width: parent.width * 0.5
+            width: (parent.width - parent.spacing * 2) * 0.45
             placeholder: "SUPER"
           }
 
           Input {
             id: keyInput
-            width: parent.width * 0.5
+            width: (parent.width - parent.spacing * 2) * 0.45
             placeholder: "Return"
+          }
+
+          Button {
+            shape: "icon"
+            icon: "keyboard"
+            tooltip: keyCapture.capturing ? "LISTENING..." : "RECORD SHORTCUT"
+            active: keyCapture.capturing
+            anchors.verticalCenter: parent.verticalCenter
+            onClicked: keyCapture.capturing ? keyCapture.stop() : keyCapture.start()
+          }
+        }
+
+        Surface {
+          width: parent.width
+          height: captureLabel.implicitHeight + Theme.spaceSm * 2
+          radius: Theme.radiusSmall
+          visible: keyCapture.capturing
+          color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.08)
+          border.color: Theme.accent
+
+          Text {
+            id: captureLabel
+            anchors.centerIn: parent
+            text: keyCapture.heldMods !== ""
+              ? keyCapture.heldMods + " + ..."
+              : "PRESS A KEY COMBINATION — ESC TO CANCEL"
+            color: Theme.accent
+            font.pixelSize: Theme.fontSizeCaption
+            font.family: Theme.fontFamilyMono
+            font.letterSpacing: 0.06
+          }
+        }
+
+        Item {
+          id: keyCapture
+
+          property bool capturing: false
+          property string heldMods: ""
+
+          function start(): void {
+            capturing = true
+            heldMods = ""
+            forceActiveFocus()
+          }
+
+          function stop(): void {
+            capturing = false
+            heldMods = ""
+          }
+
+          Keys.onPressed: function(event) {
+            if (!keyCapture.capturing) return
+            event.accepted = true
+            if (event.key === Qt.Key_Escape) {
+              keyCapture.stop()
+              return
+            }
+            if (root._isModifierKey(event.key)) {
+              keyCapture.heldMods = root._modsFromEvent(event.modifiers, event.key)
+              return
+            }
+            var keyName = root._qtKeyToHypr(event)
+            if (keyName === "") return
+            modInput.input.text = root._modsFromEvent(event.modifiers, 0)
+            keyInput.input.text = keyName
+            keyCapture.stop()
+          }
+
+          Keys.onReleased: function(event) {
+            if (!keyCapture.capturing) return
+            event.accepted = true
+            if (root._isModifierKey(event.key)) {
+              keyCapture.heldMods = root._modsFromEvent(event.modifiers, 0)
+            }
           }
         }
       },
@@ -611,6 +747,7 @@ Item {
     ]
 
     onOpened: {
+      keyCapture.stop()
       modInput.input.text = root._editMod
       keyInput.input.text = root._editKey
       descInput.input.text = root._editDesc
