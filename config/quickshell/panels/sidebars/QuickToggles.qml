@@ -53,7 +53,7 @@ Item {
               modelData.label === "WIFI" ? NetworkService.wifiEnabled :
               modelData.label === "BT" ? (BluetoothService.enabled && BluetoothService.devices.length > 0) :
               modelData.label === "MONO" ? Theme.monochrome :
-              modelData.label === "EE" ? AudioService.easyEffectsEnabled :
+              modelData.label === "EE" ? AudioService.effectsActive :
               modelData.label === "POWER" ? PerformanceService.profile === 0 :
               modelData.active !== undefined ? modelData.active : false
       onClicked: modelData.toggle()

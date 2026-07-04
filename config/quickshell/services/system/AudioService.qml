@@ -2,7 +2,6 @@ pragma Singleton
 import QtQml
 import Quickshell
 import Quickshell.Services.Pipewire
-import "../../core"
 
 Singleton {
   id: svc
@@ -11,8 +10,9 @@ Singleton {
   //  PUBLIC STATE
   // ═══════════════════════════════════════════════════════════════
   readonly property PwNode _defaultSink: Pipewire.defaultAudioSink
-  readonly property PwNode sink: _resolveSink(_defaultSink, _eeTargetName, Pipewire.nodes.values)
+  readonly property PwNode sink: _resolveSink(_defaultSink, Pipewire.linkGroups.values, Pipewire.nodes.values)
   readonly property PwNode source: Pipewire.defaultAudioSource
+  readonly property bool effectsActive: _isEeSink(_defaultSink)
 
   readonly property real volume: sink?.audio?.volume ?? 0
   readonly property bool muted: sink?.audio?.muted ?? false
@@ -48,76 +48,55 @@ Singleton {
     }
   }
 
-  property string _eeTargetName: ""
+  function _isEeNode(n: PwNode): bool {
+    if (!n) return false
+    var name = (n.name || "").toLowerCase()
+    if (name.indexOf("easyeffects") === 0 || name.indexOf("pulseeffects") === 0 ||
+        name.indexOf("ee_soe_") === 0 || name.indexOf("ee_sie_") === 0) return true
+    var p = n.properties || ({})
+    var blob = ((p["application.id"] || "") + " " + (p["application.name"] || "") + " " +
+                (p["node.name"] || "")).toLowerCase()
+    return blob.indexOf("easyeffects") !== -1 || blob.indexOf("easy effects") !== -1
+  }
 
-  on_DefaultSinkChanged: _refreshEeTarget()
+  function _isEeSink(n: PwNode): bool {
+    return (n?.isSink ?? false) && !n.isStream && _isEeNode(n)
+  }
 
-  function _resolveSink(def: PwNode, targetName: string, nodes: var): PwNode {
-    if (def && def.name === "easyeffects_sink") {
-      if (targetName) {
-        for (var i = 0; i < nodes.length; i++) {
-          var n = nodes[i]
-          if (n.isSink && !n.isStream && n.name === targetName) {
-            return n
-          }
-        }
+  function _resolveSink(def: PwNode, groups: var, nodes: var): PwNode {
+    if (!def || !_isEeSink(def)) return def
+    var real = _downstreamSink(def, groups)
+    if (real) return real
+    var hwSinks = []
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i]
+      if (n.isSink && !n.isStream && !_isEeNode(n) &&
+          n.properties && n.properties["device.api"]) {
+        hwSinks.push(n)
       }
-      var hwSinks = []
-      for (var i = 0; i < nodes.length; i++) {
-        var n = nodes[i]
-        if (n.isSink && !n.isStream && n.name !== "easyeffects_sink" &&
-            n.properties && n.properties["device.api"]) {
-          hwSinks.push(n)
-        }
-      }
-      if (hwSinks.length === 1) {
-        return hwSinks[0]
-      }
-
-      return null
     }
+    if (hwSinks.length === 1) return hwSinks[0]
     return def
   }
 
-  function _refreshEeTarget(): void {
-    if (!_defaultSink || _defaultSink.name !== "easyeffects_sink") {
-      svc._eeTargetName = ""
-      return
-    }
-
-    var script = "pw-dump | python3 -c \"" +
-      "import json,sys\n" +
-      "d=json.load(sys.stdin)\n" +
-      "nodes={}\n" +
-      "for o in d:\n" +
-      "    if str(o.get('type','')).endswith('Node'):\n" +
-      "        props=(o.get('info') or {}).get('props') or {}\n" +
-      "        nodes[o['id']]=props.get('node.name','')\n" +
-      "ee_id=None\n" +
-      "for nid,name in nodes.items():\n" +
-      "    if name=='easyeffects_sink':\n" +
-      "        ee_id=nid\n" +
-      "        break\n" +
-      "if ee_id is None:\n" +
-      "    sys.exit(0)\n" +
-      "for o in d:\n" +
-      "    if not str(o.get('type','')).endswith('Link'):\n" +
-      "        continue\n" +
-      "    info=o.get('info') or {}\n" +
-      "    if info.get('output-node-id')==ee_id:\n" +
-      "        target_id=info.get('input-node-id')\n" +
-      "        if target_id in nodes:\n" +
-      "            print(nodes[target_id])\n" +
-      "            break\n" +
-      "\""
-
-    ProcessPool.runTracked("Resolve EE target", script, {
-      id: "ee-target-resolve",
-      shell: true,
-      callback: function(r) {
-        svc._eeTargetName = (r.stdout || "").trim()
+  function _downstreamSink(start: PwNode, groups: var): PwNode {
+    var visited = {}
+    visited[start.id] = true
+    var frontier = [start.id]
+    for (var depth = 0; depth < 6 && frontier.length > 0; depth++) {
+      var next = []
+      for (var i = 0; i < groups.length; i++) {
+        var g = groups[i]
+        var s = g.source
+        var t = g.target
+        if (!s || !t || frontier.indexOf(s.id) === -1 || visited[t.id]) continue
+        visited[t.id] = true
+        if (t.isSink && !t.isStream && t.audio && !_isEeNode(t)) return t
+        next.push(t.id)
       }
-    })
+      frontier = next
+    }
+    return null
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -209,26 +188,26 @@ Singleton {
   }
 
   function volumeUp(): void {
-    if (sink?.ready && sink?.audio && sink.name !== "easyeffects_sink") {
+    if (sink?.ready && sink?.audio) {
       sink.audio.volume = Math.min(1.5, sink.audio.volume + 0.1)
     }
   }
 
   function volumeDown(): void {
-    if (sink?.ready && sink?.audio && sink.name !== "easyeffects_sink") {
+    if (sink?.ready && sink?.audio) {
       sink.audio.volume = Math.max(0, sink.audio.volume - 0.1)
     }
   }
 
   function setVolume(v: real): void {
-    if (sink?.ready && sink?.audio && sink.name !== "easyeffects_sink") {
+    if (sink?.ready && sink?.audio) {
       sink.audio.muted = false
       sink.audio.volume = Math.max(0, Math.min(1.5, v))
     }
   }
 
   function toggleMute(): void {
-    if (sink?.ready && sink?.audio && sink.name !== "easyeffects_sink") {
+    if (sink?.ready && sink?.audio) {
       sink.audio.muted = !sink.audio.muted
     }
   }
@@ -247,17 +226,17 @@ Singleton {
   }
 
   function setNodeVolume(node: PwNode, v: real): void {
-    // NEVER apply volume to easyeffects_sink - it doesn't affect actual output
-    if (node?.ready && node?.audio && node.name !== "easyeffects_sink") {
-      node.audio.muted = false
-      node.audio.volume = Math.max(0, Math.min(1.5, v))
+    var n = _isEeSink(node) ? svc.sink : node
+    if (n?.ready && n?.audio) {
+      n.audio.muted = false
+      n.audio.volume = Math.max(0, Math.min(1.5, v))
     }
   }
 
   function toggleNodeMute(node: PwNode): void {
-    // NEVER apply mute to easyeffects_sink - it doesn't affect actual output
-    if (node?.ready && node?.audio && node.name !== "easyeffects_sink") {
-      node.audio.muted = !node.audio.muted
+    var n = _isEeSink(node) ? svc.sink : node
+    if (n?.ready && n?.audio) {
+      n.audio.muted = !n.audio.muted
     }
   }
 
