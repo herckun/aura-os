@@ -161,8 +161,6 @@ Rectangle {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        root.value = modelData[root.valueRole] || modelData.value || modelData;
-                        root.displayText = modelData[root.textRole] || modelData.label || modelData;
                         root.itemSelected(modelData);
                         popup.close();
                     }
