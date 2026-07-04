@@ -99,6 +99,7 @@ Singleton {
         countdownRemaining = 10;
         _writeConfig(content, function () {
             _countdownTimer.restart();
+            _redetectTimer.restart();
         });
     }
 
@@ -124,6 +125,7 @@ Singleton {
                 _previousConfig = null;
                 _applyContent = "";
                 hasPending = false;
+                _redetectTimer.restart();
             });
         } else {
             _previousConfig = null;
@@ -453,6 +455,12 @@ Singleton {
                 revert();
             }
         }
+    }
+
+    property Timer _redetectTimer: Timer {
+        interval: 700
+        repeat: false
+        onTriggered: svc.detectMonitors()
     }
 
     // ═══════════════════════════════════════════════════════════════
