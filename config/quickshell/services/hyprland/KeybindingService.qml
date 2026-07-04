@@ -306,18 +306,25 @@ Singleton {
   //  LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
 
+  function _regenerate(): void {
+    Store.loadedLater(0, function() {
+      svc._mergeBindings()
+      svc._generateHyprConfig()
+    })
+  }
+
   Connections {
     target: AppInfo
     function onManifestChanged() {
       svc._loadDefaults()
-      svc._generateHyprConfig()
+      svc._regenerate()
     }
   }
 
   Component.onCompleted: {
     if (AppInfo.manifest && Object.keys(AppInfo.manifest).length > 0) {
       _loadDefaults()
-      _generateHyprConfig()
+      _regenerate()
     }
   }
 }

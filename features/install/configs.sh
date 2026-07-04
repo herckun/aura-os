@@ -6,9 +6,19 @@ fi
 AURA_INSTALL_CONFIGS_LOADED=1
 
 deploy_hypr_config() {
+  local _mon="$CONFIG_DIR/hypr/monitors.lua" _mon_bak=""
+  if [[ -f "$_mon" ]] && head -1 "$_mon" | grep -q '@managed: display-settings'; then
+    _mon_bak="$(mktemp "/tmp/${APP_NAME}-monitors-XXXXXX")"
+    cp -f "$_mon" "$_mon_bak"
+  fi
   copy_config "$REPO_DIR/config/hypr" "$CONFIG_DIR/hypr"
   sed -i "s|@APP_NAME@|${APP_NAME}|g" "$CONFIG_DIR/hypr/hyprland.lua"
-  log_ok "Hyprland configs deployed"
+  if [[ -n "$_mon_bak" ]]; then
+    mv -f "$_mon_bak" "$_mon"
+    log_ok "Hyprland configs deployed (kept user display config)"
+  else
+    log_ok "Hyprland configs deployed"
+  fi
 }
 
 deploy_qt_styling_env() {

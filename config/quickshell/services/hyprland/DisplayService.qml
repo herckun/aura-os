@@ -324,7 +324,7 @@ Singleton {
     }
 
     function _buildConfigContent(entries: var): string {
-        var lines = [];
+        var lines = ["-- @managed: display-settings", ""];
         for (var i = 0; i < entries.length; i++) {
             var e = entries[i];
             lines.push('hl.monitor({');
