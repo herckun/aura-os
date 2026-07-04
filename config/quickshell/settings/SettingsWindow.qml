@@ -72,12 +72,10 @@ FloatingWindow {
     if (settings.visible) try { settings.raise() } catch (e) {}
   }
 
-  Rectangle {
+  Surface {
     anchors.fill: parent
     radius: Theme.radiusLarge
     color: Theme.background
-    border.width: Theme.borderWidth
-    border.color: Theme.border
 
     DotMatrixBackground {
       anchors.fill: parent

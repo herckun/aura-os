@@ -397,7 +397,7 @@ Column {
                                 }
                             ]
                             delegate: Surface {
-                                height: 22
+                                height: chipRow.implicitHeight + Theme.spaceXs * 2
                                 width: chipRow.implicitWidth + Theme.spaceSm * 2
                                 radius: Theme.radiusSmall
                                 bordered: false

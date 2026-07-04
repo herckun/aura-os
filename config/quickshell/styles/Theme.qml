@@ -152,7 +152,21 @@ Singleton {
   readonly property int fontSizeDisplayXl: _ts("displayXl")
 
 
-  readonly property var sizePresets: _data.sizes || {}
+  readonly property var sizePresets: {
+    var raw = _data.sizes || {}
+    var scale = _style.typography && _style.typography.fontSizeScale ? _style.typography.fontSizeScale : 1.0
+    var out = {}
+    for (var k in raw) {
+      var p = raw[k]
+      out[k] = {
+        fontSize: Math.round(p.fontSize * scale),
+        iconSize: p.iconSize,
+        dim: Math.round(p.dim * scale),
+        padding: Math.round(p.padding * scale)
+      }
+    }
+    return out
+  }
 
   function _c(key: string): color {
     var v = _data.colors ? _data.colors[key] : null

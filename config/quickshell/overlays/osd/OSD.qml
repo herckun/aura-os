@@ -46,13 +46,10 @@ PanelWindow {
 
   property bool shown: false
 
-  Rectangle {
+  Surface {
     id: osdRect
     anchors.fill: parent
     radius: Theme.radiusLarge
-    color: Theme.backgroundSecondary
-    border.width: Theme.borderWidth
-    border.color: Theme.border
 
     state: osd.shown ? "shown" : "hidden"
 

@@ -451,71 +451,20 @@ Item {
           font.letterSpacing: 0.06
         }
 
-        Row {
+        BentoSwitcher {
           width: parent.width
-          spacing: Theme.spaceSm
-
-          Repeater {
-            model: [
-              { label: "SHELL", value: "shell", icon: "terminal", desc: "QuickShell panels" },
-              { label: "HYPRLAND", value: "hypr", icon: "layout-grid", desc: "Window management" },
-              { label: "CUSTOM", value: "custom", icon: "code", desc: "Any command" }
-            ]
-
-            delegate: Surface {
-              width: (parent.width - Theme.spaceSm * 2) / 3
-              height: 60
-              radius: Theme.radiusMedium
-              color: root._editActionType === modelData.value
-                ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1)
-                : Theme.backgroundTertiary
-              border.color: root._editActionType === modelData.value ? Theme.accent : Theme.border
-
-              Behavior on color {
-                enabled: Theme.animationsEnabled
-                ColorAnimation { duration: Theme.animationFast }
-              }
-
-              Column {
-                anchors.centerIn: parent
-                spacing: Theme.spaceXs
-
-                Icon {
-                  source: Icons.get(modelData.icon)
-                  size: 16
-                  color: root._editActionType === modelData.value ? Theme.accent : Theme.textSecondary
-                  anchors.horizontalCenter: parent.horizontalCenter
-                }
-
-                Text {
-                  text: modelData.label
-                  color: root._editActionType === modelData.value ? Theme.accent : Theme.textPrimary
-                  font.pixelSize: Theme.fontSizeMicro
-                  font.family: Theme.fontFamilyMono
-                  font.weight: Font.Bold
-                  font.letterSpacing: 0.06
-                  anchors.horizontalCenter: parent.horizontalCenter
-                }
-
-                Text {
-                  text: modelData.desc
-                  color: Theme.textDisabled
-                  font.pixelSize: 9
-                  font.family: Theme.fontFamilyMono
-                  anchors.horizontalCenter: parent.horizontalCenter
-                }
-              }
-
-              MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                  root._editActionType = modelData.value
-                  root._editAction = ""
-                  root._editArgs = ({})
-                }
-              }
-            }
+          columns: 3
+          cellHeight: 64
+          currentIndex: root._editActionType === "shell" ? 0 : root._editActionType === "hypr" ? 1 : 2
+          items: [
+            { name: "SHELL", icon: "terminal", description: "QuickShell panels" },
+            { name: "HYPRLAND", icon: "layout-grid", description: "Window management" },
+            { name: "CUSTOM", icon: "code", description: "Any command" }
+          ]
+          onSelected: function(index) {
+            root._editActionType = ["shell", "hypr", "custom"][index]
+            root._editAction = ""
+            root._editArgs = ({})
           }
         }
       },

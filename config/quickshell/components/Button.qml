@@ -114,7 +114,7 @@ Item {
   width: {
     if (fillWidth) return -1
     if (shape === "circle" || shape === "icon") return buttonWidth
-    if (shape === "tile") return 80
+    if (shape === "tile") return Math.max(80, _tileColumn.implicitWidth + Theme.spaceSm * 2)
     if (shape === "link") return _linkLabel.implicitWidth
     var cw = _hasIcon ? (_defaultIcon.width + Theme.spaceXs + _defaultLabel.width) : _defaultLabel.width
     var px = paddingX >= 0 ? paddingX : padding
@@ -123,7 +123,7 @@ Item {
 
   height: {
     if (shape === "circle" || shape === "icon") return buttonHeight
-    if (shape === "tile") return 60
+    if (shape === "tile") return Math.max(60, _tileColumn.implicitHeight + Theme.spaceSm * 2)
     if (shape === "link") return buttonHeight
     var py = paddingY >= 0 ? paddingY : padding
     return Math.max(_defaultLabel.height + py * 2, buttonHeight)
@@ -335,6 +335,7 @@ Item {
     }
 
     Column {
+      id: _tileColumn
       anchors.centerIn: parent
       spacing: Theme.spaceXs
       visible: shape === "tile"

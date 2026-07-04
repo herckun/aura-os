@@ -42,12 +42,10 @@ Column {
       Layout.fillHeight: true
       Layout.preferredHeight: 220
 
-      Rectangle {
+      Surface {
         anchors.fill: parent
         radius: Theme.radiusLarge
-        color: Theme.backgroundTertiary
-        border.width: Theme.borderWidth
-        border.color: Theme.border
+        level: 2
       }
 
       Image {
@@ -322,13 +320,11 @@ Column {
             }
           }
 
-          Rectangle {
+          Surface {
             anchors.fill: parent
             radius: Theme.radiusSmall
             color: pickMoreHover.containsMouse ? Theme.controlBackgroundHover : Theme.backgroundTertiary
             visible: modelData.isPickMore
-            border.width: Theme.borderWidth
-            border.color: Theme.border
             Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
 
             Column {

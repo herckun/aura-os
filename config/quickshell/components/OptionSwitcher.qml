@@ -23,15 +23,20 @@ RowLayout {
   readonly property color _st: selectedTextColor.a > 0 ? selectedTextColor :
     Theme.contrastTextColor(_sc)
 
-  readonly property int _maxContentWidth: {
+  property int _maxContentWidth: 0
+
+  function _remeasure(): void {
     var max = 0
     for (var i = 0; i < options.length; i++) {
-      var tw = _measureText.width
       _measureText.text = options[i].toUpperCase()
-      if (tw > max) max = tw
+      if (_measureText.width > max) max = _measureText.width
     }
-    return max + controlPadding * 2 + 8
+    _maxContentWidth = Math.ceil(max + controlPadding * 2 + 8)
   }
+
+  onOptionsChanged: _remeasure()
+  onControlFontSizeChanged: _remeasure()
+  Component.onCompleted: _remeasure()
 
   Text {
     id: _measureText

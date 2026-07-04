@@ -13,7 +13,7 @@ Rectangle {
 
   signal clicked()
 
-  height: 32
+  height: Math.max(Theme.controlHeight + Theme.spaceXxs * 2, chipRow.implicitHeight + Theme.spaceXs * 2)
   radius: Theme.radiusMedium
   width: chipRow.implicitWidth + Theme.spaceMd * 2
   color: selected ? Theme.accent : Theme.backgroundSecondary
@@ -46,9 +46,9 @@ Rectangle {
     Rectangle {
       anchors.verticalCenter: parent.verticalCenter
       visible: root.count > 0
-      width: countText.implicitWidth + 10
-      height: 16
-      radius: 8
+      width: countText.implicitWidth + Theme.spaceSm
+      height: countText.implicitHeight + Theme.spaceXxs * 2
+      radius: height / 2
       color: root.selected ? Theme.contrastTextColor(Theme.accent) : Theme.backgroundTertiary
 
       Text {

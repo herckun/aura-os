@@ -68,13 +68,10 @@ PanelWindow {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay()
   }
 
-  Rectangle {
+  Surface {
     id: calBg
     anchors.fill: parent
     radius: Theme.radiusMedium
-    color: Theme.backgroundSecondary
-    border.width: Theme.borderWidth
-    border.color: Theme.border
   }
 
   Column {

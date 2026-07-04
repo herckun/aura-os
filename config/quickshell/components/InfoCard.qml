@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../styles"
 
-Rectangle {
+Surface {
   id: root
 
   property string label: ""
@@ -12,9 +12,6 @@ Rectangle {
   width: parent.width
   height: Theme.controlHeight + Theme.spaceXs
   radius: Theme.radiusMedium
-  color: Theme.backgroundSecondary
-  border.width: Theme.borderWidth
-  border.color: Theme.border
 
   RowLayout {
     anchors { fill: parent; leftMargin: Theme.controlPadding; rightMargin: Theme.controlPadding }

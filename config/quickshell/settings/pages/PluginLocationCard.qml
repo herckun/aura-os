@@ -118,16 +118,14 @@ Column {
   }
 
   // ── Empty state ───────────────────────────────────────
-  Rectangle {
+  Surface {
     width: parent.width
-    height: 48
+    height: emptyLabel.implicitHeight + Theme.spaceMd * 2
     radius: Theme.radiusMedium
-    color: Theme.backgroundSecondary
-    border.width: Theme.borderWidth
-    border.color: Theme.border
     visible: root._enabled && root._filteredPlugins.length === 0
 
     Text {
+      id: emptyLabel
       anchors.centerIn: parent
       text: "NO PLUGINS"
       color: Theme.textDisabled

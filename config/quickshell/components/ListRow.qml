@@ -16,7 +16,7 @@ Surface {
 
     signal clicked
 
-    implicitHeight: 48
+    implicitHeight: Math.max(Theme.controlHeight + Theme.spaceMd, rowLayout.implicitHeight + padding * 2)
     height: implicitHeight
     bordered: true
     padding: Theme.spaceSm
@@ -42,6 +42,7 @@ Surface {
     }
 
     RowLayout {
+        id: rowLayout
         anchors.fill: parent
         spacing: Theme.spaceMd
 

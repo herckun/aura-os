@@ -164,13 +164,11 @@ Column {
 
     Behavior on height { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.InOutCubic } }
 
-    Rectangle {
+    Surface {
       anchors.fill: parent
       anchors.topMargin: Theme.spaceXs
       radius: Theme.radiusMedium
-      color: Theme.backgroundTertiary
-      border.width: Theme.borderWidth
-      border.color: Theme.border
+      level: 2
 
       Column {
         id: settingsCol

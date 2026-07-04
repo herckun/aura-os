@@ -108,7 +108,7 @@ Rectangle {
 
             delegate: Rectangle {
                 width: listView.width
-                height: 36
+                height: Theme.controlHeight + Theme.spaceXs * 2
                 radius: Theme.radiusSmall
                 color: {
                     if (itemMouse.containsMouse)

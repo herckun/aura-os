@@ -17,7 +17,7 @@ Item {
   signal editClicked()
   signal deleteClicked()
 
-  height: 48
+  height: Math.max(Theme.controlHeight + Theme.spaceMd, mainLayout.implicitHeight + Theme.spaceSm)
 
   readonly property var keyLabels: ({
     "XF86AudioRaiseVolume": "Vol Up",
@@ -85,12 +85,13 @@ Item {
   }
 
   RowLayout {
+    id: mainLayout
     anchors.fill: parent
     spacing: Theme.spaceMd
 
     Rectangle {
       Layout.preferredWidth: 160
-      Layout.preferredHeight: 28
+      Layout.preferredHeight: Theme.controlHeightSmall + Theme.spaceXxs * 2
       radius: Theme.radiusSmall
       color: Theme.backgroundTertiary
       border.width: Theme.borderWidth
@@ -160,7 +161,7 @@ Item {
 
         Rectangle {
           width: typeLabel.implicitWidth + Theme.spaceSm * 2
-          height: 14
+          height: typeLabel.implicitHeight + Theme.spaceXxs * 2
           radius: Theme.radiusXs
           color: {
             if (!binding) return Theme.backgroundTertiary
@@ -197,7 +198,7 @@ Item {
         Rectangle {
           visible: root.isCustom
           width: customLabel.implicitWidth + Theme.spaceSm * 2
-          height: 14
+          height: customLabel.implicitHeight + Theme.spaceXxs * 2
           radius: Theme.radiusXs
           color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.15)
 

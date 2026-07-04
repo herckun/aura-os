@@ -70,13 +70,10 @@ PanelWindow {
     }
   }
 
-  Rectangle {
+  Surface {
     id: bg
     anchors.fill: parent
     radius: Theme.radiusLarge
-    color: Theme.backgroundSecondary
-    border.width: Theme.borderWidth
-    border.color: Theme.border
 
     Column {
       id: contentCol
