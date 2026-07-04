@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "../../core"
+import "../../services"
 
 Singleton {
   id: svc
@@ -52,24 +53,6 @@ Singleton {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  //  SIGNALS (for non-panel IPC)
-  // ═══════════════════════════════════════════════════════════════
-
-  signal brightnessBrighter()
-  signal brightnessDimmer()
-  signal performanceSetProfile(int profile)
-  signal screenshotRegion()
-  signal screenshotScreen()
-  signal screenshotOutput()
-  signal screenshotWindow()
-  signal volumeUp()
-  signal volumeDown()
-  signal volumeToggleMute()
-  signal volumeToggleMicMute()
-  signal appsLaunch(string category)
-
-
-  // ═══════════════════════════════════════════════════════════════
   //  IPC HANDLERS
   // ═══════════════════════════════════════════════════════════════
 
@@ -111,37 +94,43 @@ Singleton {
 
   IpcHandler {
     target: "brightness"
-    function brighter(): void { svc.brightnessBrighter() }
-    function dimmer(): void { svc.brightnessDimmer() }
+    function brighter(): void { BrightnessService.brighter() }
+    function dimmer(): void { BrightnessService.dimmer() }
   }
 
   IpcHandler {
     target: "volume"
-    function up(): void { svc.volumeUp() }
-    function down(): void { svc.volumeDown() }
-    function toggleMute(): void { svc.volumeToggleMute() }
-    function setVolume(v: int): void { svc.volumeSetVolume(v) }
+    function up(): void { AudioService.volumeUp() }
+    function down(): void { AudioService.volumeDown() }
+    function toggleMute(): void { AudioService.toggleMute() }
+    function toggleMicMute(): void { AudioService.toggleMicMute() }
+    function setVolume(v: int): void { AudioService.setVolume(v / 100) }
   }
 
   IpcHandler {
     target: "performance"
-    function setProfile(p: int): void { svc.performanceSetProfile(p) }
+    function setProfile(p: int): void { PerformanceService.switchProfile(p) }
   }
 
   IpcHandler {
     target: "apps"
-    function terminal(): void { svc.appsLaunch("terminal") }
-    function browser(): void { svc.appsLaunch("browser") }
-    function files(): void { svc.appsLaunch("fileManager") }
-    function editor(): void { svc.appsLaunch("editor") }
+    function terminal(): void { DefaultAppsService.launch("terminal") }
+    function browser(): void { DefaultAppsService.launch("browser") }
+    function files(): void { DefaultAppsService.launch("fileManager") }
+    function editor(): void { DefaultAppsService.launch("editor") }
   }
 
   IpcHandler {
     target: "screenshot"
-    function region(): void { svc.screenshotRegion() }
-    function screen(): void { svc.screenshotScreen() }
-    function output(): void { svc.screenshotOutput() }
-    function window(): void { svc.screenshotWindow() }
+    function region(): void { ScreenshotService.captureRegion() }
+    function screen(): void { ScreenshotService.captureScreen() }
+    function output(): void { ScreenshotService.captureOutput() }
+    function window(): void { ScreenshotService.captureWindow() }
+  }
+
+  IpcHandler {
+    target: "wallpaper"
+    function cycle(): void { WallpaperService.cycleWallpaper() }
   }
 
   IpcHandler {

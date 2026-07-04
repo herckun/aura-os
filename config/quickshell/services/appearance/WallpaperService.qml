@@ -31,6 +31,8 @@ Singleton {
   property string downloadStatus: ""
   property bool pickerOpen: false
   property var wallpaperHistory: []
+  property bool autoCycle: false
+  property int autoCycleMinutes: 30
 
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
@@ -75,6 +77,38 @@ Singleton {
         svc._pollWallpaper()
       }
     })
+  }
+
+  function cycleWallpaper(): void {
+    if (ProcessPool.isBusy("cycle-wallpaper")) return
+    var dir = AppInfo.wallpaperDir
+    ProcessPool.runTracked("List wallpapers", [
+      "sh", "-c", "find '" + dir + "' -maxdepth 1 -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \\) | sort"
+    ], {
+      id: "cycle-wallpaper",
+      callback: function(r) {
+        if (r.exitCode !== 0 || !r.stdout) return
+        var files = r.stdout.trim().split("\n").filter(function(f) { return f.length > 0 })
+        if (files.length === 0) return
+        var current = svc.sourceWallpaperPath || svc.wallpaperPath
+        var idx = files.indexOf(current)
+        var next = files[(idx + 1) % files.length]
+        if (next === current) return
+        svc.setWallpaper(next, true)
+        if (cycleTimer.running) cycleTimer.restart()
+      }
+    })
+  }
+
+  function setAutoCycle(on: bool): void {
+    svc.autoCycle = on
+    Store.set("wallpaper.autoCycle", on)
+  }
+
+  function setAutoCycleMinutes(minutes: int): void {
+    svc.autoCycleMinutes = minutes
+    Store.set("wallpaper.autoCycleMinutes", minutes)
+    if (cycleTimer.running) cycleTimer.restart()
   }
 
   function downloadRandom(): void {
@@ -337,6 +371,14 @@ Singleton {
     running: false
     repeat: false
     onTriggered: svc._pollWallpaper()
+  }
+
+  Timer {
+    id: cycleTimer
+    interval: Math.max(1, svc.autoCycleMinutes) * 60000
+    running: svc.autoCycle
+    repeat: true
+    onTriggered: svc.cycleWallpaper()
   }
 
   Timer {
@@ -656,9 +698,15 @@ Singleton {
   //  LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
 
+  function _loadCycleSettings(): void {
+    svc.autoCycle = Store.getBool("wallpaper.autoCycle", false)
+    svc.autoCycleMinutes = Store.getInt("wallpaper.autoCycleMinutes", 30)
+  }
+
   Component.onCompleted: {
     svc._mono = Store.getBool("theme.monochrome", false)
     svc._loadHistory()
+    svc._loadCycleSettings()
     svc._pollWallpaper()
     svc._computeIlluminanceMap()
 
@@ -669,6 +717,7 @@ Singleton {
     Store.loaded.connect(function() {
       svc._mono = Store.getBool("theme.monochrome", false)
       svc._loadHistory()
+      svc._loadCycleSettings()
     })
   }
 }

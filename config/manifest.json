@@ -480,6 +480,10 @@
         "label": "Cycle Shell Mode"
       },
       {
+        "id": "wallpaper.cycle",
+        "label": "Next Wallpaper"
+      },
+      {
         "id": "apps.terminal",
         "label": "Launch Default Terminal"
       },

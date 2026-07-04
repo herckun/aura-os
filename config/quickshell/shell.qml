@@ -24,49 +24,6 @@ ShellRoot {
     id: root
     settings.watchFiles: true
 
-    // ── IPC Connections ──────────────────────────────────────────
-    Connections {
-        target: IpcService
-
-        function onBrightnessBrighter() {
-            BrightnessService.brighter();
-        }
-        function onBrightnessDimmer() {
-            BrightnessService.dimmer();
-        }
-        function onPerformanceSetProfile(p) {
-            PerformanceService.switchProfile(p);
-        }
-        function onScreenshotRegion() {
-            ScreenshotService.captureRegion();
-        }
-        function onScreenshotScreen() {
-            ScreenshotService.captureScreen();
-        }
-        function onScreenshotOutput() {
-            ScreenshotService.captureOutput();
-        }
-        function onScreenshotWindow() {
-            ScreenshotService.captureWindow();
-        }
-        function onVolumeUp() {
-            AudioService.volumeUp();
-        }
-        function onVolumeDown() {
-            AudioService.volumeDown();
-        }
-        function onVolumeToggleMute() {
-            AudioService.toggleMute();
-        }
-        function onVolumeToggleMicMute() {
-            AudioService.toggleMicMute();
-        }
-        function onAppsLaunch(category) {
-            DefaultAppsService.launch(category);
-        }
-
-    }
-
     // ── Global Shortcuts ─────────────────────────────────────────
     GlobalShortcut {
         name: "appswitch"
