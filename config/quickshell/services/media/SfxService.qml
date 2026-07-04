@@ -27,7 +27,7 @@ Singleton {
   Component {
     id: slotComponent
 
-    Item {
+    Scope {
       id: slot
 
       Process {

@@ -123,7 +123,8 @@ Singleton {
   function poll(): void {
     if (_pollHandle && ProcessPool.isRunning(_pollHandle)) return
     _pollHandle = ProcessPool.runTracked("Bluetooth poll",
-      "bluetoothctl show 2>/dev/null | grep -q 'Powered: yes' && echo 'on' || echo 'off'; bluetoothctl devices 2>/dev/null",
+      "out=$(timeout 3 bluetoothctl show 2>/dev/null) && [ -n \"$out\" ] || { echo unavailable; exit 0; }; " +
+      "printf '%s' \"$out\" | grep -q 'Powered: yes' && echo 'on' || echo 'off'; timeout 3 bluetoothctl devices 2>/dev/null",
       {
         id: "bt-poll",
         shell: true,

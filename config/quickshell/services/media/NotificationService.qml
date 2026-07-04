@@ -86,7 +86,7 @@ Singleton {
     return Date.now().toString(36) + Math.random().toString(36).substr(2)
   }
 
-  function _createNotification(summary: string, body: string, icon: string, appName: string, urgency: int, actions: var): object {
+  function _createNotification(summary: string, body: string, icon: string, appName: string, urgency: int, actions: var): var {
     return {
       id: _generateId(),
       summary: summary || "",

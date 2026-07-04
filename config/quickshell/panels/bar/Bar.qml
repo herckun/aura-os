@@ -83,7 +83,7 @@ PanelWindow {
 
   Connections {
     target: NotificationService
-    function onNotificationsChanged() {
+    function onPosted(urgency) {
       var notif = NotificationService.notifications[0]
       if (notif) {
         var p = nextNotifPopup()
