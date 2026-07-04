@@ -51,30 +51,6 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
   // ═══════════════════════════════════════════════════════════════
-  function snapshot(): var {
-    return {
-      hasBattery: hasBattery,
-      percentage: percentage,
-      charging: charging,
-      discharging: discharging,
-      fullyCharged: fullyCharged,
-      energy: energy,
-      energyCapacity: energyCapacity,
-      changeRate: changeRate,
-      timeToEmpty: timeToEmpty,
-      timeToFull: timeToFull,
-      powerRate: powerRate,
-      avgPowerRate: avgPowerRate,
-      avgTimeToEmpty: avgTimeToEmpty,
-      modelName: modelName,
-      healthSupported: healthSupported,
-      healthPercentage: healthPercentage,
-      iconName: iconName,
-      lowBattery: lowBattery,
-      criticalBattery: criticalBattery
-    }
-  }
-
   // ═══════════════════════════════════════════════════════════════
   //  INTERNAL STATE
   // ═══════════════════════════════════════════════════════════════

@@ -64,16 +64,7 @@ Singleton {
     return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s
   }
 
-  function snapshot(): var {
-    return {
-      remaining: svc.remaining,
-      running: svc.running,
-      paused: svc.paused,
-      label: svc.label,
-      total: svc.total,
-      mode: svc._mode
-    }
-  }
+  function init(): void {}
 
   // ═══════════════════════════════════════════════════════════════
   //  INTERNAL STATE

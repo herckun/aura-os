@@ -240,12 +240,5 @@ Singleton {
     }
   }
 
-  function snapshot() {
-    return {
-      sinkName: sinkName,
-      sourceName: sourceName,
-      sinkReady: sinkReady,
-      sourceReady: sourceReady
-    }
-  }
+  function init(): void {}
 }

@@ -22,14 +22,7 @@ Singleton {
   //  PUBLIC API
   // ═══════════════════════════════════════════════════════════════
 
-  function snapshot(): var {
-    return {
-      animationsEnabled: animationsEnabled,
-      blurEnabled: blurEnabled,
-      transparencyEnabled: transparencyEnabled,
-      barFloating: barFloating
-    }
-  }
+  function init(): void {}
 
   function setAnimations(on: bool): void {
     Store.set("performance.animations", on)

@@ -36,26 +36,7 @@ Singleton {
   //  PUBLIC API
   // ═══════════════════════════════════════════════════════════════
 
-  function snapshot(): var {
-    return {
-      wallpaperPath: wallpaperPath,
-      wallpaperReady: wallpaperReady,
-      sourceWallpaperPath: sourceWallpaperPath,
-      primary: primary,
-      primaryLight: primaryLight,
-      primaryDark: primaryDark,
-      primaryMuted: primaryMuted,
-      secondary: secondary,
-      tertiary: tertiary,
-      background: background,
-      surface: surface,
-      accent: accent,
-      wallpaperAccents: wallpaperAccents,
-      downloadStatus: downloadStatus,
-      pickerOpen: pickerOpen,
-      wallpaperHistory: wallpaperHistory
-    }
-  }
+  function init(): void {}
 
   function setMonochrome(on: bool): void {
     svc._mono = on

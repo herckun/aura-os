@@ -49,18 +49,7 @@ Singleton {
             _persistIdentity(player.identity);
     }
 
-    function snapshot(): var {
-        return {
-            title: svc.currentTitle,
-            artist: svc.currentArtist,
-            album: svc.currentAlbum,
-            artUrl: svc.currentArtUrl,
-            duration: svc.duration,
-            position: svc.position,
-            status: svc.playbackStatus,
-            hasPlayer: svc.hasPlayer
-        };
-    }
+    function init(): void {}
 
     // ═══════════════════════════════════════════════════════════════
     //  INTERNAL STATE
