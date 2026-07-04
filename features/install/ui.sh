@@ -426,16 +426,14 @@ screen_plugins() {
   done
   _checkbox_menu
 
-  local i name dep dep_install
+  local i name
   for (( i = 0; i < total; i++ )); do
     [[ "${MENU_CHECKED[i]}" == "1" ]] || continue
     def="${extra_arr[i]}"
     selected_extra_defs+=("$def")
-    name=$(pf "$def" 1); dep=$(pf "$def" 4); dep_install=$(pf "$def" 5)
+    name=$(pf "$def" 1)
     # Auto-install missing tool deps for the plugins the user checked.
-    if [[ -n "$dep" ]] && ! command -v "$dep" &>/dev/null && [[ -n "$dep_install" ]]; then
-      extra_dep_map["$name"]="true"
-    fi
+    _plugin_needs_deps "$def" && extra_dep_map["$name"]="true" || true
   done
   return 0
 }

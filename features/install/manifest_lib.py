@@ -36,8 +36,10 @@ def _manifest_block(text):
 
 
 def _plugin_meta(base, kind, rel_file):
-    """Read name/description/first-dependency from a plugin's own QML manifest.
-    The manifest.json only stores {id, file}; everything else lives in the plugin."""
+    """Read name/description/dependencies from a plugin's own QML manifest.
+    The manifest.json only stores {id, file}; everything else lives in the plugin.
+    All dependency entries are kept: bins joined with ',', installs with ';;',
+    paired by index."""
     meta = {"name": "", "description": "", "dep": "", "install": ""}
     if not rel_file:
         return meta
@@ -55,12 +57,16 @@ def _plugin_meta(base, kind, rel_file):
         meta["description"] = m.group(1)
     dm = re.search(r'\bdependencies\s*:\s*\[(.*?)\]', block, re.S)
     if dm:
-        bm = re.search(r'\bbin\s*:\s*"([^"]*)"', dm.group(1))
-        im = re.search(r'\binstall\s*:\s*"([^"]*)"', dm.group(1))
-        if bm:
-            meta["dep"] = bm.group(1)
-        if im:
-            meta["install"] = im.group(1)
+        bins = []
+        installs = []
+        for em in re.finditer(r'\{[^}]*\}', dm.group(1)):
+            bm = re.search(r'\bbin\s*:\s*"([^"]*)"', em.group(0))
+            im = re.search(r'\binstall\s*:\s*"([^"]*)"', em.group(0))
+            if bm:
+                bins.append(bm.group(1))
+                installs.append(im.group(1) if im else "")
+        meta["dep"] = ",".join(bins)
+        meta["install"] = ";;".join(installs)
     return meta
 
 
