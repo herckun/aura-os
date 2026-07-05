@@ -30,9 +30,9 @@ Singleton {
 
   property string downloadStatus: ""
   property bool pickerOpen: false
-  property var wallpaperHistory: []
-  property bool autoCycle: false
-  property int autoCycleMinutes: 30
+  readonly property var wallpaperHistory: Store.toArray(Store.wallpaper.history)
+  readonly property bool autoCycle: Store.wallpaper.autoCycle
+  readonly property int autoCycleMinutes: Store.wallpaper.autoCycleMinutes
 
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
@@ -101,12 +101,10 @@ Singleton {
   }
 
   function setAutoCycle(on: bool): void {
-    svc.autoCycle = on
     Store.wallpaper.autoCycle = on
   }
 
   function setAutoCycleMinutes(minutes: int): void {
-    svc.autoCycleMinutes = minutes
     Store.wallpaper.autoCycleMinutes = minutes
     if (cycleTimer.running) cycleTimer.restart()
   }
@@ -240,14 +238,11 @@ Singleton {
     var history = svc.wallpaperHistory.filter(function(h) { return h.path !== path })
     history.unshift({ path: path, time: Date.now() })
     if (history.length > 12) history = history.slice(0, 12)
-    svc.wallpaperHistory = history
     Store.wallpaper.history = history
   }
 
   function removeFromHistory(path: string): void {
-    var history = svc.wallpaperHistory.filter(function(h) { return h.path !== path })
-    svc.wallpaperHistory = history
-    Store.wallpaper.history = history
+    Store.wallpaper.history = svc.wallpaperHistory.filter(function(h) { return h.path !== path })
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -270,10 +265,7 @@ Singleton {
   //  PRIVATE HELPERS
   // ═══════════════════════════════════════════════════════════════
 
-  function _loadHistory(): void {
-    var saved = Store.wallpaper.history
-    svc.wallpaperHistory = Array.isArray(saved) ? saved.slice() : []
-  }
+
 
   function _pollWallpaper(): void {
     if (_pollHandle && ProcessPool.isRunning(_pollHandle)) {
@@ -693,10 +685,7 @@ Singleton {
   //  LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
 
-  function _loadCycleSettings(): void {
-    svc.autoCycle = Store.wallpaper.autoCycle
-    svc.autoCycleMinutes = Store.wallpaper.autoCycleMinutes
-  }
+
 
   Connections {
     target: Store.theme
@@ -707,8 +696,6 @@ Singleton {
 
   Component.onCompleted: {
     svc._mono = Store.theme.monochrome
-    svc._loadHistory()
-    svc._loadCycleSettings()
     svc._pollWallpaper()
     svc._computeIlluminanceMap()
   }

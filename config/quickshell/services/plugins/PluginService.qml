@@ -159,7 +159,7 @@ Singleton {
       if (was !== enabled) svc.pluginEnabledChanged(pluginId, sec, enabled)
     }
     Store.plugins.enabled = enabledMap
-    var order = (Store.plugins.order[toLocation] || []).slice()
+    var order = Store.toArray(Store.plugins.order[toLocation])
     var idx = order.indexOf(pluginId)
     if (idx >= 0) order.splice(idx, 1)
     order.push(pluginId)

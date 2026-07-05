@@ -8,7 +8,7 @@ import "../"
 Singleton {
   id: svc
 
-  property bool enabled: true
+  readonly property bool enabled: Store.sfx.enabled
 
   property bool _ready: false
   property var _lastPlayed: ({})
@@ -112,7 +112,6 @@ Singleton {
   function init(): void {}
 
   function setEnabled(v: bool): void {
-    svc.enabled = v
     Store.sfx.enabled = v
   }
 
@@ -183,9 +182,11 @@ Singleton {
     onTriggered: svc._ready = true
   }
 
-  Component.onCompleted: {
-    svc.enabled = Store.sfx.enabled
-    if (svc.enabled) svc._spawn("startup")
+  property Timer _startupSfx: Timer {
+    interval: 400
+    repeat: false
+    running: true
+    onTriggered: if (svc.enabled) svc._spawn("startup")
   }
 
   Component.onDestruction: {

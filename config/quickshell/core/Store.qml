@@ -23,6 +23,19 @@ Singleton {
   property alias plugins: adapter.plugins
   property alias desktop: adapter.desktop
 
+  function toArray(v: var): var {
+    var out = []
+    if (v && v.length !== undefined)
+      for (var i = 0; i < v.length; i++) out.push(v[i])
+    return out
+  }
+
+  function toObject(v: var): var {
+    var out = {}
+    if (v) for (var k in v) out[k] = v[k]
+    return out
+  }
+
   function mapSet(map: var, key: string, value: var): var {
     var m = Object.assign({}, map || {})
     m[key] = value

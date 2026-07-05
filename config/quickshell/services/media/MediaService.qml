@@ -378,7 +378,7 @@ Singleton {
     // ═══════════════════════════════════════════════════════════════
 
     function _loadExcludedPlayers(): void {
-        _excludedPlayers = Store.media.excludePlayers;
+        _excludedPlayers = Store.toArray(Store.media.excludePlayers);
     }
 
     Connections {

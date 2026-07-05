@@ -76,12 +76,20 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
+  property Timer _restoreTimer: Timer {
+    interval: 400
+    repeat: false
+    running: true
+    onTriggered: {
+      svc.lastSsid = Store.network.lastSsid
+      svc.lastWiredName = Store.network.lastWiredName
+      svc.lastConnectionType = Store.network.lastConnectionType
+      if (svc.lastSsid !== "" || svc.lastWiredName !== "") autoConnectTimer.restart()
+    }
+  }
+
   Component.onCompleted: {
-    svc.lastSsid = Store.network.lastSsid
-    svc.lastWiredName = Store.network.lastWiredName
-    svc.lastConnectionType = Store.network.lastConnectionType
     svc.poll()
-    if (svc.lastSsid !== "" || svc.lastWiredName !== "") autoConnectTimer.restart()
   }
 
   // ═══════════════════════════════════════════════════════════════
