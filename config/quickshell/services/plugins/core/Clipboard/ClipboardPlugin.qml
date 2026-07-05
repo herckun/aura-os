@@ -19,6 +19,7 @@ BasePlugin {
     description: "Clipboard history",
     icon: "clipboard",
     locations: ["overview"],
+    defaultLayout: { "overview": { order: 40 } },
     overviewTab: { icon: "clipboard", label: "CLIP", key: "4" },
     settings: []
   })

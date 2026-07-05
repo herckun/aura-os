@@ -21,6 +21,7 @@ BasePlugin {
     description: "Storage usage",
     icon: "database",
     locations: ["controlcenter_row", "dashboard"],
+    defaultLayout: { "controlcenter_row": { enabled: false }, "dashboard": { order: 20 } },
     settings: []
   })
 

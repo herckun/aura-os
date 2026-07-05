@@ -382,11 +382,9 @@ Singleton {
     }
 
     Connections {
-        target: Store
-        function onChanged(key, value, previous) {
-            if (key === "media.excludePlayers") {
-                svc._loadExcludedPlayers();
-            }
+        target: Store.media
+        function onExcludePlayersChanged() {
+            svc._loadExcludedPlayers();
         }
     }
 

@@ -21,6 +21,7 @@ BasePlugin {
     description: "App launcher groups",
     icon: "rocket",
     locations: ["controlcenter_row"],
+    defaultLayout: { "controlcenter_row": { order: 70 } },
     settings: [
       {
         key: "groups",

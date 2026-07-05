@@ -20,6 +20,7 @@ BasePlugin {
     description: "Large clock widget for the desktop",
     icon: "clock",
     locations: ["desktop"],
+    defaultLayout: { "desktop": { order: 10, position: { x: 0.72, y: 0.07 }, settings: { showBackground: false } } },
     settings: [
       {
         key: "draggable",

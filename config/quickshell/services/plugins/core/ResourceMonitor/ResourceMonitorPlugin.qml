@@ -21,6 +21,7 @@ BasePlugin {
     description: "CPU, memory, and GPU usage display",
     icon: "cpu",
     locations: ["desktop"],
+    defaultLayout: { "desktop": { enabled: false, settings: { showBackground: true } } },
     settings: [
       {
         key: "draggable",

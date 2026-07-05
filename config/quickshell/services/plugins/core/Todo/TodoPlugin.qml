@@ -20,6 +20,7 @@ BasePlugin {
     description: "Task manager",
     icon: "todo",
     locations: ["overview"],
+    defaultLayout: { "overview": { order: 20 } },
     overviewTab: { icon: "todo", label: "TODO", key: "2" },
     settings: []
   })

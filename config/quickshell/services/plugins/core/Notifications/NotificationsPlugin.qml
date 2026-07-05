@@ -21,6 +21,7 @@ BasePlugin {
     description: "Recent notifications and badge",
     icon: "message",
     locations: ["controlcenter_row", "bar_right"],
+    defaultLayout: { "bar_right": { order: 20 }, "controlcenter_row": { enabled: false } },
     settings: [
       { key: "maxVisible", label: "MAX VISIBLE", type: "stepper", default: 5, min: 1, max: 20, step: 1, shared: true }
     ]

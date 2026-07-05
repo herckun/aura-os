@@ -21,6 +21,7 @@ BasePlugin {
     description: "Pomodoro and countdown timer",
     icon: "timer",
     locations: ["controlcenter_row", "overview"],
+    defaultLayout: { "controlcenter_row": { order: 50 }, "overview": { enabled: false } },
     overviewTab: { icon: "timer", label: "TIMER", key: "3" },
     settings: [
       { key: "defaultMinutes", label: "DEFAULT MINUTES", type: "stepper", default: 25, min: 1, max: 120, step: 1, shared: true }

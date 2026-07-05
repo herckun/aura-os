@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQml
+import QtQuick.Layouts
 import "../../../../styles"
 import "../../../../components"
 import "../../../../core"
@@ -19,6 +20,7 @@ BasePlugin {
     description: "Now playing controls",
     icon: "music",
     locations: ["controlcenter_row", "dashboard"],
+    defaultLayout: { "controlcenter_row": { order: 10 }, "dashboard": { order: 40 } },
     settings: []
   })
 

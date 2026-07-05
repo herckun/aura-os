@@ -7,77 +7,92 @@ import "../../core"
 Singleton {
   id: svc
 
-  readonly property var enabled: ({
-    "bar-workspaces@bar_left": true,
-    "smartIsland@bar_center": true,
-    "bar-status@bar_right": true,
-    "notifications@bar_right": true,
-    "system@bar_right": false,
-    "weather@bar_right": false,
-    "media@controlcenter_row": true,
-    "weather@controlcenter_row": true,
-    "system@controlcenter_row": true,
-    "nightlight@controlcenter_row": true,
-    "timer@controlcenter_row": true,
-    "screenshot@controlcenter_row": true,
-    "launchgroups@controlcenter_row": true,
-    "disk@controlcenter_row": false,
-    "notifications@controlcenter_row": false,
-    "powerprofile@controlcenter_row": false,
-    "docker@controlcenter_row": false,
-    "workspaces@overview": true,
-    "todo@overview": true,
-    "notes@overview": true,
-    "clipboard@overview": true,
-    "timer@overview": false,
-    "desktopclock@desktop": true,
-    "audioviz@desktop": false,
-    "lyrics@desktop": false,
-    "resourcemonitor@desktop": false,
-    "system@dashboard": true
-  })
-
-  readonly property var order: ({
-    "bar_left": ["bar-workspaces"],
-    "bar_center": ["smartIsland"],
-    "bar_right": ["bar-status", "notifications"],
-    "controlcenter_row": ["media", "weather", "system", "nightlight", "timer", "screenshot", "launchgroups"],
-    "overview": ["workspaces", "todo", "notes", "clipboard"],
-    "dashboard": ["system", "disk", "weather", "media"]
-  })
-
-  readonly property var settings: ({
-    "audioviz@desktop:showBackground": true,
-    "lyrics@desktop:showBackground": true,
-    "resourcemonitor@desktop:showBackground": true,
-    "desktopclock@desktop:showBackground": false
-  })
-
-  readonly property var widgets: ({
-    "desktopclock": { x: 0.72, y: 0.07 }
-  })
+  property bool _pendingApply: false
 
   function init(): void {
-    if (Store.freshInstall) apply()
+    if (Store.freshInstall) _applyWhenReady()
+  }
+
+  function apply(): void {
+    var enabled = ({})
+    var settings = ({})
+    var widgets = ({})
+    var byLocation = ({})
+
+    var plugins = PluginService.plugins
+    for (var i = 0; i < plugins.length; i++) {
+      var p = plugins[i]
+      var m = p.manifest || {}
+      var declared = m.locations || []
+      var dl = m.defaultLayout || {}
+
+      var locs = declared.slice()
+      for (var key in dl)
+        if (locs.indexOf(key) < 0) locs.push(key)
+
+      for (var j = 0; j < locs.length; j++) {
+        var loc = locs[j]
+        var spec = dl[loc] || {}
+        var on = spec.enabled !== undefined ? spec.enabled === true : declared.indexOf(loc) >= 0
+        enabled[p.id + "@" + loc] = on
+
+        if (on) {
+          if (!byLocation[loc]) byLocation[loc] = []
+          byLocation[loc].push({ id: p.id, order: spec.order !== undefined ? spec.order : 100 })
+        }
+
+        if (spec.settings)
+          for (var sk in spec.settings)
+            settings[p.id + "@" + loc + ":" + sk] = spec.settings[sk]
+
+        if (spec.position && spec.position.x !== undefined && spec.position.y !== undefined)
+          widgets[p.id] = { x: spec.position.x, y: spec.position.y }
+      }
+    }
+
+    var order = ({})
+    for (var location in byLocation) {
+      byLocation[location].sort(function(a, b) {
+        if (a.order !== b.order) return a.order - b.order
+        return a.id < b.id ? -1 : 1
+      })
+      order[location] = byLocation[location].map(function(e) { return e.id })
+    }
+
+    Store.plugins.enabled = enabled
+    Store.plugins.order = order
+
+    var s = Object.assign({}, Store.toObject(Store.plugins.settings))
+    for (var k in settings) s[k] = settings[k]
+    Store.plugins.settings = s
+
+    var w = Object.assign({}, Store.toObject(Store.desktop.widgets))
+    for (var id in widgets) w[id] = Object.assign({}, w[id] || {}, widgets[id])
+    Store.desktop.widgets = w
+  }
+
+  function _applyWhenReady(): void {
+    if (PluginService.plugins.length > 0) {
+      apply()
+      return
+    }
+    _pendingApply = true
   }
 
   Connections {
     target: Store
     function onFreshInstallChanged() {
-      if (Store.freshInstall) svc.apply()
+      if (Store.freshInstall) svc._applyWhenReady()
     }
   }
 
-  function apply(): void {
-    Store.plugins.enabled = Object.assign({}, enabled)
-    Store.plugins.order = Object.assign({}, order)
-
-    var s = Object.assign({}, Store.plugins.settings)
-    for (var k in settings) s[k] = settings[k]
-    Store.plugins.settings = s
-
-    var w = Object.assign({}, Store.desktop.widgets)
-    for (var id in widgets) w[id] = Object.assign({}, w[id] || {}, widgets[id])
-    Store.desktop.widgets = w
+  Connections {
+    target: PluginService
+    function onPluginsUpdated() {
+      if (svc._pendingApply && PluginService.plugins.length > 0) {
+        svc._pendingApply = false
+        svc.apply()
+      }
+    }
   }
 }

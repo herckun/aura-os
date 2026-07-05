@@ -22,6 +22,7 @@ BasePlugin {
     description: "Quick markdown scratchpad",
     icon: "note",
     locations: ["overview"],
+    defaultLayout: { "overview": { order: 30 } },
     overviewTab: { icon: "note", label: "NOTES", key: "5" },
     settings: []
   })

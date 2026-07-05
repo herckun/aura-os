@@ -20,6 +20,7 @@ BasePlugin {
     description: "Network, keyboard, and battery indicators",
     icon: "signal",
     locations: ["bar_right"],
+    defaultLayout: { "bar_right": { order: 10 } },
     settings: []
   })
 

@@ -22,6 +22,7 @@ BasePlugin {
     icon: "bolt",
     dependencies: [{ bin: "tlp", install: "sudo pacman -S --noconfirm tlp" }],
     locations: ["controlcenter_row"],
+    defaultLayout: { "controlcenter_row": { enabled: false } },
     settings: []
   })
 

@@ -23,6 +23,7 @@ BasePlugin {
     description: "Workspace indicators and window title",
     icon: "grid",
     locations: ["bar_left"],
+    defaultLayout: { "bar_left": { order: 10 } },
     settings: []
   })
 

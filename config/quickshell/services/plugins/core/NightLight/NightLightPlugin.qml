@@ -21,6 +21,7 @@ BasePlugin {
     description: "Blue light filter",
     icon: "moon",
     locations: ["controlcenter_row", "settings"],
+    defaultLayout: { "controlcenter_row": { order: 40 } },
     settings: [
       { key: "temperature", label: "TEMPERATURE (K)", type: "stepper", default: 3500, min: 2700, max: 6500, step: 100, shared: true },
       { key: "autoSchedule", label: "AUTO", description: "On at 20:00, off at 07:00", type: "toggle", default: false, shared: true }

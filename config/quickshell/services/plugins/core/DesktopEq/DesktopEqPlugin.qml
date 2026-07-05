@@ -20,6 +20,7 @@ BasePlugin {
     description: "Desktop audio spectrum visualizer",
     icon: "speaker-high",
     locations: ["desktop"],
+    defaultLayout: { "desktop": { enabled: false, settings: { showBackground: true } } },
     settings: [
       {
         key: "draggable",

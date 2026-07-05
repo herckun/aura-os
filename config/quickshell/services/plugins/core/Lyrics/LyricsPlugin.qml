@@ -21,6 +21,7 @@ BasePlugin {
     description: "Synced lyrics from currently playing track",
     icon: "music-note",
     locations: ["desktop"],
+    defaultLayout: { "desktop": { enabled: false, settings: { showBackground: true } } },
     settings: [
       { key: "draggable", label: "DRAGGABLE", description: "Allow repositioning by dragging", type: "toggle", default: true },
       { key: "autoPosition", label: "AUTO POSITION", description: "Find best position on wallpaper automatically", type: "toggle", default: false },

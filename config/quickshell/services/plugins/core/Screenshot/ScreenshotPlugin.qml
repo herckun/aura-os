@@ -20,6 +20,7 @@ BasePlugin {
     description: "Screen capture",
     icon: "camera",
     locations: ["controlcenter_row"],
+    defaultLayout: { "controlcenter_row": { order: 60 } },
     settings: []
   })
 

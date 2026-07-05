@@ -22,6 +22,7 @@ BasePlugin {
     description: "Hyprland workspace switcher",
     icon: "grid",
     locations: ["overview"],
+    defaultLayout: { "overview": { order: 10 } },
     overviewTab: { icon: "grid", label: "WS", key: "1" },
     settings: []
   })

@@ -20,6 +20,7 @@ BasePlugin {
     description: "A small, dynamic island that shows media and timer information.",
     icon: "clock",
     locations: ["bar_center"],
+    defaultLayout: { "bar_center": { order: 10 } },
     settings: []
   })
 
