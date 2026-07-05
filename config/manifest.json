@@ -476,6 +476,18 @@
         "label": "Set Volume"
       },
       {
+        "id": "media.playPause",
+        "label": "Play / Pause Media"
+      },
+      {
+        "id": "media.next",
+        "label": "Next Track"
+      },
+      {
+        "id": "media.previous",
+        "label": "Previous Track"
+      },
+      {
         "id": "mode.cycle",
         "label": "Cycle Shell Mode"
       },
@@ -528,7 +540,12 @@
           {
             "key": "direction",
             "label": "Direction",
-            "options": ["left", "right", "up", "down"]
+            "options": [
+              "left",
+              "right",
+              "up",
+              "down"
+            ]
           }
         ]
       },
@@ -539,7 +556,12 @@
           {
             "key": "direction",
             "label": "Direction",
-            "options": ["left", "right", "up", "down"]
+            "options": [
+              "left",
+              "right",
+              "up",
+              "down"
+            ]
           }
         ]
       },
@@ -1177,6 +1199,46 @@
         "locked": true
       },
       {
+        "id": "media-play",
+        "category": "media",
+        "mod": "",
+        "key": "XF86AudioPlay",
+        "actionType": "shell",
+        "action": "media.playPause",
+        "description": "Play / pause media",
+        "locked": true
+      },
+      {
+        "id": "media-pause",
+        "category": "media",
+        "mod": "",
+        "key": "XF86AudioPause",
+        "actionType": "shell",
+        "action": "media.playPause",
+        "description": "Pause media",
+        "locked": true
+      },
+      {
+        "id": "media-next",
+        "category": "media",
+        "mod": "",
+        "key": "XF86AudioNext",
+        "actionType": "shell",
+        "action": "media.next",
+        "description": "Next track",
+        "locked": true
+      },
+      {
+        "id": "media-prev",
+        "category": "media",
+        "mod": "",
+        "key": "XF86AudioPrev",
+        "actionType": "shell",
+        "action": "media.previous",
+        "description": "Previous track",
+        "locked": true
+      },
+      {
         "id": "bright-up",
         "category": "media",
         "mod": "",
@@ -1440,9 +1502,18 @@
       }
     ],
     "gpu": {
-      "nvidia": ["nvidia-utils"],
-      "amd": ["mesa", "vulkan-radeon", "libva-mesa-driver"],
-      "intel": ["mesa", "vulkan-intel"]
+      "nvidia": [
+        "nvidia-utils"
+      ],
+      "amd": [
+        "mesa",
+        "vulkan-radeon",
+        "libva-mesa-driver"
+      ],
+      "intel": [
+        "mesa",
+        "vulkan-intel"
+      ]
     },
     "aur": [
       {

@@ -134,6 +134,13 @@ Singleton {
   }
 
   IpcHandler {
+    target: "media"
+    function playPause(): void { MediaService.playPause() }
+    function next(): void { MediaService.next() }
+    function previous(): void { MediaService.previous() }
+  }
+
+  IpcHandler {
     target: "mode"
     function set(m: int): void { ModeService.setMode(m) }
     function cycle(): void { ModeService.cycleMode() }
