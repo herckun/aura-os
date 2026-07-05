@@ -57,8 +57,9 @@ Singleton {
                 w = reg.w;
                 h = reg.h;
             } else {
-                w = Store.get("desktop." + id + ".w", 200);
-                h = Store.get("desktop." + id + ".h", 120);
+                var geom = Store.desktop.widgets[id] || {};
+                w = geom.w ?? 200;
+                h = geom.h ?? 120;
             }
             if (w <= 0 || h <= 0) continue;
 
@@ -67,10 +68,12 @@ Singleton {
 
             registerRegion(id, pos.x, pos.y, w, h);
             autoPositions[id] = pos;
-            Store.set("desktop." + id + ".x", pos.x / screenW);
-            Store.set("desktop." + id + ".y", pos.y / screenH);
-            Store.set("desktop." + id + ".w", w);
-            Store.set("desktop." + id + ".h", h);
+            Store.desktop.widgets = Store.mapPatch(Store.desktop.widgets, id, {
+                x: pos.x / screenW,
+                y: pos.y / screenH,
+                w: w,
+                h: h
+            });
         }
 
         layoutComplete();

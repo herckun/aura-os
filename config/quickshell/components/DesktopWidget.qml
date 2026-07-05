@@ -73,8 +73,10 @@ Item {
     widgetLoader.y = newY
     root._committedX = newX
     root._committedY = newY
-    Store.set("desktop." + root.plugin.id + ".x", newX / root.screenWidth)
-    Store.set("desktop." + root.plugin.id + ".y", newY / root.screenHeight)
+    Store.desktop.widgets = Store.mapPatch(Store.desktop.widgets, root.plugin.id, {
+      x: newX / root.screenWidth,
+      y: newY / root.screenHeight
+    })
     root._registerMyRegion()
     DesktopLayoutService.requestLayout(root.screenWidth, root.screenHeight)
   }
@@ -179,8 +181,9 @@ Item {
 
   // ── Position restore ───────────────────────────────────────
   function _restorePosition(): void {
-    var sx = Store.get("desktop." + plugin.id + ".x", -1)
-    var sy = Store.get("desktop." + plugin.id + ".y", -1)
+    var geom = Store.desktop.widgets[plugin.id] || {}
+    var sx = geom.x ?? -1
+    var sy = geom.y ?? -1
     if (sx >= 0 && sy >= 0) {
       widgetLoader.x = sx * root.screenWidth
       widgetLoader.y = sy * root.screenHeight
@@ -303,12 +306,8 @@ Item {
   // ── Lifecycle ──────────────────────────────────────────────
   Component.onCompleted: {
     _restorePosition()
-    Store.watch("theme.accent", function() { root._updateBackground() })
-    Store.loadedLater(300, function() {
-      _restorePosition()
-      _registerMyRegion()
-      DesktopLayoutService.requestLayout(root.screenWidth, root.screenHeight)
-    })
+    _registerMyRegion()
+    DesktopLayoutService.requestLayout(root.screenWidth, root.screenHeight)
   }
 
   Component.onDestruction: {
@@ -358,8 +357,7 @@ Item {
       var fy = widgetLoader.y / root.screenHeight
       fx = Math.max(0, Math.min(1, fx))
       fy = Math.max(0, Math.min(1, fy))
-      Store.set("desktop." + plugin.id + ".x", fx)
-      Store.set("desktop." + plugin.id + ".y", fy)
+      Store.desktop.widgets = Store.mapPatch(Store.desktop.widgets, plugin.id, { x: fx, y: fy })
       root._committedX = widgetLoader.x
       root._committedY = widgetLoader.y
       root._registerMyRegion()

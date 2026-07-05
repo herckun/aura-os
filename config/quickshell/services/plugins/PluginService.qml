@@ -86,7 +86,7 @@ Singleton {
   }
 
   function isPluginEnabledForLocation(pluginId: string, location: string): bool {
-    var val = Store.get(_ekey(pluginId, location), undefined)
+    var val = Store.plugins.enabled[_ekey(pluginId, location)]
     if (val !== undefined) return val
     for (var i = 0; i < plugins.length; i++) {
       if (plugins[i].id === pluginId)
@@ -117,9 +117,7 @@ Singleton {
       var p = plugins[i]
       if (canRenderAt(p, location)) result.push(p)
     }
-    var raw = Store.get(_okey(location), "[]")
-    var order = []
-    try { order = JSON.parse(raw) } catch (e) {}
+    var order = Store.plugins.order[location] || []
     var orderMap = ({})
     for (var j = 0; j < order.length; j++) orderMap[order[j]] = j
     result.sort(function(a, b) {
@@ -142,7 +140,7 @@ Singleton {
   }
 
   function setPluginEnabledForLocation(pluginId: string, location: string, enabled: bool): void {
-    Store.set(_ekey(pluginId, location), enabled)
+    Store.plugins.enabled = Store.mapSet(Store.plugins.enabled, _ekey(pluginId, location), enabled)
     svc.pluginEnabledChanged(pluginId, location, enabled)
     _emitUpdated()
   }
@@ -152,34 +150,34 @@ Singleton {
     if (!group) return
     var sections = _sectionsInGroup(group)
     beginBatch()
+    var enabledMap = Object.assign({}, Store.plugins.enabled)
     for (var i = 0; i < sections.length; i++) {
       var sec = sections[i]
       var enabled = (sec === toLocation)
       var was = isPluginEnabledForLocation(pluginId, sec)
-      Store.set(_ekey(pluginId, sec), enabled)
+      enabledMap[_ekey(pluginId, sec)] = enabled
       if (was !== enabled) svc.pluginEnabledChanged(pluginId, sec, enabled)
     }
-    var raw = Store.get(_okey(toLocation), "[]")
-    var order = []
-    try { order = JSON.parse(raw) } catch (e) {}
+    Store.plugins.enabled = enabledMap
+    var order = (Store.plugins.order[toLocation] || []).slice()
     var idx = order.indexOf(pluginId)
     if (idx >= 0) order.splice(idx, 1)
     order.push(pluginId)
-    Store.set(_okey(toLocation), JSON.stringify(order))
+    Store.plugins.order = Store.mapSet(Store.plugins.order, toLocation, order)
     endBatch()
   }
 
   function setPluginOrder(location: string, orderedIds: var): void {
-    Store.set(_okey(location), JSON.stringify(orderedIds))
+    Store.plugins.order = Store.mapSet(Store.plugins.order, location, orderedIds)
     _emitUpdated()
   }
 
   function getPluginSetting(pluginId: string, key: string, location: string): var {
     if (location) {
-      var val = Store.get(_skey(pluginId, key, location), undefined)
+      var val = Store.plugins.settings[_skey(pluginId, key, location)]
       if (val !== undefined) return val
     }
-    var val = Store.get(_skey(pluginId, key, ""), undefined)
+    var val = Store.plugins.settings[_skey(pluginId, key, "")]
     if (val !== undefined) return val
     var p = _findPlugin(pluginId)
     if (p) {
@@ -191,7 +189,7 @@ Singleton {
   }
 
   function setPluginSetting(pluginId: string, key: string, value: var, location: string): void {
-    Store.set(_skey(pluginId, key, location), value)
+    Store.plugins.settings = Store.mapSet(Store.plugins.settings, _skey(pluginId, key, location), value)
     svc.pluginSettingChanged(pluginId, key, value, location || "")
     _emitUpdated()
   }
@@ -208,16 +206,12 @@ Singleton {
   }
 
   function _ekey(pluginId, location): string {
-    return "plugins." + pluginId + ".enabled." + location
+    return pluginId + "@" + location
   }
 
   function _skey(pluginId, key, location): string {
-    return location ? "plugins." + pluginId + "." + location + "." + key
-                    : "plugins." + pluginId + "." + key
-  }
-
-  function _okey(location): string {
-    return "plugins.order." + location
+    return location ? pluginId + "@" + location + ":" + key
+                    : pluginId + ":" + key
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -259,16 +253,8 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
-  function _initFromConfig(): void {
-    if (loaded) return
+  Component.onCompleted: {
     loaded = true
     _emitUpdated()
-  }
-
-  Component.onCompleted: {
-    if (Store._dirReady) {
-      _initFromConfig()
-    }
-    if (!loaded) Store.loadedLater(250, _initFromConfig)
   }
 }

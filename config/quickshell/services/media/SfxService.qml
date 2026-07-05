@@ -113,7 +113,7 @@ Singleton {
 
   function setEnabled(v: bool): void {
     svc.enabled = v
-    Store.set("sfx.enabled", v)
+    Store.sfx.enabled = v
   }
 
   function play(name: string): void {
@@ -184,11 +184,8 @@ Singleton {
   }
 
   Component.onCompleted: {
-    svc.enabled = Store.getBool("sfx.enabled", true)
-    Store.loadedLater(100, function () {
-      svc.enabled = Store.getBool("sfx.enabled", true)
-      if (svc.enabled) svc._spawn("startup")
-    })
+    svc.enabled = Store.sfx.enabled
+    if (svc.enabled) svc._spawn("startup")
   }
 
   Component.onDestruction: {

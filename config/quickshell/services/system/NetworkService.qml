@@ -77,16 +77,10 @@ Singleton {
   //  LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
   Component.onCompleted: {
-    svc.lastSsid = Store.getString("network.lastSsid", "")
-    svc.lastWiredName = Store.getString("network.lastWiredName", "")
-    svc.lastConnectionType = Store.getString("network.lastConnectionType", "")
+    svc.lastSsid = Store.network.lastSsid
+    svc.lastWiredName = Store.network.lastWiredName
+    svc.lastConnectionType = Store.network.lastConnectionType
     svc.poll()
-    Store.loadedLater(100, function() {
-      svc.lastSsid = Store.getString("network.lastSsid", "")
-      svc.lastWiredName = Store.getString("network.lastWiredName", "")
-      svc.lastConnectionType = Store.getString("network.lastConnectionType", "")
-      autoConnectTimer.restart()
-    })
     if (svc.lastSsid !== "" || svc.lastWiredName !== "") autoConnectTimer.restart()
   }
 
@@ -121,16 +115,16 @@ Singleton {
     if (ssid === "" || svc.lastSsid === ssid) return
     svc.lastSsid = ssid
     svc.lastConnectionType = "wifi"
-    Store.set("network.lastSsid", ssid)
-    Store.set("network.lastConnectionType", "wifi")
+    Store.network.lastSsid = ssid
+    Store.network.lastConnectionType = "wifi"
   }
 
   function _saveLastWired(name: string): void {
     if (name === "" || svc.lastWiredName === name) return
     svc.lastWiredName = name
     svc.lastConnectionType = "wired"
-    Store.set("network.lastWiredName", name)
-    Store.set("network.lastConnectionType", "wired")
+    Store.network.lastWiredName = name
+    Store.network.lastConnectionType = "wired"
   }
 
   function _cleanError(text: string): string {
@@ -489,7 +483,7 @@ Singleton {
             svc.lastError = ""
             if (svc.lastSsid === ssid) {
               svc.lastSsid = ""
-              Store.set("network.lastSsid", "")
+              Store.network.lastSsid = ""
             }
             var idx = svc.savedWifiNetworks.indexOf(ssid)
             if (idx !== -1) {

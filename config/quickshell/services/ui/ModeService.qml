@@ -18,7 +18,9 @@ Singleton {
         Theater = 4
     }
 
-  property int mode: ModeService.Default
+  readonly property int mode: Store.shell.mode >= 0 && Store.shell.mode <= 4 ? Store.shell.mode : ModeService.Default
+
+  readonly property string modeKey: ["default", "zen", "focus", "gaming", "theater"][mode]
 
   readonly property var modeInfo: ({
             0: {
@@ -48,6 +50,39 @@ Singleton {
             }
         })
 
+  readonly property var visualDefaults: ({
+            "default": {
+                animations: true,
+                blur: true,
+                transparency: true,
+                barFloating: false
+            },
+            "zen": {
+                animations: true,
+                blur: true,
+                transparency: true,
+                barFloating: true
+            },
+            "focus": {
+                animations: true,
+                blur: false,
+                transparency: false,
+                barFloating: false
+            },
+            "gaming": {
+                animations: false,
+                blur: false,
+                transparency: false,
+                barFloating: false
+            },
+            "theater": {
+                animations: true,
+                blur: true,
+                transparency: true,
+                barFloating: true
+            }
+        })
+
   readonly property bool showBar: mode !== ModeService.Gaming
   readonly property bool showHotAreas: mode === ModeService.Default || mode === ModeService.Zen
   readonly property bool minimalBar: mode === ModeService.Focus
@@ -60,73 +95,15 @@ Singleton {
     //  PUBLIC API
     // ═══════════════════════════════════════════════════════════════
     function setMode(m: int): void {
-        if (mode === m)
-            return;
-        mode = m;
-        Store.set("shell.mode", m);
-        _applyVisualPreset(m);
+        var preset = visualDefaults[["default", "zen", "focus", "gaming", "theater"][m]];
+        Store.shell.mode = m;
+        Store.appearance.animations = preset.animations;
+        Store.appearance.blur = preset.blur;
+        Store.appearance.transparency = preset.transparency;
+        Store.appearance.barFloating = preset.barFloating;
     }
 
     function cycleMode(): void {
-        var next = (mode + 1) % 5;
-        setMode(next);
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  VISUAL PRESETS
-    // ═══════════════════════════════════════════════════════════════
-
-    function _applyVisualPreset(m: int): void {
-        var nextAnimations = true;
-        var nextBlur = true;
-        var nextTransparency = true;
-        var nextFloating = false;
-
-        switch (m) {
-        case ModeService.Default:
-            break;
-        case ModeService.Zen:
-            nextFloating = true;
-            break;
-        case ModeService.Focus:
-            nextBlur = false;
-            nextTransparency = false;
-            break;
-        case ModeService.Gaming:
-            nextAnimations = false;
-            nextBlur = false;
-            nextTransparency = false;
-            break;
-        case ModeService.Theater:
-            nextFloating = true;
-            break;
-        }
-
-        Store.setBatch({
-            "performance.animations": nextAnimations,
-            "appearance.blur": nextBlur,
-            "appearance.transparency": nextTransparency,
-            "appearance.barFloating": nextFloating
-        });
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  PRIVATE HELPERS
-    // ═══════════════════════════════════════════════════════════════
-    function _syncFromStore(): void {
-        mode = Store.getInt("shell.mode", ModeService.Default);
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  LIFECYCLE
-    // ═══════════════════════════════════════════════════════════════
-    Component.onCompleted: {
-        Store.loadedLater(10, function () {
-            svc._syncFromStore();
-        });
-
-        Store.watch("shell.mode", function (_, value) {
-            svc.mode = value;
-        });
+        setMode((mode + 1) % 5);
     }
 }

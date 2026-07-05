@@ -31,9 +31,7 @@ Singleton {
   readonly property color error: _c("error")
   readonly property color interactive: _c("interactive")
 
-  property color _rawAccent: "#D71921"
-  property bool _accentManual: false
-  property bool monochrome: false
+  readonly property bool monochrome: Store.theme.monochrome
   property var predefinedAccents: [
     { color: "#D71921", name: "RED" },
     { color: "#E85D04", name: "ORANGE" },
@@ -54,8 +52,8 @@ Singleton {
     return result
   }
 
-  readonly property color accent: monochrome ? "#E8E8E8" : _rawAccent
-  readonly property color accentPure: _rawAccent
+  readonly property color accentPure: _ensureVisibleAccent(Qt.color(Store.theme.accent))
+  readonly property color accent: monochrome ? "#E8E8E8" : accentPure
 
   readonly property color controlBackground: _c("controlBackground")
   readonly property color controlBackgroundHover: _c("controlBackgroundHover")
@@ -76,20 +74,12 @@ Singleton {
   readonly property color controlBackgroundActive: _c("controlBackgroundActive")
   readonly property color borderActive: _c("borderActive")
 
-  property bool animationsEnabled: AppearanceService.animationsEnabled
-  property bool blurEnabled: AppearanceService.blurEnabled
-  property bool transparencyEnabled: AppearanceService.transparencyEnabled
-  property int shellMode: 0
+  readonly property bool animationsEnabled: AppearanceService.animationsEnabled
+  readonly property bool blurEnabled: AppearanceService.blurEnabled
+  readonly property bool transparencyEnabled: AppearanceService.transparencyEnabled
+  readonly property int shellMode: ModeService.mode
 
-  readonly property string _styleKey: {
-    switch (shellMode) {
-    case 1: return "zen"
-    case 2: return "focus"
-    case 3: return "gaming"
-    case 4: return "theater"
-    default: return "default"
-    }
-  }
+  readonly property string _styleKey: ModeService.modeKey
   readonly property var _style: _data.styles ? _data.styles[_styleKey] || _data.styles["default"] || {} : {}
   readonly property var _mode: _style.mode || {}
 
@@ -239,16 +229,12 @@ Singleton {
   }
 
   function setAccent(hex: string): void {
-    var c = _ensureVisibleAccent(Qt.color(hex))
-    _rawAccent = c
-    _accentManual = true
-    Store.set("theme.accent", c.toString())
-    Store.set("theme.accentManual", true)
+    Store.theme.accent = _ensureVisibleAccent(Qt.color(hex)).toString()
+    Store.theme.accentManual = true
   }
 
   function setMonochrome(on: bool): void {
-    monochrome = on
-    Store.set("theme.monochrome", on)
+    Store.theme.monochrome = on
   }
 
   Process {
@@ -281,26 +267,5 @@ Singleton {
     }
   }
 
-  function _syncFromStore() {
-    var acc = Store.getString("theme.accent", "#D71921")
-    if (acc) root._rawAccent = root._ensureVisibleAccent(Qt.color(acc))
-    root._accentManual = Store.getBool("theme.accentManual", false)
-    root.monochrome = Store.getBool("theme.monochrome", false)
-    root.shellMode = Store.getInt("shell.mode", 0)
-  }
-
-  Component.onCompleted: {
-    _themeLoader.running = true
-
-    _syncFromStore()
-
-    Store.watch("theme.accent", function(_, v) { root._rawAccent = root._ensureVisibleAccent(Qt.color(v)) })
-    Store.watch("theme.monochrome", function(_, v) { root.monochrome = v })
-    Store.watch("performance.animations", function(_, v) { root.animationsEnabled = v })
-    Store.watch("appearance.blur", function(_, v) { root.blurEnabled = v })
-    Store.watch("appearance.transparency", function(_, v) { root.transparencyEnabled = v })
-    Store.watch("shell.mode", function(_, v) { root.shellMode = v })
-
-    Store.loaded.connect(function() { root._syncFromStore() })
-  }
+  Component.onCompleted: _themeLoader.running = true
 }

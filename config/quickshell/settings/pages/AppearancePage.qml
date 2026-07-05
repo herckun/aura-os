@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../../core"
 import "../../styles"
 import "../../services"
 import "../../components"
@@ -71,6 +72,9 @@ Column {
   Card {
     width: parent.width
     title: "VISUAL EFFECTS"
+    description: PerformanceService.batterySaver
+                 ? "Locked while battery saver is active"
+                 : "Switching shell mode applies its preset — manual changes are saved"
 
     Column {
       width: parent.width
@@ -97,7 +101,9 @@ Column {
         Toggle {
           toggleWidth: 38
           toggleHeight: 20
-          checked: AppearanceService.animationsEnabled
+          checked: Store.appearance.animations
+          enabled: !AppearanceService.locked
+          opacity: AppearanceService.locked ? 0.4 : 1
           onToggled: (v) => AppearanceService.setAnimations(v)
         }
       }
@@ -111,7 +117,9 @@ Column {
         Toggle {
           toggleWidth: 38
           toggleHeight: 20
-          checked: AppearanceService.transparencyEnabled
+          checked: Store.appearance.transparency
+          enabled: !AppearanceService.locked
+          opacity: AppearanceService.locked ? 0.4 : 1
           onToggled: (v) => AppearanceService.setTransparency(v)
         }
       }
@@ -125,7 +133,9 @@ Column {
         Toggle {
           toggleWidth: 38
           toggleHeight: 20
-          checked: AppearanceService.blurEnabled
+          checked: Store.appearance.blur
+          enabled: !AppearanceService.locked
+          opacity: AppearanceService.locked ? 0.4 : 1
           onToggled: (v) => AppearanceService.setBlur(v)
         }
       }
@@ -141,13 +151,7 @@ Column {
       width: parent.width
       columns: 3
       currentIndex: ModeService.mode
-      items: [
-        { name: "DEFAULT",  icon: "device-desktop", description: "Full desktop with bar and hot areas" },
-        { name: "ZEN",     icon: "sun",            description: "Clean canvas — panels appear on demand" },
-        { name: "FOCUS",   icon: "target",         description: "Productivity — simplified, distraction-free" },
-        { name: "GAMING",  icon: "zap",            description: "Full-screen — minimal overlays" },
-        { name: "THEATER", icon: "moon",           description: "Media-centric — large widgets, dark chrome" }
-      ]
+      items: [0, 1, 2, 3, 4].map((i) => ModeService.modeInfo[i])
       onSelected: (idx) => ModeService.setMode(idx)
     }
   }

@@ -78,8 +78,8 @@ Singleton {
   }
 
   function resetToDefaults(): void {
-    Store.set("keybindings.overrides", {})
-    Store.set("keybindings.custom", [])
+    Store.keybindings.overrides = ({})
+    Store.keybindings.custom = ([])
     _loadDefaults()
     _generateHyprConfig()
   }
@@ -107,8 +107,8 @@ Singleton {
   }
 
   function _mergeBindings(): void {
-    var overrides = Store.getObject("keybindings.overrides", {})
-    var custom = Store.getArray("keybindings.custom", [])
+    var overrides = Object.assign({}, Store.keybindings.overrides)
+    var custom = Store.keybindings.custom.slice()
     var merged = []
 
     for (var i = 0; i < _manifestDefaults.length; i++) {
@@ -156,8 +156,8 @@ Singleton {
       }
     }
 
-    Store.set("keybindings.overrides", overrides)
-    Store.set("keybindings.custom", custom)
+    Store.keybindings.overrides = overrides
+    Store.keybindings.custom = custom
   }
 
   function _generateHyprConfig(): void {
@@ -307,10 +307,8 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
 
   function _regenerate(): void {
-    Store.loadedLater(0, function() {
-      svc._mergeBindings()
-      svc._generateHyprConfig()
-    })
+    svc._mergeBindings()
+    svc._generateHyprConfig()
   }
 
   Connections {

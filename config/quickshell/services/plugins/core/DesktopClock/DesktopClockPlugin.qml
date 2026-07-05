@@ -183,7 +183,7 @@ BasePlugin {
     property int _cfgVersion: 0
     readonly property color _bgColor: {
       var _v = _cfgVersion
-      var sampled = Store.get("desktop.desktopclock.bgColor", "")
+      var sampled = (Store.desktop.widgets["desktopclock"] || {}).bgColor || ""
       if (sampled.length > 0) {
         var c = Qt.color(sampled)
         if (c.valid) return c

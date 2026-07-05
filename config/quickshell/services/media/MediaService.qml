@@ -154,7 +154,7 @@ Singleton {
         }
         if (activePlayer && availablePlayers.indexOf(activePlayer) >= 0 && !isIdle(activePlayer))
             return;
-        var savedId = Store.getString("media.lastPlayerIdentity", "");
+        var savedId = Store.media.lastPlayerIdentity;
         if (savedId) {
             var match = availablePlayers.find(function (p) {
                 return p.identity === savedId;
@@ -173,7 +173,7 @@ Singleton {
 
     function _persistIdentity(identity: string): void {
         if (identity)
-            Store.set("media.lastPlayerIdentity", identity);
+            Store.media.lastPlayerIdentity = identity;
     }
 
     // ── State management ──
@@ -378,7 +378,7 @@ Singleton {
     // ═══════════════════════════════════════════════════════════════
 
     function _loadExcludedPlayers(): void {
-        _excludedPlayers = Store.getArray("media.excludePlayers", []);
+        _excludedPlayers = Store.media.excludePlayers;
     }
 
     Connections {

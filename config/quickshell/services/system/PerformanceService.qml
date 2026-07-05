@@ -13,7 +13,9 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   enum Profile { Performance = 0, Balanced = 1, BatterySaver = 2 }
 
-  property int profile: 1
+  readonly property int profile: Store.performance.profile
+
+  readonly property bool batterySaver: profile === 2
 
   readonly property real pollIntervalMultiplier: {
     switch (svc.profile) {
@@ -32,9 +34,7 @@ Singleton {
   }
 
   function switchProfile(p: int): void {
-    if (p === svc.profile) return
-    svc.profile = p
-    Store.set("performance.profile", p)
+    Store.performance.profile = p
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -42,9 +42,6 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   property bool _ready: false
   property int _prevProfile: 1
-  property bool _savedBlur: true
-  property bool _savedTransparency: true
-  property bool _savedAnimations: true
   property real _savedBrightness: 0.7
   property var _tlpHandle: null
 
@@ -69,20 +66,11 @@ Singleton {
     svc._savedBrightness = BrightnessService.brightness
     BrightnessService.setBrightness(0.30)
     BluetoothService.setPower(false)
-    svc._savedBlur = Store.getBool("appearance.blur", true)
-    svc._savedTransparency = Store.getBool("appearance.transparency", true)
-    svc._savedAnimations = Store.getBool("performance.animations", true)
-    Store.set("appearance.blur", false)
-    Store.set("appearance.transparency", false)
-    Store.set("performance.animations", false)
   }
 
-  function _restoreAppearance(): void {
+  function _exitBatterySaver(): void {
     BrightnessService.setBrightness(svc._savedBrightness)
     BluetoothService.setPower(true)
-    Store.set("appearance.blur", svc._savedBlur)
-    Store.set("appearance.transparency", svc._savedTransparency)
-    Store.set("performance.animations", svc._savedAnimations)
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -99,7 +87,7 @@ Singleton {
     } else {
       svc._applyTLP(svc.profile)
       if (svc._prevProfile === 2) {
-        svc._restoreAppearance()
+        svc._exitBatterySaver()
       }
     }
     svc._prevProfile = svc.profile
@@ -109,21 +97,12 @@ Singleton {
   //  LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
   Component.onCompleted: {
-    Store.watch("performance.profile", function(_, value) {
-      svc.profile = value
-    })
-    Store.loadedLater(50, function() {
-      svc._syncFromStore()
-      svc._ready = true
-      if (svc.profile === 2) {
-        svc._enterBatterySaver()
-      } else {
-        svc._applyTLP(svc.profile)
-      }
-    })
-  }
-
-  function _syncFromStore(): void {
-    svc.profile = Store.getInt("performance.profile", 1)
+    svc._prevProfile = svc.profile
+    svc._ready = true
+    if (svc.profile === 2) {
+      svc._enterBatterySaver()
+    } else {
+      svc._applyTLP(svc.profile)
+    }
   }
 }

@@ -5,6 +5,8 @@ import Quickshell.Io
 import "../../core"
 import "../../styles"
 import "../hyprland"
+import "../ui"
+import "../system"
 
 Singleton {
   id: svc
@@ -13,10 +15,12 @@ Singleton {
   //  PUBLIC STATE
   // ═══════════════════════════════════════════════════════════════
 
-  property bool animationsEnabled: true
-  property bool blurEnabled: true
-  property bool transparencyEnabled: true
-  property bool barFloating: false
+  readonly property bool animationsEnabled: Store.appearance.animations && !PerformanceService.batterySaver
+  readonly property bool blurEnabled: Store.appearance.blur && !PerformanceService.batterySaver
+  readonly property bool transparencyEnabled: Store.appearance.transparency && !PerformanceService.batterySaver
+  readonly property bool barFloating: Store.appearance.barFloating
+
+  readonly property bool locked: PerformanceService.batterySaver
 
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
@@ -25,30 +29,28 @@ Singleton {
   function init(): void {}
 
   function setAnimations(on: bool): void {
-    Store.set("performance.animations", on)
-    var blink = on ? "0.5" : "0"
-    ProcessPool.runQueued("Kitty cursor", ["kitty", "@", "set-cursor-blink-interval", blink], {
-      silent: true
-    })
-    applyKittyConfig(on, blurEnabled, transparencyEnabled)
+    if (locked) return
+    Store.appearance.animations = on
   }
 
   function setBlur(on: bool): void {
-    Store.set("appearance.blur", on)
+    if (locked) return
+    Store.appearance.blur = on
   }
 
   function setTransparency(on: bool): void {
-    Store.set("appearance.transparency", on)
-    var opacity = on ? "0.95" : "1.0"
-    ProcessPool.runQueued("Kitty opacity", ["kitty", "@", "set-background-opacity", opacity], {
-      silent: true
-    })
-    applyKittyConfig(animationsEnabled, blurEnabled, on)
+    if (locked) return
+    Store.appearance.transparency = on
   }
 
-  function applyKittyConfig(anim: bool, blr: bool, trn: bool): void {
-    var opacity = trn ? "0.95" : "1.0"
-    var blink = anim ? "0.5" : "0"
+  function setBarFloating(on: bool): void {
+    if (locked) return
+    Store.appearance.barFloating = on
+  }
+
+  function applyKittyConfig(): void {
+    var opacity = transparencyEnabled ? "0.95" : "1.0"
+    var blink = animationsEnabled ? "0.5" : "0"
     var conf = AppInfo.configHome + "/kitty/kitty.conf"
     ProcessPool.runQueued("Kitty config", [
       "sh", "-c",
@@ -74,7 +76,7 @@ Singleton {
     var gapsOut = gapsParts.length > 1 ? gapsParts[1] : gapsParts[0] || "8"
 
     HyprlandService.modifyConfig(hyprDir + "/animations.lua", [
-      { pattern: /(leaf[^=]*enabled\s*=\s*)(?:true|false)/g, replacement: "$1" + animEnabled }
+      { pattern: /(leaf\s*=\s*"[^"]*",\s*enabled\s*=\s*)(?:true|false)/g, replacement: "$1" + animEnabled }
     ])
 
     HyprlandService.modifyConfig(hyprDir + "/decorations.lua", [
@@ -95,47 +97,44 @@ Singleton {
   //  PRIVATE HELPERS
   // ═══════════════════════════════════════════════════════════════
 
-  function _syncFromStore(): void {
-    animationsEnabled = Store.getBool("performance.animations", true)
-    blurEnabled = Store.getBool("appearance.blur", true)
-    transparencyEnabled = Store.getBool("appearance.transparency", true)
-    barFloating = Store.getBool("appearance.barFloating", false)
-  }
+  readonly property string themeEngineState: JSON.stringify({
+    accent: Store.theme.accent.replace("#", ""),
+    shellMode: ModeService.mode,
+    transparency: transparencyEnabled,
+    animations: animationsEnabled,
+    monochrome: Store.theme.monochrome,
+    blur: blurEnabled
+  })
 
-  function _watchStore(key: string, handler: var): void {
-    Store.watch(key, function(_, value) {
-      handler(value)
-    })
-  }
-
-  function _scheduleHyprUpdate(): void {
-    _hyprUpdateTimer.restart()
-  }
-
-  function _themeArgs(): string {
-    var raw = Store.getString("theme.accent", "#D71921")
-    var accent = raw.replace("#", "")
-    var transparency = Store.getBool("appearance.transparency", true)
-    var animations = Store.getBool("performance.animations", true)
-    var monochrome = Store.getBool("theme.monochrome", false)
-    var blur = Store.getBool("appearance.blur", true)
-    var mode = Store.getInt("shell.mode", 0)
-    return JSON.stringify({
-      accent: accent,
-      shellMode: mode,
-      transparency: transparency,
-      animations: animations,
-      monochrome: monochrome,
-      blur: blur
-    })
-  }
+  readonly property string hyprConfigState: JSON.stringify({
+    animations: animationsEnabled,
+    blur: blurEnabled,
+    transparency: transparencyEnabled,
+    outerGap: Theme.hyprOuterGap,
+    innerGap: Theme.hyprInnerGap
+  })
 
   function _flushThemeUpdate(): void {
-    ProcessPool.runDetachedBusy([AppInfo.configHome + "/features/theme/engine.sh", _themeArgs()], "theme-engine", 1500)
+    ProcessPool.runDetachedBusy([AppInfo.configHome + "/features/theme/engine.sh", themeEngineState], "theme-engine", 1500)
   }
 
-  function _scheduleThemeUpdate(): void {
-    _themeUpdateTimer.restart()
+  // ═══════════════════════════════════════════════════════════════
+  //  SIGNAL CONNECTIONS
+  // ═══════════════════════════════════════════════════════════════
+
+  onThemeEngineStateChanged: _themeUpdateTimer.restart()
+  onHyprConfigStateChanged: _hyprUpdateTimer.restart()
+
+  onAnimationsEnabledChanged: {
+    var blink = animationsEnabled ? "0.5" : "0"
+    ProcessPool.runQueued("Kitty cursor", ["kitty", "@", "set-cursor-blink-interval", blink], { silent: true })
+    applyKittyConfig()
+  }
+
+  onTransparencyEnabledChanged: {
+    var opacity = transparencyEnabled ? "0.95" : "1.0"
+    ProcessPool.runQueued("Kitty opacity", ["kitty", "@", "set-background-opacity", opacity], { silent: true })
+    applyKittyConfig()
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -159,44 +158,7 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
 
   Component.onCompleted: {
-    svc._syncFromStore()
-
-    _watchStore("theme.accent", function(_) { svc._scheduleThemeUpdate() })
-    _watchStore("theme.monochrome", function(_) { svc._scheduleThemeUpdate() })
-    _watchStore("appearance.blur", function(value) {
-      svc.blurEnabled = value
-      svc._scheduleThemeUpdate()
-      svc._scheduleHyprUpdate()
-    })
-    _watchStore("appearance.transparency", function(value) {
-      svc.transparencyEnabled = value
-      var opacity = value ? "0.95" : "1.0"
-      ProcessPool.runQueued("Kitty opacity", ["kitty", "@", "set-background-opacity", opacity], { silent: true })
-      svc.applyKittyConfig(svc.animationsEnabled, svc.blurEnabled, value)
-      svc._scheduleThemeUpdate()
-      svc._scheduleHyprUpdate()
-    })
-    _watchStore("performance.animations", function(value) {
-      svc.animationsEnabled = value
-      var blink = value ? "0.5" : "0"
-      ProcessPool.runQueued("Kitty cursor", ["kitty", "@", "set-cursor-blink-interval", blink], { silent: true })
-      svc.applyKittyConfig(value, svc.blurEnabled, svc.transparencyEnabled)
-      svc._scheduleThemeUpdate()
-      svc._scheduleHyprUpdate()
-    })
-    _watchStore("appearance.barFloating", function(value) {
-      svc.barFloating = value
-      svc._scheduleHyprUpdate()
-    })
-    _watchStore("shell.mode", function(_) {
-      svc._scheduleHyprUpdate()
-      svc._scheduleThemeUpdate()
-    })
-
-    Store.loaded.connect(function() {
-      svc._syncFromStore()
-      svc._scheduleThemeUpdate()
-      svc._scheduleHyprUpdate()
-    })
+    _themeUpdateTimer.restart()
+    _hyprUpdateTimer.restart()
   }
 }

@@ -35,12 +35,12 @@ BasePlugin {
 
   // ── Public API ───────────────────────────────────────────────────
   function _syncFromStore(): void {
-    var val = Store.get("plugins.notes.content", "")
+    var val = Store.plugins.settings["notes:content"] ?? ""
     if (val !== _content) _content = val
   }
 
   function _save(): void {
-    Store.set("plugins.notes.content", _content)
+    Store.plugins.settings = Store.mapSet(Store.plugins.settings, "notes:content", _content)
   }
 
   function _onContentChanged(): void {
@@ -63,9 +63,9 @@ BasePlugin {
   }
 
   Connections {
-    target: Store
-    function onLoaded() {
-      _syncFromStore()
+    target: Store.plugins
+    function onSettingsChanged() {
+      root._syncFromStore()
     }
   }
 

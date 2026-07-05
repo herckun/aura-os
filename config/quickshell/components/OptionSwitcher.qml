@@ -14,7 +14,7 @@ RowLayout {
   property int controlHeight: size === "xs" ? Theme.controlHeightSmall - 4 : size === "sm" ? Theme.controlHeightSmall : Theme.controlHeight
   property int controlFontSize: size === "xs" ? Theme.fontSizeMicro : size === "sm" ? Theme.fontSizeCaption : Theme.fontSizeLabel
   property int controlPadding: size === "xs" ? Theme.spaceXs : size === "sm" ? Theme.spaceSm : Theme.spaceMd
-  property string currentOption: options.length > currentIndex ? options[currentIndex] : ""
+  property string currentOption: currentIndex >= 0 && currentIndex < options.length ? options[currentIndex] : ""
 
   signal selected(int index)
 

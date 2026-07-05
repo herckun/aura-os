@@ -125,9 +125,8 @@ Singleton {
   }
 
   function setDefault(category: string, item: var): void {
-    var stored = Store.getObject("defaultApps", {})
-    stored[category] = { id: item.id || "", name: item.name || "", exec: item.exec || "" }
-    Store.set("defaultApps", stored)
+    var stored = Store.mapSet(Store.apps.defaults, category, { id: item.id || "", name: item.name || "", exec: item.exec || "" })
+    Store.apps.defaults = stored
 
     _applySystem(_categoryById(category), stored[category])
 
@@ -316,12 +315,12 @@ Singleton {
     }
     candidates = cands
     svc._detected = detected
-    Store.loadedLater(0, function() { svc._resolve() })
+    svc._resolve()
   }
 
   function _resolve(): void {
     var detected = svc._detected
-    var stored = Store.getObject("defaultApps", {})
+    var stored = Store.apps.defaults
     var manifest = (AppInfo.manifest && AppInfo.manifest.defaultApps) || {}
     var cur = {}
     for (var i = 0; i < categories.length; i++) {
@@ -371,7 +370,7 @@ Singleton {
   Connections {
     target: AppInfo
     function onManifestChanged() {
-      if (svc.loaded) Store.loadedLater(0, function() { svc._resolve() })
+      if (svc.loaded) svc._resolve()
     }
   }
 

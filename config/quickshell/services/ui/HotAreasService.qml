@@ -39,7 +39,7 @@ Singleton {
     var m = Object.assign({}, enabledMap)
     m[id] = val
     enabledMap = m
-    Store.set("hotareas.enabled", enabledMap)
+    Store.hotareas.enabled = enabledMap
   }
 
   function triggerAction(action: string): void {
@@ -50,7 +50,7 @@ Singleton {
   //  PRIVATE HELPERS
   // ═══════════════════════════════════════════════════════════════
   function _syncFromStore(): void {
-    var saved = Store.get("hotareas.enabled", null)
+    var saved = Store.hotareas.enabled
     if (saved && typeof saved === "object") {
       var m = Object.assign({}, enabledMap)
       for (var k in saved)
@@ -64,11 +64,12 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   Component.onCompleted: {
     svc._syncFromStore()
-    Store.watch("hotareas.enabled", function() {
+  }
+
+  Connections {
+    target: Store.hotareas
+    function onEnabledChanged() {
       svc._syncFromStore()
-    })
-    Store.loadedLater(150, function() {
-      svc._syncFromStore()
-    })
+    }
   }
 }

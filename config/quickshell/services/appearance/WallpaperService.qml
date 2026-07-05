@@ -42,11 +42,11 @@ Singleton {
 
   function setMonochrome(on: bool): void {
     svc._mono = on
-    Store.set("theme.accentManual", false)
+    Store.theme.accentManual = false
     if (!on && wallpaperAccents.length > 0) {
-      Store.set("theme.accent", wallpaperAccents[0])
+      Store.theme.accent = wallpaperAccents[0]
     } else if (on) {
-      Store.set("theme.accent", "#E8E8E8")
+      Store.theme.accent = "#E8E8E8"
     }
     if (_startupDone) svc._userChangedWallpaper = true
     svc.refresh()
@@ -62,7 +62,7 @@ Singleton {
     if (!path || path.length === 0) return
     if (_startupDone) svc._userChangedWallpaper = true
 
-    Store.set("theme.accentManual", false)
+    Store.theme.accentManual = false
     svc.sourceWallpaperPath = path
     svc.addToHistory(path)
 
@@ -102,12 +102,12 @@ Singleton {
 
   function setAutoCycle(on: bool): void {
     svc.autoCycle = on
-    Store.set("wallpaper.autoCycle", on)
+    Store.wallpaper.autoCycle = on
   }
 
   function setAutoCycleMinutes(minutes: int): void {
     svc.autoCycleMinutes = minutes
-    Store.set("wallpaper.autoCycleMinutes", minutes)
+    Store.wallpaper.autoCycleMinutes = minutes
     if (cycleTimer.running) cycleTimer.restart()
   }
 
@@ -241,13 +241,13 @@ Singleton {
     history.unshift({ path: path, time: Date.now() })
     if (history.length > 12) history = history.slice(0, 12)
     svc.wallpaperHistory = history
-    Store.set("wallpaper.history", JSON.stringify(history))
+    Store.wallpaper.history = history
   }
 
   function removeFromHistory(path: string): void {
     var history = svc.wallpaperHistory.filter(function(h) { return h.path !== path })
     svc.wallpaperHistory = history
-    Store.set("wallpaper.history", JSON.stringify(history))
+    Store.wallpaper.history = history
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -271,13 +271,8 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
 
   function _loadHistory(): void {
-    try {
-      var raw = Store.getString("wallpaper.history", "[]")
-      var parsed = JSON.parse(raw)
-      if (Array.isArray(parsed)) svc.wallpaperHistory = parsed
-    } catch (e) {
-      svc.wallpaperHistory = []
-    }
+    var saved = Store.wallpaper.history
+    svc.wallpaperHistory = Array.isArray(saved) ? saved.slice() : []
   }
 
   function _pollWallpaper(): void {
@@ -355,9 +350,9 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
 
   onWallpaperAccentsChanged: {
-    if (wallpaperAccents.length > 0 && _userChangedWallpaper && !Store.getBool("theme.accentManual", false)) {
+    if (wallpaperAccents.length > 0 && _userChangedWallpaper && !Store.theme.accentManual) {
       _userChangedWallpaper = false
-      Store.set("theme.accent", _mono ? "#E8E8E8" : wallpaperAccents[0])
+      Store.theme.accent = _mono ? "#E8E8E8" : wallpaperAccents[0]
     }
   }
 
@@ -699,25 +694,22 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
 
   function _loadCycleSettings(): void {
-    svc.autoCycle = Store.getBool("wallpaper.autoCycle", false)
-    svc.autoCycleMinutes = Store.getInt("wallpaper.autoCycleMinutes", 30)
+    svc.autoCycle = Store.wallpaper.autoCycle
+    svc.autoCycleMinutes = Store.wallpaper.autoCycleMinutes
+  }
+
+  Connections {
+    target: Store.theme
+    function onMonochromeChanged() {
+      svc.setMonochrome(Store.theme.monochrome)
+    }
   }
 
   Component.onCompleted: {
-    svc._mono = Store.getBool("theme.monochrome", false)
+    svc._mono = Store.theme.monochrome
     svc._loadHistory()
     svc._loadCycleSettings()
     svc._pollWallpaper()
     svc._computeIlluminanceMap()
-
-    Store.watch("theme.monochrome", function(_, on) {
-      svc.setMonochrome(on)
-    })
-
-    Store.loaded.connect(function() {
-      svc._mono = Store.getBool("theme.monochrome", false)
-      svc._loadHistory()
-      svc._loadCycleSettings()
-    })
   }
 }
