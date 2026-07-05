@@ -137,3 +137,39 @@ hl.layer_rule({
   blur = true,
   ignore_alpha = 0.0,
 })
+
+hl.window_rule({
+  name  = "float-compact",
+  match = { float = true },
+  size = "60% 65%",
+  center = true,
+})
+
+local floatState = {}
+
+hl.on("window.update_rules", function(w)
+  if not w then return end
+  local ok, addr = pcall(function() return w.address end)
+  if not ok or not addr then return end
+  local was = floatState[addr]
+  local now = w.floating
+  floatState[addr] = now
+  if now and was == false and w.fullscreen == 0 then
+    hl.timer(function()
+      local win = hl.get_window("address:" .. addr)
+      if not (win and win.floating and win.fullscreen == 0) then return end
+      local m = win.monitor
+      if not m then return end
+      local tw = math.floor(m.width * 0.6)
+      local th = math.floor(m.height * 0.65)
+      hl.dispatch(hl.dsp.window.resize({ x = tw, y = th, window = win }))
+      hl.dispatch(hl.dsp.window.move({ x = m.x + math.floor((m.width - tw) / 2), y = m.y + math.floor((m.height - th) / 2), window = win }))
+    end, { timeout = 60, type = "oneshot" })
+  end
+end)
+
+hl.on("window.destroy", function(w)
+  if not w then return end
+  local ok, addr = pcall(function() return w.address end)
+  if ok and addr then floatState[addr] = nil end
+end)
