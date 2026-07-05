@@ -19,22 +19,61 @@ Section {
       Layout.fillWidth: true
       spacing: Theme.spaceSm
 
-      Avatar {
-        Layout.alignment: Qt.AlignVCenter
-        size: 34
-        source: UserService.avatarSource
-        fallbackText: UserService.initial
-      }
-
-      Text {
+      Item {
         Layout.fillWidth: true
-        text: UserService.displayName.toUpperCase()
-        color: Theme.textPrimary
-        font.pixelSize: Theme.fontSizeCaption
-        font.family: Theme.fontFamilyMono
-        font.weight: Font.Bold
-        font.letterSpacing: 0.14
-        elide: Text.ElideRight
+        implicitHeight: idRow.implicitHeight
+
+        RowLayout {
+          id: idRow
+          anchors.fill: parent
+          spacing: Theme.spaceSm
+
+          Avatar {
+            Layout.alignment: Qt.AlignVCenter
+            size: 34
+            source: UserService.avatarSource
+            fallbackText: UserService.initial
+            ringColor: idMa.containsMouse ? Theme.accent : Theme.borderVisible
+          }
+
+          ColumnLayout {
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignVCenter
+            spacing: 0
+
+            Text {
+              text: "HELLO,"
+              color: Theme.textDisabled
+              font.pixelSize: Theme.fontSizeMicro
+              font.family: Theme.fontFamilyMono
+              font.letterSpacing: 0.16
+            }
+
+            Text {
+              Layout.fillWidth: true
+              text: UserService.displayName.toUpperCase()
+              color: idMa.containsMouse ? Theme.accent : Theme.textPrimary
+              font.pixelSize: Theme.fontSizeCaption
+              font.family: Theme.fontFamilyMono
+              font.weight: Font.Bold
+              font.letterSpacing: 0.14
+              elide: Text.ElideRight
+
+              Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
+            }
+          }
+        }
+
+        MouseArea {
+          id: idMa
+          anchors.fill: parent
+          hoverEnabled: true
+          cursorShape: Qt.PointingHandCursor
+          onClicked: {
+            IpcService.navigatePanel("settings", "user")
+            IpcService.togglePanel("controlcenter")
+          }
+        }
       }
 
       ButtonGroup {
