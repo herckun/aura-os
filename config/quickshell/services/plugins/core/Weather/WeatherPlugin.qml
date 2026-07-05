@@ -21,7 +21,7 @@ BasePlugin {
     icon: "sun",
     locations: ["controlcenter_row", "bar_right"],
     settings: [
-      { key: "showDetails", label: "SHOW DETAILS", type: "toggle", default: true },
+      { key: "showDetails", label: "SHOW DETAILS", type: "toggle", default: true, locations: ["controlcenter_row"] },
       { key: "location", label: "LOCATION", description: "Overrides IP-detected location", type: "text", placeholder: "City, Country", shared: true, default: "" }
     ]
   })

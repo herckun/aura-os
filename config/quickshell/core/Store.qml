@@ -6,6 +6,8 @@ import Quickshell.Io
 Singleton {
   id: store
 
+  property bool freshInstall: false
+
   property alias appearance: adapter.appearance
   property alias theme: adapter.theme
   property alias shell: adapter.shell
@@ -17,6 +19,7 @@ Singleton {
   property alias hotareas: adapter.hotareas
   property alias keybindings: adapter.keybindings
   property alias apps: adapter.apps
+  property alias search: adapter.search
   property alias plugins: adapter.plugins
   property alias desktop: adapter.desktop
 
@@ -42,7 +45,10 @@ Singleton {
     onFileChanged: reload()
     onAdapterUpdated: saveTimer.restart()
     onLoadFailed: (error) => {
-      if (error === FileViewError.FileNotFound) mkdirProc.running = true
+      if (error === FileViewError.FileNotFound) {
+        store.freshInstall = true
+        mkdirProc.running = true
+      }
     }
     onSaveFailed: (error) => {
       if (error === FileViewError.FileNotFound && !mkdirProc.running) mkdirProc.running = true
@@ -104,6 +110,10 @@ Singleton {
 
       property JsonObject apps: JsonObject {
         property var defaults: ({})
+      }
+
+      property JsonObject search: JsonObject {
+        property var disabled: ([])
       }
 
       property JsonObject plugins: JsonObject {

@@ -22,8 +22,8 @@ BasePlugin {
     icon: "moon",
     locations: ["controlcenter_row", "settings"],
     settings: [
-      { key: "temperature", label: "TEMPERATURE (K)", type: "stepper", default: 3500, min: 2700, max: 6500, step: 100 },
-      { key: "autoSchedule", label: "AUTO", description: "On at 20:00, off at 07:00", type: "toggle", default: false }
+      { key: "temperature", label: "TEMPERATURE (K)", type: "stepper", default: 3500, min: 2700, max: 6500, step: 100, shared: true },
+      { key: "autoSchedule", label: "AUTO", description: "On at 20:00, off at 07:00", type: "toggle", default: false, shared: true }
     ]
   })
 

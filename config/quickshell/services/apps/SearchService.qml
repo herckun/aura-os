@@ -29,15 +29,94 @@ Singleton {
     function registerProvider(provider): void {
         if (!provider || !provider.id)
             return;
-        for (var i = 0; i < svc._providers.length; i++) {
-            if (svc._providers[i].id === provider.id) {
-                svc._providers[i] = provider;
-                svc._sortProviders();
-                return;
+        var next = svc._providers.slice();
+        var replaced = false;
+        for (var i = 0; i < next.length; i++) {
+            if (next[i].id === provider.id) {
+                next[i] = provider;
+                replaced = true;
+                break;
             }
         }
-        svc._providers.push(provider);
+        if (!replaced)
+            next.push(provider);
+        svc._providers = next;
         svc._sortProviders();
+    }
+
+    function isProviderEnabled(providerId: string): bool {
+        return Store.search.disabled.indexOf(providerId) < 0;
+    }
+
+    function setProviderEnabled(providerId: string, on: bool): void {
+        var list = Store.search.disabled.filter(function (id) {
+            return id !== providerId;
+        });
+        if (!on)
+            list.push(providerId);
+        Store.search.disabled = list;
+    }
+
+    readonly property var _builtinMeta: ({
+            apps: {
+                label: "Applications",
+                description: "Installed application launcher",
+                icon: "squares-four"
+            },
+            calc: {
+                label: "Calculator",
+                description: "Inline math with = prefix",
+                icon: "calculator"
+            },
+            commands: {
+                label: "Command hints",
+                description: "Suggests /commands as you type",
+                icon: "terminal"
+            }
+        })
+
+    readonly property var catalog: {
+        var disabled = Store.search.disabled;
+        var plugins = PluginService.plugins || [];
+        var out = [];
+        for (var i = 0; i < svc._providers.length; i++) {
+            var p = svc._providers[i];
+            var meta = svc._builtinMeta[p.id];
+            var entry = {
+                id: p.id,
+                label: meta ? meta.label : p.id,
+                description: meta ? meta.description : "",
+                icon: meta ? meta.icon : "magnifying-glass",
+                builtin: !!meta,
+                prefixes: [],
+                enabled: disabled.indexOf(p.id) < 0
+            };
+            if (!meta) {
+                for (var j = 0; j < plugins.length; j++) {
+                    var pl = plugins[j];
+                    if (pl && pl.searchProvider && pl.searchProvider.id === p.id) {
+                        entry.label = pl.manifest.name || p.id;
+                        entry.description = pl.manifest.description || "";
+                        entry.icon = pl.manifest.icon || "magnifying-glass";
+                        break;
+                    }
+                }
+            }
+            var c = p.command;
+            if (c) {
+                var cmds = Array.isArray(c) ? c : [c];
+                for (var k = 0; k < cmds.length; k++)
+                    if (cmds[k] && cmds[k].prefix)
+                        entry.prefixes.push("/" + cmds[k].prefix);
+            }
+            out.push(entry);
+        }
+        out.sort(function (a, b) {
+            if (a.builtin !== b.builtin)
+                return a.builtin ? -1 : 1;
+            return a.label.localeCompare(b.label);
+        });
+        return out;
     }
 
     function unregisterProvider(providerId: string): void {
@@ -70,6 +149,8 @@ Singleton {
         var commandMode = text.charAt(0) === "/";
         for (var i = 0; i < svc._providers.length; i++) {
             var p = svc._providers[i];
+            if (!svc.isProviderEnabled(p.id))
+                continue;
             if (commandMode && !p.command && p.id !== "commands")
                 continue;
             var out = null;
@@ -110,7 +191,7 @@ Singleton {
         var out = [];
         for (var i = 0; i < svc._providers.length; i++) {
             var c = svc._providers[i].command;
-            if (!c)
+            if (!c || !svc.isProviderEnabled(svc._providers[i].id))
                 continue;
             if (Array.isArray(c))
                 out = out.concat(c);

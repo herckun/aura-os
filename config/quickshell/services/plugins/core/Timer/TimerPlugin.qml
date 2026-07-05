@@ -23,7 +23,7 @@ BasePlugin {
     locations: ["controlcenter_row", "overview"],
     overviewTab: { icon: "timer", label: "TIMER", key: "3" },
     settings: [
-      { key: "defaultMinutes", label: "DEFAULT MINUTES", type: "stepper", default: 25, min: 1, max: 120, step: 1 }
+      { key: "defaultMinutes", label: "DEFAULT MINUTES", type: "stepper", default: 25, min: 1, max: 120, step: 1, shared: true }
     ]
   })
 

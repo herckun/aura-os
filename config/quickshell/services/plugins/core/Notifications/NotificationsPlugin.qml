@@ -22,7 +22,7 @@ BasePlugin {
     icon: "message",
     locations: ["controlcenter_row", "bar_right"],
     settings: [
-      { key: "maxVisible", label: "MAX VISIBLE", type: "stepper", default: 5, min: 1, max: 20, step: 1 }
+      { key: "maxVisible", label: "MAX VISIBLE", type: "stepper", default: 5, min: 1, max: 20, step: 1, shared: true }
     ]
   })
 

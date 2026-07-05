@@ -1,4 +1,5 @@
 module components
+Avatar 1.0 Avatar.qml
 Badge 1.0 Badge.qml
 BentoSwitcher 1.0 BentoSwitcher.qml
 BusyOverlay 1.0 BusyOverlay.qml
@@ -49,6 +50,7 @@ StatCard 1.0 StatCard.qml
 StepperControl 1.0 StepperControl.qml
 Surface 1.0 Surface.qml
 TabBar 1.0 TabBar.qml
+TabStrip 1.0 TabStrip.qml
 Tag 1.0 Tag.qml
 Toggle 1.0 Toggle.qml
 ToggleSetting 1.0 ToggleSetting.qml

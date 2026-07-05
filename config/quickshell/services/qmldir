@@ -16,6 +16,7 @@ singleton RequestService 1.0 system/RequestService.qml
 singleton ResourceService 1.0 system/ResourceService.qml
 singleton ScreenshotService 1.0 system/ScreenshotService.qml
 singleton UpdatesService 1.0 system/UpdatesService.qml
+singleton UserService 1.0 system/UserService.qml
 singleton LyricsService 1.0 media/LyricsService.qml
 singleton MediaService 1.0 media/MediaService.qml
 singleton NotificationService 1.0 media/NotificationService.qml
@@ -43,4 +44,5 @@ singleton SettingsService 1.0 ui/SettingsService.qml
 singleton DateTimeService 1.0 infra/DateTimeService.qml
 singleton TimerService 1.0 infra/TimerService.qml
 BasePlugin 1.0 plugins/_BasePlugin.qml
+singleton DefaultLayoutService 1.0 plugins/DefaultLayoutService.qml
 singleton PluginService 1.0 plugins/PluginService.qml

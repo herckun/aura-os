@@ -303,6 +303,16 @@ Item {
     }
   }
 
+  Connections {
+    target: Store.desktop
+    function onWidgetsChanged() {
+      if (dragArea._dragging) return
+      root._restorePosition()
+      root._registerMyRegion()
+      DesktopLayoutService.requestLayout(root.screenWidth, root.screenHeight)
+    }
+  }
+
   // ── Lifecycle ──────────────────────────────────────────────
   Component.onCompleted: {
     _restorePosition()

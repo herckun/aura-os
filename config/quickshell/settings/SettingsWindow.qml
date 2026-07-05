@@ -60,7 +60,8 @@ FloatingWindow {
       case "connectivity": return "pages/ConnectivityPage.qml"
       case "keybindings": return "pages/KeybindingsPage.qml"
       case "defaultapps": return "pages/DefaultAppsPage.qml"
-      case "plugins": return "pages/PluginsPage.qml"
+      case "user": return "pages/UserPage.qml"
+      case "plugins": return "pages/layout/LayoutPage.qml"
       case "misc": return "pages/MiscPage.qml"
       case "about": return "pages/AboutPage.qml"
       default: return "pages/DashboardPage.qml"
@@ -164,6 +165,7 @@ FloatingWindow {
           ListElement { sid: "wallpaper";    icon: "image";      label: "WALLPAPER" }
           ListElement { sid: "keybindings";  icon: "keyboard";   label: "KEYBINDINGS" }
           ListElement { sid: "defaultapps";  icon: "rocket";     label: "DEFAULT APPS" }
+          ListElement { sid: "user";         icon: "user";       label: "USER" }
           ListElement { sid: "plugins";      icon: "cpu";        label: "PLUGINS" }
           ListElement { sid: "about";        icon: "info";       label: "ABOUT" }
           ListElement { sid: "misc";         icon: "clipboard";  label: "MISC" }

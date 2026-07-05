@@ -1,0 +1,11 @@
+module layout
+BarPreview 1.0 BarPreview.qml
+DesktopPreview 1.0 DesktopPreview.qml
+DropZone 1.0 DropZone.qml
+LayoutPage 1.0 LayoutPage.qml
+PluginChip 1.0 PluginChip.qml
+PluginDetail 1.0 PluginDetail.qml
+PluginSettingEditors 1.0 PluginSettingEditors.qml
+SearchPreview 1.0 SearchPreview.qml
+Stage 1.0 Stage.qml
+ZonesPreview 1.0 ZonesPreview.qml

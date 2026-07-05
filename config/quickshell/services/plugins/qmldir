@@ -44,4 +44,5 @@ WikipediaPlugin 1.0 extra/Wikipedia/WikipediaPlugin.qml
 WindowsPlugin 1.0 extra/Windows/WindowsPlugin.qml
 WindscribePlugin 1.0 extra/Windscribe/WindscribePlugin.qml
 BasePlugin 1.0 _BasePlugin.qml
+DefaultLayoutService 1.0 DefaultLayoutService.qml
 PluginService 1.0 PluginService.qml
