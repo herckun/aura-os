@@ -147,29 +147,45 @@ hl.window_rule({
 
 local floatState = {}
 
-hl.on("window.update_rules", function(w)
-  if not w then return end
+local function compactFloat(addr)
+  hl.timer(function()
+    local win = hl.get_window("address:" .. addr)
+    if not (win and win.floating and win.fullscreen == 0 and not win.pinned) then return end
+    local m = win.monitor
+    if not m then return end
+    local tw = math.floor(m.width * 0.6)
+    local th = math.floor(m.height * 0.65)
+    hl.dispatch(hl.dsp.window.resize({ x = tw, y = th, window = win }))
+    hl.dispatch(hl.dsp.window.move({ x = m.x + math.floor((m.width - tw) / 2), y = m.y + math.floor((m.height - th) / 2), window = win }))
+  end, { timeout = 60, type = "oneshot" })
+end
+
+local function windowAddr(w)
+  if not w then return nil end
   local ok, addr = pcall(function() return w.address end)
-  if not ok or not addr then return end
+  if ok then return addr end
+  return nil
+end
+
+hl.on("window.open", function(w)
+  local addr = windowAddr(w)
+  if not addr then return end
+  floatState[addr] = w.floating
+  if w.floating then compactFloat(addr) end
+end)
+
+hl.on("window.update_rules", function(w)
+  local addr = windowAddr(w)
+  if not addr then return end
   local was = floatState[addr]
   local now = w.floating
   floatState[addr] = now
   if now and was == false and w.fullscreen == 0 then
-    hl.timer(function()
-      local win = hl.get_window("address:" .. addr)
-      if not (win and win.floating and win.fullscreen == 0) then return end
-      local m = win.monitor
-      if not m then return end
-      local tw = math.floor(m.width * 0.6)
-      local th = math.floor(m.height * 0.65)
-      hl.dispatch(hl.dsp.window.resize({ x = tw, y = th, window = win }))
-      hl.dispatch(hl.dsp.window.move({ x = m.x + math.floor((m.width - tw) / 2), y = m.y + math.floor((m.height - th) / 2), window = win }))
-    end, { timeout = 60, type = "oneshot" })
+    compactFloat(addr)
   end
 end)
 
 hl.on("window.destroy", function(w)
-  if not w then return end
-  local ok, addr = pcall(function() return w.address end)
-  if ok and addr then floatState[addr] = nil end
+  local addr = windowAddr(w)
+  if addr then floatState[addr] = nil end
 end)
