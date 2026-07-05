@@ -43,7 +43,7 @@ Singleton {
     "bar_right": ["bar-status", "notifications"],
     "controlcenter_row": ["media", "weather", "system", "nightlight", "timer", "screenshot", "launchgroups"],
     "overview": ["workspaces", "todo", "notes", "clipboard"],
-    "dashboard": ["system"]
+    "dashboard": ["system", "disk", "weather", "media"]
   })
 
   readonly property var settings: ({

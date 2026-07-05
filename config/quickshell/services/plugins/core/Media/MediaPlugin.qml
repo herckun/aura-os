@@ -18,7 +18,7 @@ BasePlugin {
     name: "Media",
     description: "Now playing controls",
     icon: "music",
-    locations: ["controlcenter_row"],
+    locations: ["controlcenter_row", "dashboard"],
     settings: []
   })
 
@@ -37,6 +37,98 @@ BasePlugin {
   // ── Lifecycle ────────────────────────────────────────────────────
 
   // ── UI components ────────────────────────────────────────────────
+  property Component dashboardComponent: Card {
+    title: "NOW PLAYING"
+    visible: MediaService.hasPlayer
+
+    ColumnLayout {
+      width: parent.width
+      spacing: Theme.spaceSm
+
+      function fmtDuration(secs) {
+        var h = Math.floor(secs / 3600)
+        var m = Math.floor((secs % 3600) / 60)
+        return h + "h " + m + "m"
+      }
+
+      RowLayout {
+        spacing: Theme.spaceSm
+
+        Rectangle {
+          width: 44; height: 44
+          radius: Theme.radiusSmall
+          color: Theme.backgroundTertiary
+
+          Image {
+            id: dashArt
+            anchors.fill: parent
+            anchors.margins: 2
+            source: MediaService.currentArtUrl
+            fillMode: Image.PreserveAspectCrop
+            visible: status === Image.Ready
+          }
+          Icon {
+            anchors.centerIn: parent
+            source: Icons.get("music")
+            size: 18
+            color: Theme.textDisabled
+            visible: dashArt.status !== Image.Ready
+          }
+        }
+
+        ColumnLayout {
+          Layout.fillWidth: true
+          spacing: Theme.space2
+
+          Text {
+            text: MediaService.currentTitle
+            color: Theme.textDisplay
+            font.pixelSize: Theme.fontSizeBody
+            font.family: Theme.fontFamilyMono
+            elide: Text.ElideRight
+            maximumLineCount: 1
+            Layout.fillWidth: true
+          }
+          Text {
+            text: MediaService.currentArtist
+            color: Theme.textDisabled
+            font.pixelSize: Theme.fontSizeCaption
+            font.family: Theme.fontFamilyMono
+            elide: Text.ElideRight
+            maximumLineCount: 1
+            Layout.fillWidth: true
+          }
+        }
+      }
+
+      ProgressBar {
+        Layout.fillWidth: true
+        visible: !MediaService._isStream
+        value: MediaService.duration > 0 ? MediaService.position / MediaService.duration : 0
+        barHeight: 3
+      }
+
+      RowLayout {
+        Layout.fillWidth: true
+
+        Text {
+          text: MediaService._isStream ? "LIVE" : parent.parent.fmtDuration(MediaService.position)
+          color: MediaService._isStream ? Theme.error : Theme.textDisabled
+          font.pixelSize: Theme.fontSizeMicro
+          font.family: Theme.fontFamilyMono
+          font.weight: MediaService._isStream ? Font.Bold : Font.Normal
+        }
+        Item { Layout.fillWidth: true }
+        Text {
+          text: MediaService._isStream ? "" : parent.parent.fmtDuration(MediaService.duration)
+          color: Theme.textDisabled
+          font.pixelSize: Theme.fontSizeMicro
+          font.family: Theme.fontFamilyMono
+        }
+      }
+    }
+  }
+
   property Component controlCenterComponent: Column {
     width: parent.width
     spacing: Theme.spaceSm

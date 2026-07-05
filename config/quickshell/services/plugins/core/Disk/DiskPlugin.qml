@@ -20,7 +20,7 @@ BasePlugin {
     name: "Disk",
     description: "Storage usage",
     icon: "database",
-    locations: ["controlcenter_row"],
+    locations: ["controlcenter_row", "dashboard"],
     settings: []
   })
 
@@ -82,6 +82,52 @@ BasePlugin {
   }
 
   // ── UI components ────────────────────────────────────────────────
+  property Component dashboardComponent: Card {
+    title: "DISK"
+    visible: ResourceService.diskTotal !== ""
+
+    ColumnLayout {
+      width: parent.width
+      spacing: Theme.spaceSm
+
+      RowLayout {
+        Text {
+          text: ResourceService.diskUsed
+          color: Theme.textDisplay
+          font.pixelSize: Theme.fontSizeTitle
+          font.family: Theme.fontFamilyDisplay
+        }
+        Text {
+          text: "/ " + ResourceService.diskTotal
+          color: Theme.textDisabled
+          font.pixelSize: Theme.fontSizeCaption
+          font.family: Theme.fontFamilyMono
+          Layout.alignment: Qt.AlignBottom
+          Layout.bottomMargin: Theme.space2
+        }
+        Item { Layout.fillWidth: true }
+        Text {
+          text: ResourceService.diskFree + " free"
+          color: Theme.textDisabled
+          font.pixelSize: Theme.fontSizeCaption
+          font.family: Theme.fontFamilyMono
+          Layout.alignment: Qt.AlignBottom
+          Layout.bottomMargin: Theme.space2
+        }
+      }
+
+      ProgressBar {
+        Layout.fillWidth: true
+        value: {
+          var t = parseFloat(ResourceService.diskTotal)
+          var u = parseFloat(ResourceService.diskUsed)
+          return (t > 0 && !isNaN(t) && !isNaN(u)) ? u / t : 0
+        }
+        barHeight: 4
+      }
+    }
+  }
+
   property Component controlCenterComponent: Column {
     width: parent.width
     spacing: Theme.spaceSm

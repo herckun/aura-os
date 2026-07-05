@@ -19,7 +19,7 @@ BasePlugin {
     name: "Weather",
     description: "Current weather conditions",
     icon: "sun",
-    locations: ["controlcenter_row", "bar_right"],
+    locations: ["controlcenter_row", "bar_right", "dashboard"],
     settings: [
       { key: "showDetails", label: "SHOW DETAILS", type: "toggle", default: true, locations: ["controlcenter_row"] },
       { key: "location", label: "LOCATION", description: "Overrides IP-detected location", type: "text", placeholder: "City, Country", shared: true, default: "" }
@@ -48,6 +48,43 @@ BasePlugin {
 
   // ── UI components ────────────────────────────────────────────────
   property Component barComponent: WeatherWidget {}
+
+  property Component dashboardComponent: Card {
+    title: "WEATHER"
+    visible: WeatherService.hasData
+
+    GridLayout {
+      width: parent.width
+      columns: 2
+      columnSpacing: Theme.spaceMd
+      rowSpacing: 2
+
+      Text {
+        text: WeatherService.wmoIcon(WeatherService.weatherCode)
+        color: Theme.textDisplay
+        font.pixelSize: Theme.fontSizeHeading
+        Layout.rowSpan: 2
+        Layout.alignment: Qt.AlignTop
+      }
+      Text {
+        text: WeatherService.temp
+        color: Theme.textDisplay
+        font.pixelSize: Theme.fontSizeTitle2
+        font.family: Theme.fontFamilyDisplay
+        Layout.rowSpan: 2
+        Layout.alignment: Qt.AlignTop
+      }
+
+      Text { text: WeatherService.weather; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeCaption; font.family: Theme.fontFamilyMono; Layout.columnSpan: 2 }
+      Text { text: "FEELS  " + WeatherService.feelsLike; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono }
+      Text { text: "HUMIDITY  " + WeatherService.humidity; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono }
+      Text { text: "WIND  " + WeatherService.windSpeed + " " + WeatherService.windDir; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; elide: Text.ElideRight; maximumLineCount: 1; Layout.fillWidth: true }
+      Text { text: "PRESSURE  " + WeatherService.pressure; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono }
+      Text { text: "UV  " + WeatherService.uvIndex; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono }
+      Text { text: "SUNRISE  " + WeatherService.sunrise; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono }
+      Text { text: "SUNSET  " + WeatherService.sunset; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono }
+    }
+  }
 
   property Component controlCenterComponent: Column {
     width: parent.width
