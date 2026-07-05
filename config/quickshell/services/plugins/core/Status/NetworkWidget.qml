@@ -5,6 +5,17 @@ import "../../../../services"
 Item {
   id: root
 
+  MouseArea {
+    anchors.fill: parent
+    cursorShape: Qt.PointingHandCursor
+    onClicked: networkTooltip.toggle()
+  }
+
+  NetworkTooltip {
+    id: networkTooltip
+    anchorItem: root
+  }
+
   implicitWidth: row.width
   implicitHeight: 22
 
