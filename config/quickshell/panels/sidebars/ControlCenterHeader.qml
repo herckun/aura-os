@@ -11,13 +11,74 @@ Section {
   paddingX: 0
   paddingY: 0
 
-  RowLayout {
+  ColumnLayout {
     width: parent.width
-    spacing: Theme.spaceMd
+    spacing: Theme.spaceSm
+
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: Theme.spaceSm
+
+      Avatar {
+        Layout.alignment: Qt.AlignVCenter
+        size: 34
+        source: UserService.avatarSource
+        fallbackText: UserService.initial
+      }
+
+      Text {
+        Layout.fillWidth: true
+        text: UserService.displayName.toUpperCase()
+        color: Theme.textPrimary
+        font.pixelSize: Theme.fontSizeCaption
+        font.family: Theme.fontFamilyMono
+        font.weight: Font.Bold
+        font.letterSpacing: 0.14
+        elide: Text.ElideRight
+      }
+
+      ButtonGroup {
+        Layout.alignment: Qt.AlignVCenter
+
+        Button { shape: "circle";
+          icon: "settings"
+          size: "md"
+          buttonWidth: 30
+          buttonHeight: 30
+          iconSize: 14
+          onClicked: IpcService.togglePanel("settings")
+        }
+
+        Button { shape: "circle";
+          icon: "refresh"
+          size: "md"
+          buttonWidth: 30
+          buttonHeight: 30
+          iconSize: 14
+          onClicked: {
+            ProcessPool.runDetached("hyprctl reload && pkill -TERM -x qs && sleep 1 && nohup qs >/dev/null 2>&1 &", { shell: true })
+          }
+        }
+
+        Button { shape: "circle";
+          icon: "power"
+          size: "md"
+          buttonWidth: 30
+          buttonHeight: 30
+          iconSize: 14
+          actionId: "power"
+          onClicked: {
+            ProcessPool.runQueued("Power", ["wleave", "-m", Theme.wleaveSize, "-p", "layer-shell"], {
+              silent: true,
+              id: "power",
+            })
+          }
+        }
+      }
+    }
 
     ColumnLayout {
       Layout.fillWidth: true
-      Layout.alignment: Qt.AlignVCenter
       spacing: Theme.spaceXxs
 
       RowLayout {
@@ -56,7 +117,7 @@ Section {
       }
 
       Text {
-        text: Qt.formatDateTime(DateTimeService.currentDate, "EEEE, MMMM d").toUpperCase()
+        text: Qt.formatDateTime(DateTimeService.currentDate, "dddd, MMMM d").toUpperCase()
         color: Theme.textSecondary
         font.pixelSize: Theme.fontSizeCaption
         font.family: Theme.fontFamilyMono
@@ -70,45 +131,6 @@ Section {
         font.family: Theme.fontFamilyMono
         font.letterSpacing: 0.06
         visible: ResourceService.uptime !== ""
-      }
-    }
-
-    ButtonGroup {
-      Layout.alignment: Qt.AlignTop | Qt.AlignRight
-
-      Button { shape: "circle";
-        icon: "settings"
-        size: "md"
-        buttonWidth: 30
-        buttonHeight: 30
-        iconSize: 14
-        onClicked: IpcService.togglePanel("settings")
-      }
-
-      Button { shape: "circle";
-        icon: "refresh"
-        size: "md"
-        buttonWidth: 30
-        buttonHeight: 30
-        iconSize: 14
-        onClicked: {
-          ProcessPool.runDetached("hyprctl reload && pkill -TERM -x qs && sleep 1 && nohup qs >/dev/null 2>&1 &", { shell: true })
-        }
-      }
-
-      Button { shape: "circle";
-        icon: "power"
-        size: "md"
-        buttonWidth: 30
-        buttonHeight: 30
-        iconSize: 14
-        actionId: "power"
-        onClicked: {
-          ProcessPool.runQueued("Power", ["wleave", "-m", Theme.wleaveSize, "-p", "layer-shell"], {
-            silent: true,
-            id: "power",
-          })
-        }
       }
     }
   }
