@@ -1712,6 +1712,18 @@
       "role": "sound effects (CC-BY-SA-4.0)",
       "url": "https://github.com/ubuntu/yaru",
       "icon": "music-note"
+    },
+    {
+      "name": "Open-Meteo",
+      "role": "weather forecast data (CC BY 4.0)",
+      "url": "https://open-meteo.com",
+      "icon": "sun"
+    },
+    {
+      "name": "ipinfo.io",
+      "role": "ip geolocation for weather",
+      "url": "https://ipinfo.io",
+      "icon": "map-pin"
     }
   ],
   "defaultApps": {

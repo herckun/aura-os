@@ -104,24 +104,19 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
 
   function _geoLocate(): void {
-    ProcessPool.runTracked("Geo locate", "timeout 5 curl -s 'https://ipinfo.io/json'", {
-      id: "geo-locate",
-      shell: true,
-      callback: function(r) {
-        try {
-          var j = JSON.parse(r.stdout)
-          var loc = j.loc.split(",")
-          svc.latitude = parseFloat(loc[0])
-          svc.longitude = parseFloat(loc[1])
-          svc.location = j.city || ""
-          svc.countryCode = j.country || ""
-        } catch (e) {
-          svc.latitude = 48.8566
-          svc.longitude = 2.3522
-          svc.location = "Paris"
-        }
-        svc._fetchWeather()
+    RequestService.get("https://ipinfo.io/json", function(r) {
+      try {
+        var loc = r.data.loc.split(",")
+        svc.latitude = parseFloat(loc[0])
+        svc.longitude = parseFloat(loc[1])
+        svc.location = r.data.city || ""
+        svc.countryCode = r.data.country || ""
+      } catch (e) {
+        svc.latitude = 48.8566
+        svc.longitude = 2.3522
+        svc.location = "Paris"
       }
+      svc._fetchWeather()
     })
   }
 
@@ -132,34 +127,30 @@ Singleton {
     var url = "https://geocoding-api.open-meteo.com/v1/search?name=" +
       encodeURIComponent(city) + "&count=10&language=en&format=json"
 
-    ProcessPool.runTracked("Geocode location", "timeout 5 curl -s '" + url + "'", {
-      id: "geocode-location",
-      shell: true,
-      callback: function(r) {
-        var hit = null
-        try {
-          var results = JSON.parse(r.stdout).results || []
-          for (var i = 0; i < results.length && country; i++) {
-            var res = results[i]
-            if ((res.country || "").toLowerCase() === country ||
-                (res.country_code || "").toLowerCase() === country) {
-              hit = res
-              break
-            }
+    RequestService.get(url, function(r) {
+      var hit = null
+      try {
+        var results = (r.data && r.data.results) || []
+        for (var i = 0; i < results.length && country; i++) {
+          var res = results[i]
+          if ((res.country || "").toLowerCase() === country ||
+              (res.country_code || "").toLowerCase() === country) {
+            hit = res
+            break
           }
-          if (!hit && results.length > 0) hit = results[0]
-        } catch (e) {}
-
-        if (!hit) {
-          svc._geoLocate()
-          return
         }
-        svc.latitude = hit.latitude
-        svc.longitude = hit.longitude
-        svc.location = hit.name || city
-        svc.countryCode = hit.country_code || ""
-        svc._fetchWeather()
+        if (!hit && results.length > 0) hit = results[0]
+      } catch (e) {}
+
+      if (!hit) {
+        svc._geoLocate()
+        return
       }
+      svc.latitude = hit.latitude
+      svc.longitude = hit.longitude
+      svc.location = hit.name || city
+      svc.countryCode = hit.country_code || ""
+      svc._fetchWeather()
     })
   }
 
@@ -178,12 +169,9 @@ Singleton {
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max" +
       "&timezone=auto&forecast_days=7"
 
-    ProcessPool.runTracked("Fetch weather", "timeout 8 curl -s '" + url + "'", {
-      id: "fetch-weather",
-      shell: true,
-      callback: function(r) {
+    RequestService.get(url, function(r) {
         try {
-          var j = JSON.parse(r.stdout)
+          var j = r.data
           var c = j.current
           var d = j.daily
           var h = j.hourly
@@ -236,7 +224,6 @@ Singleton {
           svc.loaded = true
         }
         svc.fetching = false
-      }
     })
   }
 
