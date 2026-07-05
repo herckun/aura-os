@@ -153,10 +153,14 @@ local function compactFloat(addr)
     if not (win and win.floating and win.fullscreen == 0 and not win.pinned) then return end
     local m = win.monitor
     if not m then return end
-    local tw = math.floor(m.width * 0.6)
-    local th = math.floor(m.height * 0.65)
+    local scale = m.scale or 1
+    if scale <= 0 then scale = 1 end
+    local mw = m.width / scale
+    local mh = m.height / scale
+    local tw = math.floor(mw * 0.6)
+    local th = math.floor(mh * 0.65)
     hl.dispatch(hl.dsp.window.resize({ x = tw, y = th, window = win }))
-    hl.dispatch(hl.dsp.window.move({ x = m.x + math.floor((m.width - tw) / 2), y = m.y + math.floor((m.height - th) / 2), window = win }))
+    hl.dispatch(hl.dsp.window.move({ x = m.x + math.floor((mw - tw) / 2), y = m.y + math.floor((mh - th) / 2), window = win }))
   end, { timeout = 60, type = "oneshot" })
 end
 
