@@ -131,7 +131,23 @@ d_total, d_used, d_free = disk()
 cpu_procs = top_cpu_procs()
 mem_procs = top_mem_procs()
 
+def uptime_str():
+    try:
+        with open("/proc/uptime") as f:
+            secs = int(float(f.read().split()[0]))
+        d, rem = divmod(secs, 86400)
+        h, rem = divmod(rem, 3600)
+        m = rem // 60
+        if d > 0:
+            return f"{d}d {h}h {m}m"
+        if h > 0:
+            return f"{h}h {m}m"
+        return f"{m}m"
+    except (IOError, ValueError):
+        return ""
+
 print(f"CPU {cpu}")
+print(f"UPTIME {uptime_str()}")
 print(f"MEM {mem_used} {mem_total}")
 print(f"CPUT {cput if cput else 'N/A'}")
 print(f"DISK {d_total} {d_used} {d_free}")

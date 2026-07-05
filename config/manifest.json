@@ -1687,26 +1687,31 @@
   "credits": [
     {
       "name": "herc",
-      "role": "creator"
+      "role": "creator",
+      "icon": "user"
     },
     {
       "name": "Nothing Technology",
-      "role": "design inspiration"
+      "role": "design inspiration",
+      "icon": "palette"
     },
     {
       "name": "end-4/dots-hyprland",
       "role": "source of inspiration",
-      "url": "https://github.com/end-4/dots-hyprland"
+      "url": "https://github.com/end-4/dots-hyprland",
+      "icon": "git-branch"
     },
     {
       "name": "uiriansan/SilentSDDM",
       "role": "source of inspiration for sddm theme",
-      "url": "https://github.com/uiriansan/SilentSDDM"
+      "url": "https://github.com/uiriansan/SilentSDDM",
+      "icon": "lock"
     },
     {
       "name": "Ubuntu Yaru sound theme",
       "role": "sound effects (CC-BY-SA-4.0)",
-      "url": "https://github.com/ubuntu/yaru"
+      "url": "https://github.com/ubuntu/yaru",
+      "icon": "music-note"
     }
   ],
   "defaultApps": {

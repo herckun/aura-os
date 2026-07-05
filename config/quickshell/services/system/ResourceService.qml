@@ -136,6 +136,8 @@ Singleton {
               svc.diskTotal = parts[1] || ""
               svc.diskUsed = parts[2] || ""
               svc.diskFree = parts[3] || ""
+            } else if (parts[0] === "UPTIME" && parts.length > 1) {
+              svc.uptime = parts.slice(1).join(" ").toUpperCase()
             }
           }
         }
