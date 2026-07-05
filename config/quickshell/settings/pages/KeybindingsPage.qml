@@ -12,6 +12,7 @@ Item {
   height: content.implicitHeight
 
   property string _editingId: ""
+  property string _validationError: ""
   property string _editMod: "SUPER"
   property string _editKey: ""
   property string _editDesc: ""
@@ -450,6 +451,7 @@ Item {
     confirmIcon: "check"
     confirmVariant: "accent"
     dismissOnBackdrop: false
+    closeOnConfirm: false
 
     content: [
       Column {
@@ -521,11 +523,13 @@ Item {
             capturing = true
             heldMods = ""
             forceActiveFocus()
+            KeybindingService.beginCapture()
           }
 
           function stop(): void {
             capturing = false
             heldMods = ""
+            KeybindingService.endCapture()
           }
 
           Keys.onPressed: function(event) {
@@ -725,6 +729,16 @@ Item {
         }
       },
 
+      Text {
+        width: parent.width
+        text: root._validationError
+        color: Theme.error
+        font.pixelSize: Theme.fontSizeCaption
+        font.family: Theme.fontFamilyMono
+        wrapMode: Text.WordWrap
+        visible: root._validationError !== ""
+      },
+
       Column {
         width: parent.width
         spacing: Theme.spaceXs
@@ -748,12 +762,18 @@ Item {
 
     onOpened: {
       keyCapture.stop()
+      root._validationError = ""
       modInput.input.text = root._editMod
       keyInput.input.text = root._editKey
       descInput.input.text = root._editDesc
       if (root._editActionType === "custom") {
         customCmdInput.input.text = root._editAction
       }
+    }
+
+    onClosed: {
+      keyCapture.stop()
+      root._validationError = ""
     }
 
     onConfirmed: {
@@ -765,6 +785,20 @@ Item {
         root._editAction = customCmdInput.text
       }
 
+      var err = KeybindingService.validateBinding({
+        mod: root._editMod,
+        key: root._editKey,
+        description: root._editDesc,
+        actionType: root._editActionType,
+        action: root._editAction,
+        args: root._editArgs
+      })
+      if (err !== "") {
+        root._validationError = err
+        return
+      }
+      root._validationError = ""
+      editModal.open = false
       root.checkAndSave()
     }
   }

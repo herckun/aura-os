@@ -46,25 +46,98 @@ Singleton {
     return conflicts
   }
 
-  function updateBinding(id: string, updates: var): void {
+  function updateBinding(id: string, updates: var): bool {
     var copy = bindings.slice()
     for (var i = 0; i < copy.length; i++) {
       if (copy[i].id === id) {
-        copy[i] = Object.assign({}, copy[i], updates)
+        var merged = Object.assign({}, copy[i], updates)
+        if (validateBinding(merged) !== "") return false
+        copy[i] = merged
         break
       }
     }
     bindings = copy
     _saveUserOverrides()
     _generateHyprConfig()
+    return true
   }
 
-  function addCustomBinding(binding: var): void {
+  function addCustomBinding(binding: var): bool {
+    if (validateBinding(binding) !== "") return false
     var copy = bindings.slice()
     copy.push(Object.assign({}, binding, { custom: true }))
     bindings = copy
     _saveUserOverrides()
     _generateHyprConfig()
+    return true
+  }
+
+  property bool captureActive: false
+
+  function beginCapture(): void {
+    if (captureActive) return
+    captureActive = true
+    _captureFailsafe.restart()
+    ProcessPool.runDetached(["hyprctl", "dispatch", "hl.dsp.submap(\"qs-capture\")"], { silent: true })
+  }
+
+  function endCapture(): void {
+    if (!captureActive) return
+    captureActive = false
+    _captureFailsafe.stop()
+    ProcessPool.runDetached(["hyprctl", "dispatch", "hl.dsp.submap(\"reset\")"], { silent: true })
+  }
+
+  property Timer _captureFailsafe: Timer {
+    interval: 20000
+    repeat: false
+    onTriggered: svc.endCapture()
+  }
+
+  readonly property var validMods: ["SUPER", "CTRL", "SHIFT", "ALT"]
+
+  function validateBinding(b: var): string {
+    var mod = (b.mod || "").trim()
+    if (mod !== "") {
+      var parts = mod.toUpperCase().split(/[\s+]+/).filter(function(x) { return x !== "" })
+      var seen = ({})
+      for (var i = 0; i < parts.length; i++) {
+        if (validMods.indexOf(parts[i]) < 0)
+          return "Unknown modifier \"" + parts[i] + "\" — use SUPER, CTRL, SHIFT or ALT"
+        if (seen[parts[i]]) return "Duplicate modifier \"" + parts[i] + "\""
+        seen[parts[i]] = true
+      }
+    }
+    var key = (b.key || "").trim()
+    if (key === "") return "A key is required"
+    if (!/^([A-Za-z0-9]|F([1-9]|1[0-9]|2[0-4])|Return|Enter|Space|Tab|BackSpace|Delete|Insert|Home|End|Prior|Next|Left|Right|Up|Down|Escape|Print|Menu|minus|equal|plus|comma|period|slash|question|backslash|semicolon|apostrophe|grave|bracketleft|bracketright|XF86[A-Za-z0-9]+|mouse:[0-9]+|mouse_(up|down|left|right)|code:[0-9]+)$/.test(key))
+      return "\"" + key + "\" is not a recognised key name"
+    var action = (b.action || "").trim()
+    if (action === "") return "An action is required"
+    if (/[\u0000-\u001F\u007F]/.test(action))
+      return "The action can't contain control characters"
+    if ((b.description || "") !== "" && /[\u0000-\u001F\u007F]/.test(b.description))
+      return "The description can't contain control characters"
+    if ((b.actionType || "") === "hypr") {
+      var args = b.args || {}
+      if ((action === "movefocus" || action === "movewindow")
+          && args.direction !== undefined && String(args.direction) !== ""
+          && ["left", "right", "up", "down"].indexOf(String(args.direction)) < 0)
+        return "Direction must be left, right, up or down"
+      if ((action === "workspace" || action === "movetoworkspace")
+          && args.id !== undefined && args.id !== null && String(args.id) !== ""
+          && !/^([0-9]+|[+-][0-9]+|e[+-][0-9]+|empty|previous|special(:[A-Za-z0-9_-]+)?|name:[A-Za-z0-9 _-]+)$/.test(String(args.id)))
+        return "Workspace must be a number or a valid selector (e.g. 3, +1, special:magic)"
+      if (action === "togglespecialworkspace"
+          && args.name !== undefined && String(args.name) !== ""
+          && !/^[A-Za-z0-9_-]+$/.test(String(args.name)))
+        return "Special workspace names can only use letters, digits, - and _"
+      if (action === "resizeactive"
+          && args.params !== undefined && String(args.params) !== ""
+          && !/^-?[0-9]+%? -?[0-9]+%?$/.test(String(args.params)))
+        return "Resize parameters must look like \"20 0\" or \"10% 0\""
+    }
+    return ""
   }
 
   function removeBinding(id: string): void {
@@ -107,8 +180,8 @@ Singleton {
   }
 
   function _mergeBindings(): void {
-    var overrides = Object.assign({}, Store.keybindings.overrides)
-    var custom = Store.keybindings.custom.slice()
+    var overrides = Store.toObject(Store.keybindings.overrides)
+    var custom = Store.toArray(Store.keybindings.custom)
     var merged = []
 
     for (var i = 0; i < _manifestDefaults.length; i++) {
@@ -208,12 +281,23 @@ Singleton {
     lines.push("-- Mouse bindings")
     lines.push("hl.bind(mainMod .. \" + mouse:272\", hl.dsp.window.drag(),   { mouse = true })")
     lines.push("hl.bind(mainMod .. \" + mouse:273\", hl.dsp.window.resize(), { mouse = true })")
+    lines.push("")
+    lines.push("-- Keybind capture guard (settings editor parks here while recording)")
+    lines.push("hl.define_submap(\"qs-capture\", function()")
+    lines.push("  hl.bind(\"CTRL + ALT + Escape\", hl.dsp.submap(\"reset\"))")
+    lines.push("end)")
 
     var config = lines.join("\n")
     _writeConfig(config)
   }
 
+  function _safeDirection(dir: var): string {
+    return ["left", "right", "up", "down"].indexOf(String(dir)) >= 0 ? String(dir) : "left"
+  }
+
   function _buildKeyExpr(mod: string, key: string): string {
+    key = _escapeLua(key)
+    mod = _escapeLua(mod)
     if (mod === "") return "\"" + key + "\""
 
     if (mod === "SUPER") {
@@ -264,23 +348,25 @@ Singleton {
       case "togglefloating":
         return "hl.dsp.window.float({ action = \"toggle\" })"
       case "movefocus":
-        return "hl.dsp.focus({ direction = \"" + (args.direction || "left") + "\" })"
+        return "hl.dsp.focus({ direction = \"" + _safeDirection(args.direction) + "\" })"
       case "movewindow":
-        return "hl.dsp.window.move({ direction = \"" + (args.direction || "left") + "\" })"
+        return "hl.dsp.window.move({ direction = \"" + _safeDirection(args.direction) + "\" })"
       case "resizeactive":
-        return "function() hl.exec_cmd(\"hyprctl dispatch resizeactive " + (args.params || "0 0") + "\") end"
+        var rzParams = /^-?[0-9]+%? -?[0-9]+%?$/.test(String(args.params || "")) ? String(args.params) : "0 0"
+        return "function() hl.exec_cmd(\"hyprctl dispatch resizeactive " + rzParams + "\") end"
       case "workspace":
         var wsArg = args.id
         if (wsArg === undefined || wsArg === null) wsArg = "1"
-        if (typeof wsArg === "number" || !isNaN(wsArg)) return "hl.dsp.focus({ workspace = " + wsArg + " })"
-        return "hl.dsp.focus({ workspace = \"" + wsArg + "\" })"
+        if (typeof wsArg === "number" || !isNaN(wsArg)) return "hl.dsp.focus({ workspace = " + parseInt(wsArg) + " })"
+        return "hl.dsp.focus({ workspace = \"" + _escapeLua(wsArg) + "\" })"
       case "movetoworkspace":
         var mwsArg = args.id
         if (mwsArg === undefined || mwsArg === null) mwsArg = "1"
-        if (typeof mwsArg === "number" || !isNaN(mwsArg)) return "hl.dsp.window.move({ workspace = " + mwsArg + " })"
-        return "hl.dsp.window.move({ workspace = \"" + mwsArg + "\" })"
+        if (typeof mwsArg === "number" || !isNaN(mwsArg)) return "hl.dsp.window.move({ workspace = " + parseInt(mwsArg) + " })"
+        return "hl.dsp.window.move({ workspace = \"" + _escapeLua(mwsArg) + "\" })"
       case "togglespecialworkspace":
-        return "hl.dsp.workspace.toggle_special(\"" + (args.name || "magic") + "\")"
+        var spName = String(args.name || "magic").replace(/[^A-Za-z0-9_-]/g, "")
+        return "hl.dsp.workspace.toggle_special(\"" + (spName || "magic") + "\")"
       case "exit":
         return "function() hl.exec_cmd(\"hyprctl dispatch exit\") end"
       case "exec":
@@ -291,7 +377,11 @@ Singleton {
   }
 
   function _escapeLua(str: string): string {
-    return str.replace(/\\/g, "\\\\").replace(/"/g, "\\\"")
+    return String(str)
+      .replace(/[\r\n\t]/g, " ")
+      .replace(/[\u0000-\u001F\u007F]/g, "")
+      .replace(/\\/g, "\\\\")
+      .replace(/"/g, "\\\"")
   }
 
   function _writeConfig(content: string): void {
