@@ -12,19 +12,16 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   readonly property var areas: [
     { id: "controlcenter", position: "top-right", action: "controlcenter" },
-    { id: "launcher", position: "top-left", action: "launcher" },
-    { id: "overview", position: "top-center", action: "overview" }
+    { id: "overview", position: "top-left", action: "overview" }
   ]
 
   property var enabledMap: ({
     "controlcenter": true,
-    "launcher": false,
     "overview": false
   })
 
   readonly property var actionLabels: ({
     "controlcenter": "CONTROL CENTER",
-    "launcher": "LAUNCHER",
     "overview": "OVERVIEW"
   })
 
