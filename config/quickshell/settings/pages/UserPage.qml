@@ -18,8 +18,6 @@ Column {
     Card {
         width: parent.width
         title: "PROFILE"
-        description: "Your avatar is shown in the control center and across the shell"
-
         Stage {
             width: parent.width
             minHeight: 190
@@ -132,15 +130,6 @@ Column {
                         }
                     }
                 }
-            }
-
-            Button {
-                Layout.alignment: Qt.AlignVCenter
-                text: "CHANGE AVATAR"
-                icon: "photo"
-                size: "sm"
-                busy: UserService.busy
-                onClicked: UserService.pickAvatar()
             }
         }
 
