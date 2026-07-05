@@ -2,8 +2,9 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../../core"
-import "../system"
+import "../../../../core"
+import "../../../media"
+import "../../../system"
 
 Singleton {
   id: svc
@@ -390,7 +391,14 @@ Singleton {
       }
     }
     function onHasPlayerChanged() {
-      if (!MediaService.hasPlayer) _clearLyrics()
+      if (!MediaService.hasPlayer) {
+        _clearLyrics()
+      } else if (MediaService.currentTitle) {
+        svc.currentTrack = MediaService.currentTitle
+        svc.currentArtist = MediaService.currentArtist
+        svc.loading = true
+        _fetchLyrics(MediaService.currentTitle, MediaService.currentArtist)
+      }
     }
   }
 
@@ -434,6 +442,9 @@ Singleton {
 
   Component.onCompleted: {
     if (MediaService.hasPlayer && MediaService.currentTitle) {
+      svc.currentTrack = MediaService.currentTitle
+      svc.currentArtist = MediaService.currentArtist
+      svc.loading = true
       _fetchLyrics(MediaService.currentTitle, MediaService.currentArtist)
     }
   }

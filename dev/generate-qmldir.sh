@@ -83,7 +83,11 @@ generate_plugin_qmldir() {
         uiname="$(basename "$uifile" .qml)"
         [[ "$uiname" == *Plugin ]] && continue
         [[ "$uiname" == _* ]] && continue
-        ui+="$uiname 1.0 $uiname.qml"$'\n'
+        if head -5 "$uifile" | grep -q 'pragma Singleton'; then
+          ui+="singleton $uiname 1.0 $uiname.qml"$'\n'
+        else
+          ui+="$uiname 1.0 $uiname.qml"$'\n'
+        fi
       done
       if [[ -n "$ui" ]]; then
         printf '%s' "$ui" > "$plugindir/qmldir"

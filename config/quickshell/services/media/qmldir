@@ -1,5 +1,4 @@
 module media
-singleton LyricsService 1.0 LyricsService.qml
 singleton MediaService 1.0 MediaService.qml
 singleton NotificationService 1.0 NotificationService.qml
 singleton SfxService 1.0 SfxService.qml
