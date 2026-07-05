@@ -68,12 +68,17 @@ Singleton {
 
             registerRegion(id, pos.x, pos.y, w, h);
             autoPositions[id] = pos;
-            Store.desktop.widgets = Store.mapPatch(Store.desktop.widgets, id, {
-                x: pos.x / screenW,
-                y: pos.y / screenH,
-                w: w,
-                h: h
-            });
+            var prev = Store.desktop.widgets[id] || {};
+            var nx = pos.x / screenW;
+            var ny = pos.y / screenH;
+            if (Math.abs((prev.x ?? -1) - nx) > 0.0005 || Math.abs((prev.y ?? -1) - ny) > 0.0005 || prev.w !== w || prev.h !== h) {
+                Store.desktop.widgets = Store.mapPatch(Store.desktop.widgets, id, {
+                    x: nx,
+                    y: ny,
+                    w: w,
+                    h: h
+                });
+            }
         }
 
         layoutComplete();

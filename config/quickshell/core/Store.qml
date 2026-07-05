@@ -56,7 +56,7 @@ Singleton {
     atomicWrites: true
     printErrors: true
     onFileChanged: reload()
-    onAdapterUpdated: saveTimer.restart()
+    onAdapterUpdated: if (!saveTimer.running) saveTimer.start()
     onLoadFailed: (error) => {
       if (error === FileViewError.FileNotFound) {
         store.freshInstall = true

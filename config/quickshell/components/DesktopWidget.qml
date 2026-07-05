@@ -307,9 +307,12 @@ Item {
     target: Store.desktop
     function onWidgetsChanged() {
       if (dragArea._dragging) return
+      var geom = Store.desktop.widgets[root.plugin.id] || {}
+      var tx = (geom.x ?? -1) * root.screenWidth
+      var ty = (geom.y ?? -1) * root.screenHeight
+      if (Math.abs(tx - widgetLoader.x) < 1 && Math.abs(ty - widgetLoader.y) < 1) return
       root._restorePosition()
       root._registerMyRegion()
-      DesktopLayoutService.requestLayout(root.screenWidth, root.screenHeight)
     }
   }
 
