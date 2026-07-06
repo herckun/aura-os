@@ -23,7 +23,7 @@ Item {
     border.color: root.ringColor
   }
 
-  Text {
+  OpticalText {
     anchors.centerIn: parent
     text: root.fallbackText
     color: Theme.accent

@@ -323,7 +323,7 @@ PanelWindow {
             }
           }
 
-          Text {
+          OpticalText {
             anchors.horizontalCenter: parent.horizontalCenter
             text: smartPopup.formatTime(TimerService.remaining)
             color: Theme.textDisplay

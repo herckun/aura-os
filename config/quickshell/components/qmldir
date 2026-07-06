@@ -28,6 +28,7 @@ ListRow 1.0 ListRow.qml
 MetricGauge 1.0 MetricGauge.qml
 Modal 1.0 Modal.qml
 Notification 1.0 Notification.qml
+OpticalText 1.0 OpticalText.qml
 OptionSwitcher 1.0 OptionSwitcher.qml
 OverlayPanel 1.0 OverlayPanel.qml
 PageHeader 1.0 PageHeader.qml
