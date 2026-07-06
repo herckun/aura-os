@@ -284,40 +284,6 @@ BasePlugin {
             visible: !LyricsService.loading && LyricsService.hasLyrics && MediaService.playbackStatus !== "Stopped" && LyricsService.currentLineIndex >= 0 && LyricsService.currentLineIndex < LyricsService.lines.length - 1
             clip: true
 
-            Rectangle {
-                anchors.top: parent.top
-                width: parent.width
-                height: 20
-                z: 2
-                gradient: Gradient {
-                    GradientStop {
-                        position: 0.0
-                        color: lyricsContainer._bgColor
-                    }
-                    GradientStop {
-                        position: 1.0
-                        color: "transparent"
-                    }
-                }
-            }
-
-            Rectangle {
-                anchors.bottom: parent.bottom
-                width: parent.width
-                height: 20
-                z: 2
-                gradient: Gradient {
-                    GradientStop {
-                        position: 0.0
-                        color: "transparent"
-                    }
-                    GradientStop {
-                        position: 1.0
-                        color: lyricsContainer._bgColor
-                    }
-                }
-            }
-
             Column {
                 id: lyricsCol
                 width: parent.width
@@ -355,8 +321,7 @@ BasePlugin {
                             result.push({
                                 lineIndex: i,
                                 text: LyricsService.lines[i].text,
-                                isCurrent: i === LyricsService.currentLineIndex,
-                                distance: LyricsService.currentLineIndex >= 0 ? Math.abs(i - LyricsService.currentLineIndex) : 0
+                                isCurrent: i === LyricsService.currentLineIndex
                             });
                         }
                         return result;
@@ -388,43 +353,15 @@ BasePlugin {
                                 verticalCenter: parent.verticalCenter
                             }
                             text: modelData.text
-                            color: {
-                                if (modelData.isCurrent)
-                                    return lyricsContainer._accentColor;
-                                if (modelData.distance <= 1)
-                                    return lyricsContainer._textColor;
-                                return lyricsContainer._dimColor;
-                            }
-                            font.pixelSize: {
-                                if (modelData.isCurrent)
-                                    return lyricsContainer._lineFont;
-                                if (modelData.distance <= 1)
-                                    return lyricsContainer._lineFont - 1;
-                                return lyricsContainer._lineFont - 2;
-                            }
-                            font.weight: modelData.isCurrent ? Font.Bold : (modelData.distance <= 1 ? Font.Medium : Font.Normal)
+                            color: modelData.isCurrent ? lyricsContainer._accentColor : lyricsContainer._dimColor
+                            font.pixelSize: modelData.isCurrent ? lyricsContainer._lineFont : lyricsContainer._lineFont - 1
+                            font.weight: modelData.isCurrent ? Font.Bold : Font.Normal
                             font.family: Theme.fontFamilyDisplay
                             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                            opacity: {
-                                if (LyricsService.currentLineIndex < 0)
-                                    return 0.6;
-                                if (modelData.isCurrent)
-                                    return 1.0;
-                                if (modelData.distance === 1)
-                                    return 0.6;
-                                if (modelData.distance === 2)
-                                    return 0.35;
-                                return 0.15;
-                            }
+
                             Behavior on color {
                                 enabled: Theme.animationsEnabled
                                 ColorAnimation {
-                                    duration: Theme.animationNormal
-                                }
-                            }
-                            Behavior on opacity {
-                                enabled: Theme.animationsEnabled
-                                NumberAnimation {
                                     duration: Theme.animationNormal
                                 }
                             }
