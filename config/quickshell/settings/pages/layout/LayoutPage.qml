@@ -200,9 +200,9 @@ Column {
 
   // ── Preview ─────────────────────────────────────
   readonly property var _kindHints: ({
-    bar: "Your bar, live — drag widgets to reorder or move them between sections, click one to configure it",
+    bar: "Drag to rearrange — changes apply instantly, click a widget to configure it",
     zones: "Drag to rearrange — changes apply instantly, click a widget to configure it",
-    desktop: "Widgets sit at their on-screen positions — drag them around, click one to configure it",
+    desktop: "Drag to rearrange — changes apply instantly, click a widget to configure it",
     search: "Everything the launcher can search — toggle providers on or off"
   })
 
