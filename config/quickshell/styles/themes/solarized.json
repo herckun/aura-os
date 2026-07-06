@@ -5,7 +5,8 @@
   "monoAccent": "#93A1A1",
   "fonts": {
     "fontFamily": "\"Source Sans 3\", \"Space Grotesk\", sans-serif",
-    "fontFamilyMono": "\"Source Code Pro\", \"Space Mono\", monospace"
+    "fontFamilyMono": "\"Source Code Pro\", \"Space Mono\", monospace",
+    "fontFamilyDisplay": "\"Bitter\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#002B36",

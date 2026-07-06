@@ -5,7 +5,8 @@
   "monoAccent": "#F8F8F2",
   "fonts": {
     "fontFamily": "\"Sora\", \"Space Grotesk\", sans-serif",
-    "fontFamilyMono": "\"Fira Code\", \"Space Mono\", monospace"
+    "fontFamilyMono": "\"Fira Code\", \"Space Mono\", monospace",
+    "fontFamilyDisplay": "\"Unbounded\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#21222C",

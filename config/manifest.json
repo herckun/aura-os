@@ -1659,6 +1659,61 @@
         "ofl": "martianmono",
         "file": "MartianMono[wdth,wght].ttf",
         "fcName": "Martian Mono"
+      },
+      {
+        "ofl": "oxanium",
+        "file": "Oxanium[wght].ttf",
+        "fcName": "Oxanium"
+      },
+      {
+        "ofl": "orbitron",
+        "file": "Orbitron[wght].ttf",
+        "fcName": "Orbitron"
+      },
+      {
+        "ofl": "unbounded",
+        "file": "Unbounded[wght].ttf",
+        "fcName": "Unbounded"
+      },
+      {
+        "ofl": "baloo2",
+        "file": "Baloo2[wght].ttf",
+        "fcName": "Baloo 2"
+      },
+      {
+        "ofl": "vt323",
+        "file": "VT323-Regular.ttf",
+        "fcName": "VT323"
+      },
+      {
+        "ofl": "fraunces",
+        "file": "Fraunces[SOFT,WONK,opsz,wght].ttf",
+        "fcName": "Fraunces"
+      },
+      {
+        "ofl": "bitter",
+        "file": "Bitter[wght].ttf",
+        "fcName": "Bitter"
+      },
+      {
+        "ofl": "comfortaa",
+        "file": "Comfortaa[wght].ttf",
+        "fcName": "Comfortaa"
+      },
+      {
+        "ofl": "playfairdisplay",
+        "file": "PlayfairDisplay[wght].ttf",
+        "fcName": "Playfair Display"
+      },
+      {
+        "ofl": "hubotsans",
+        "file": "HubotSans[wdth,wght].ttf",
+        "fcName": "Hubot Sans"
+      },
+      {
+        "ofl": "saira",
+        "file": "Saira[wdth,wght].ttf",
+        "fcName": "Saira"
       }
     ]
   },

@@ -5,7 +5,8 @@
   "monoAccent": "#CDD6F4",
   "fonts": {
     "fontFamily": "\"Nunito\", \"Space Grotesk\", sans-serif",
-    "fontFamilyMono": "\"Cascadia Code\", \"Space Mono\", monospace"
+    "fontFamilyMono": "\"Cascadia Code\", \"Space Mono\", monospace",
+    "fontFamilyDisplay": "\"Baloo 2\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#1E1E2E",

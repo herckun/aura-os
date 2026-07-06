@@ -190,10 +190,26 @@ Singleton {
     return _style.animation ? (_style.animation[key] ?? 0) : 0
   }
 
+  readonly property var _installedFonts: Qt.fontFamilies()
+
   function _t(key: string): string {
     var f = root._theme.fonts
-    if (f && f[key]) return f[key]
-    return _data.typography ? (_data.typography[key] || "") : ""
+    var raw = (f && f[key]) || (_data.typography ? (_data.typography[key] || "") : "")
+    return _firstAvailableFamily(raw)
+  }
+
+  function _firstAvailableFamily(raw: string): string {
+    if (!raw) return ""
+    var parts = raw.split(",")
+    var first = ""
+    for (var i = 0; i < parts.length; i++) {
+      var name = parts[i].trim().replace(/^["']+|["']+$/g, "")
+      if (!name || name === "sans-serif" || name === "monospace" || name === "system-ui" || name === "serif")
+        continue
+      if (!first) first = name
+      if (root._installedFonts.indexOf(name) >= 0) return name
+    }
+    return first
   }
 
   function _ts(key: string): int {

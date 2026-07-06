@@ -5,7 +5,8 @@
   "monoAccent": "#E0DEF4",
   "fonts": {
     "fontFamily": "\"Manrope\", \"Space Grotesk\", sans-serif",
-    "fontFamilyMono": "\"Red Hat Mono\", \"Space Mono\", monospace"
+    "fontFamilyMono": "\"Red Hat Mono\", \"Space Mono\", monospace",
+    "fontFamilyDisplay": "\"Fraunces\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#191724",

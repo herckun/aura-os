@@ -5,7 +5,8 @@
   "monoAccent": "#1A1A1A",
   "fonts": {
     "fontFamily": "\"Libre Franklin\", \"Space Grotesk\", sans-serif",
-    "fontFamilyMono": "\"Spline Sans Mono\", \"Space Mono\", monospace"
+    "fontFamilyMono": "\"Spline Sans Mono\", \"Space Mono\", monospace",
+    "fontFamilyDisplay": "\"Playfair Display\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#EDEBE7",
