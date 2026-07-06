@@ -95,6 +95,11 @@ Singleton {
       property JsonObject wallpaper: JsonObject {
         property bool autoCycle: false
         property int autoCycleMinutes: 30
+        property bool carousel: false
+        property string carouselProvider: "random"
+        property int carouselMinutes: 30
+        property bool carouselRemember: false
+        property string carouselCurrent: ""
         property var history: ([])
       }
 

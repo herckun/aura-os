@@ -33,6 +33,10 @@ Singleton {
   readonly property var wallpaperHistory: Store.toArray(Store.wallpaper.history)
   readonly property bool autoCycle: Store.wallpaper.autoCycle
   readonly property int autoCycleMinutes: Store.wallpaper.autoCycleMinutes
+  readonly property bool carousel: Store.wallpaper.carousel
+  readonly property string carouselProvider: Store.wallpaper.carouselProvider
+  readonly property int carouselMinutes: Store.wallpaper.carouselMinutes
+  readonly property bool carouselRemember: Store.wallpaper.carouselRemember
 
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
@@ -61,6 +65,12 @@ Singleton {
   function setWallpaper(path: string, silent: bool): void {
     if (!path || path.length === 0) return
     if (_startupDone) svc._userChangedWallpaper = true
+
+    var prevCarousel = Store.wallpaper.carouselCurrent
+    if (prevCarousel !== "" && prevCarousel !== path) {
+      Store.wallpaper.carouselCurrent = ""
+      if (!svc.carouselRemember) svc._discardCarouselFile(prevCarousel)
+    }
 
     Store.theme.accentManual = false
     svc.sourceWallpaperPath = path
@@ -102,6 +112,7 @@ Singleton {
 
   function setAutoCycle(on: bool): void {
     Store.wallpaper.autoCycle = on
+    if (on) Store.wallpaper.carousel = false
   }
 
   function setAutoCycleMinutes(minutes: int): void {
@@ -109,11 +120,35 @@ Singleton {
     if (cycleTimer.running) cycleTimer.restart()
   }
 
+  function setCarousel(on: bool): void {
+    Store.wallpaper.carousel = on
+    if (!on) return
+    Store.wallpaper.autoCycle = false
+    if (downloadStatus === "") downloadRandomType(svc.carouselProvider, true)
+  }
+
+  function setCarouselProvider(type: string): void {
+    Store.wallpaper.carouselProvider = type
+    if (svc.carousel && downloadStatus === "") {
+      downloadRandomType(type, true)
+      carouselTimer.restart()
+    }
+  }
+
+  function setCarouselMinutes(minutes: int): void {
+    Store.wallpaper.carouselMinutes = minutes
+    if (carouselTimer.running) carouselTimer.restart()
+  }
+
+  function setCarouselRemember(on: bool): void {
+    Store.wallpaper.carouselRemember = on
+  }
+
   function downloadRandom(): void {
     downloadRandomType("random")
   }
 
-  function downloadRandomType(type: string): void {
+  function downloadRandomType(type: string, isCarousel: var): void {
     var validTypes = ["random", "anime", "monochrome"]
     if (validTypes.indexOf(type) === -1) type = "random"
     downloadStatus = "DOWNLOADING..."
@@ -130,7 +165,7 @@ Singleton {
 
     RequestService.get("https://wallhaven.cc/api/v1/search?" + apiParams, function(resp) {
       if (!resp.ok || !resp.data || !resp.data.data || resp.data.data.length === 0) {
-        _fallbackDownload(type, prefix, _dlTimeout)
+        _fallbackDownload(type, prefix, _dlTimeout, isCarousel)
         return
       }
 
@@ -138,22 +173,22 @@ Singleton {
       var idx = Math.floor(Math.random() * Math.min(entries.length, 50))
       var imgUrl = entries[idx] && entries[idx].path
       if (!imgUrl) {
-        _fallbackDownload(type, prefix, _dlTimeout)
+        _fallbackDownload(type, prefix, _dlTimeout, isCarousel)
         return
       }
 
-      _downloadImage(imgUrl, type, prefix, _dlTimeout)
+      _downloadImage(imgUrl, type, prefix, _dlTimeout, isCarousel)
     })
   }
 
-  function _fallbackDownload(type: string, prefix: string, timeout: var): void {
+  function _fallbackDownload(type: string, prefix: string, timeout: var, isCarousel: var): void {
     var fallbackUrl = type === "monochrome"
       ? "https://picsum.photos/1920/1080?grayscale"
       : "https://picsum.photos/1920/1080"
-    _downloadImage(fallbackUrl, type, prefix, timeout)
+    _downloadImage(fallbackUrl, type, prefix, timeout, isCarousel)
   }
 
-  function _downloadImage(url: string, type: string, prefix: string, timeout: var): void {
+  function _downloadImage(url: string, type: string, prefix: string, timeout: var, isCarousel: var): void {
     var dir = AppInfo.wallpaperDir
     var ts = Math.floor(Date.now() / 1000)
     var dest = dir + "/" + prefix + "-" + ts + ".jpg"
@@ -173,6 +208,7 @@ Singleton {
         var path = r.stdout.trim()
         if (path.startsWith("/")) {
           svc.setWallpaper(path)
+          if (isCarousel) Store.wallpaper.carouselCurrent = path
           svc.downloadStatus = ""
         } else {
           svc.downloadStatus = "FAILED"
@@ -243,6 +279,15 @@ Singleton {
 
   function removeFromHistory(path: string): void {
     Store.wallpaper.history = svc.wallpaperHistory.filter(function(h) { return h.path !== path })
+  }
+
+  function _discardCarouselFile(path: string): void {
+    var dir = AppInfo.wallpaperDir
+    if (path.indexOf(dir + "/") !== 0) return
+    var name = path.substring(dir.length + 1)
+    if (!/^(general|anime|mono)-\d+\.jpg$/.test(name)) return
+    svc.removeFromHistory(path)
+    ProcessPool.runDetached(["rm", "-f", path])
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -366,6 +411,16 @@ Singleton {
     running: svc.autoCycle
     repeat: true
     onTriggered: svc.cycleWallpaper()
+  }
+
+  Timer {
+    id: carouselTimer
+    interval: Math.max(1, svc.carouselMinutes) * 60000
+    running: svc.carousel
+    repeat: true
+    onTriggered: {
+      if (svc.downloadStatus === "") svc.downloadRandomType(svc.carouselProvider, true)
+    }
   }
 
   Timer {

@@ -251,6 +251,8 @@ Column {
         title: "AUTO-CYCLE"
 
         property var intervalMinutes: [1, 5, 15, 30, 60, 180]
+        property var carouselProviders: ["random", "anime", "monochrome"]
+        property var carouselLabels: ["ALL", "ANIME", "MONO"]
 
         function intervalLabel(minutes) {
             return minutes >= 60 ? (minutes / 60) + "H" : minutes + "M"
@@ -262,6 +264,11 @@ Column {
                 if (Math.abs(intervalMinutes[i] - minutes) < Math.abs(intervalMinutes[best] - minutes)) best = i
             }
             return best
+        }
+
+        function providerIndex(type) {
+            var i = carouselProviders.indexOf(type)
+            return i >= 0 ? i : 0
         }
 
         Column {
@@ -296,6 +303,68 @@ Column {
                     options: cycleCard.intervalMinutes.map(cycleCard.intervalLabel)
                     currentIndex: cycleCard.intervalIndex(WallpaperService.autoCycleMinutes)
                     onSelected: i => WallpaperService.setAutoCycleMinutes(cycleCard.intervalMinutes[i])
+                }
+            }
+
+            Divider {
+                width: parent.width
+            }
+
+            SettingRow {
+                width: parent.width
+                label: "CAROUSEL"
+                description: "Periodically download a fresh wallpaper from the web"
+
+                Toggle {
+                    toggleWidth: 38
+                    toggleHeight: 20
+                    checked: WallpaperService.carousel
+                    onToggled: v => WallpaperService.setCarousel(v)
+                }
+            }
+
+            Divider {
+                width: parent.width
+                visible: WallpaperService.carousel
+            }
+
+            SettingRow {
+                width: parent.width
+                label: "SOURCE"
+                visible: WallpaperService.carousel
+
+                OptionSwitcher {
+                    size: "sm"
+                    options: cycleCard.carouselLabels
+                    currentIndex: cycleCard.providerIndex(WallpaperService.carouselProvider)
+                    onSelected: i => WallpaperService.setCarouselProvider(cycleCard.carouselProviders[i])
+                }
+            }
+
+            SettingRow {
+                width: parent.width
+                label: "INTERVAL"
+                visible: WallpaperService.carousel
+
+                OptionSwitcher {
+                    size: "sm"
+                    options: cycleCard.intervalMinutes.map(cycleCard.intervalLabel)
+                    currentIndex: cycleCard.intervalIndex(WallpaperService.carouselMinutes)
+                    onSelected: i => WallpaperService.setCarouselMinutes(cycleCard.intervalMinutes[i])
+                }
+            }
+
+            SettingRow {
+                width: parent.width
+                label: "REMEMBER"
+                description: "Keep carousel downloads on disk and in history after they rotate out"
+                visible: WallpaperService.carousel
+
+                Toggle {
+                    toggleWidth: 38
+                    toggleHeight: 20
+                    checked: WallpaperService.carouselRemember
+                    onToggled: v => WallpaperService.setCarouselRemember(v)
                 }
             }
         }
