@@ -77,6 +77,7 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
 
   readonly property int _maxNotifications: 100
+  property var _rawTracked: []
 
   // ═══════════════════════════════════════════════════════════════
   //  PRIVATE HELPERS
@@ -100,7 +101,8 @@ Singleton {
     }
   }
 
-  function _parseActions(notifActions: var): var {
+  function _parseActions(notif: var): var {
+    var notifActions = notif.actions
     if (!notifActions) return []
 
     var result = []
@@ -110,9 +112,25 @@ Singleton {
       // display label — skip it (and any label-less action) so it isn't
       // rendered as an empty button.
       if (!a || !a.text || a.identifier === "default") continue
-      result.push({ identifier: a.identifier, text: a.text })
+      if (result.length === 0) svc._trackRaw(notif)
+      result.push((function(act) {
+          return {
+            identifier: act.identifier,
+            text: act.text,
+            invoke: function() { try { act.invoke() } catch (e) {} }
+          }
+        })(a))
     }
     return result
+  }
+
+  function _trackRaw(notif: var): void {
+    notif.tracked = true
+    svc._rawTracked.push(notif)
+    while (svc._rawTracked.length > 20) {
+      var old = svc._rawTracked.shift()
+      try { old.dismiss() } catch (e) {}
+    }
   }
 
   function _recalcUnread(): void {
@@ -126,9 +144,10 @@ Singleton {
   NotificationServer {
     id: notifServer
     keepOnReload: true
+    actionsSupported: true
 
     onNotification: function(notif) {
-      var actions = _parseActions(notif.actions)
+      var actions = _parseActions(notif)
       svc.push(notif.summary, notif.body, notif.appIcon, notif.appName, notif.urgency, actions)
     }
   }

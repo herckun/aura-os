@@ -152,10 +152,10 @@ PanelWindow {
     id: osdOverlay
   }
 
-  Toast { id: toast0; slot: 0 }
-  Toast { id: toast1; slot: 1 }
-  Toast { id: toast2; slot: 2 }
-  Toast { id: toast3; slot: 3 }
+  Toast { id: toast0 }
+  Toast { id: toast1; stackOffset: toast0.stackHeight }
+  Toast { id: toast2; stackOffset: toast0.stackHeight + toast1.stackHeight }
+  Toast { id: toast3; stackOffset: toast0.stackHeight + toast1.stackHeight + toast2.stackHeight }
 
   function nextNotifPopup(): var {
     var popups = [toast0, toast1, toast2, toast3]

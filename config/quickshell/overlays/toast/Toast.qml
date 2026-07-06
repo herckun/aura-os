@@ -14,7 +14,8 @@ PanelWindow {
   color: "transparent"
   visible: false
 
-  property int slot: 0
+  property real stackOffset: 0
+  readonly property real stackHeight: visible ? _toastHeight + 4 : 0
   property string summary: ""
   property string body: ""
   property string appIcon: ""
@@ -27,12 +28,12 @@ PanelWindow {
   property double duration: Theme.toastDuration
 
   readonly property int _mode: ModeService.mode
-  readonly property int _toastHeight: notifCard.implicitHeight + (toast.notifActions.length > 0 ? 36 : 0)
+  readonly property int _toastHeight: notifCard.implicitHeight + (toast.notifActions.length > 0 ? actionFlow.implicitHeight + Theme.spaceSm * 2 : 0)
 
   implicitWidth: Theme.toastWidth
   implicitHeight: _toastHeight
 
-  margins.top: PopupPositioner.belowBar() + 4 + (slot * (_toastHeight + 4))
+  margins.top: PopupPositioner.belowBar() + 4 + stackOffset
   margins.left: toast.screen ? toast.screen.width - toast.implicitWidth - Theme.spaceMd : 0
 
   function show(summary: string, body: string, icon: string, appName: string, urgency: int, actions: var): void {
@@ -117,6 +118,7 @@ PanelWindow {
 
     // ── Action buttons (below notification) ────────────
     Flow {
+      id: actionFlow
       anchors { left: parent.left; right: parent.right; bottom: parent.bottom; margins: Theme.spaceSm }
       spacing: Theme.spaceXs
       visible: toast.notifActions.length > 0
@@ -128,7 +130,10 @@ PanelWindow {
           required property var modelData
           size: "sm"
           text: modelData.text || ""
-          onClicked: toast.hide()
+          onClicked: {
+            if (modelData.invoke) modelData.invoke()
+            toast.hide()
+          }
         }
       }
     }
