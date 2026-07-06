@@ -110,11 +110,8 @@ Item {
   readonly property color _fbp: bgPressedColor.a > 0 ? bgPressedColor :
     _isAccent ? Qt.darker(Theme.accent, 1.15) : Theme.controlBackgroundPressed
 
-  property bool fillWidth: false
-
   // ── Geometry ───────────────────────────────────────────────
-  width: {
-    if (fillWidth) return -1
+  implicitWidth: {
     if (shape === "circle" || shape === "icon") return buttonWidth
     if (shape === "tile") return 80
     if (shape === "link") return _linkLabel.implicitWidth
@@ -123,15 +120,16 @@ Item {
     return Math.max(cw + px * 2, buttonHeight * 1.4)
   }
 
-  height: {
+  implicitHeight: {
     if (shape === "circle" || shape === "icon") return buttonHeight
     if (shape === "tile") return Math.max(60, _tileColumn.implicitHeight + Theme.spaceSm * 2)
     if (shape === "link") return buttonHeight
     var py = paddingY >= 0 ? paddingY : padding
     return Math.max(_defaultLabel.height + py * 2, buttonHeight)
   }
-  implicitWidth: width
-  implicitHeight: height
+
+  width: implicitWidth
+  height: implicitHeight
   readonly property real tileContentHeight: Math.max(60, _tileColumn.implicitHeight + Theme.spaceSm * 2)
 
   property int padding: _sizePreset.padding

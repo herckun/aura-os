@@ -18,8 +18,9 @@ Column {
   }
 
   Rectangle {
-    width: parent.width
-    height: 1
-    color: Theme.border
+    width: 28
+    height: 3
+    radius: Theme.radiusXs
+    color: Theme.accent
   }
 }
