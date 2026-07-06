@@ -52,7 +52,7 @@ Rectangle {
             radius: Theme.radiusPill
             color: root.swatchColor
             border.width: root.selected ? 3 : 1
-            border.color: root.selected ? Theme.background : Qt.rgba(1, 1, 1, 0.08)
+            border.color: root.selected ? Theme.background : Theme.overlay(0.08)
             Layout.alignment: Qt.AlignHCenter
 
             Behavior on border.width {

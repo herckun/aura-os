@@ -39,7 +39,7 @@ Column {
                         size: 96
                         source: UserService.avatarSource
                         fallbackText: UserService.initial
-                        ringColor: avatarMa.containsMouse ? Theme.accent : Qt.rgba(1, 1, 1, 0.25)
+                        ringColor: avatarMa.containsMouse ? Theme.accent : Theme.overlay(0.25)
                     }
 
                     Rectangle {

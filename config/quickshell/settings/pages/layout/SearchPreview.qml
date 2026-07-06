@@ -14,7 +14,7 @@ Stage {
     height: panelCol.implicitHeight + Theme.spaceMd * 2
     anchors.horizontalCenter: parent.horizontalCenter
     radius: Theme.radiusLarge
-    color: Qt.rgba(0, 0, 0, 0.82)
+    color: Theme.panelBackground
     border.width: Theme.borderWidth
     border.color: Theme.borderVisible
 

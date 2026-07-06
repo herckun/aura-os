@@ -216,6 +216,11 @@ Singleton {
     return _relativeLuminance(bgColor) > 0.36 ? Qt.color("#000000") : Qt.color("#FFFFFF")
   }
 
+  function overlay(alpha: real): color {
+    var t = textPrimary
+    return Qt.rgba(t.r, t.g, t.b, alpha)
+  }
+
   function variantColor(variant: string): color {
     switch (variant) {
     case "success": return success
@@ -227,8 +232,12 @@ Singleton {
   }
 
   function _ensureVisibleAccent(c: color): color {
-    if (!darkMode) return c
     var lum = _luminance(c)
+    if (!darkMode) {
+      if (lum <= 0.8) return c
+      var darkened = Qt.hsla(c.hslHue, c.hslSaturation, Math.min(c.hslLightness, 0.4), 1)
+      return _luminance(darkened) <= 0.8 ? darkened : Qt.color("#000000")
+    }
     if (lum >= 0.2) return c
     var brightened = Qt.hsla(c.hslHue, c.hslSaturation, Math.max(c.hslLightness, 0.45), 1)
     var lum2 = _luminance(brightened)

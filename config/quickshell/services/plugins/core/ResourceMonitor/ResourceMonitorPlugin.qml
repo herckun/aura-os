@@ -130,7 +130,7 @@ BasePlugin {
         labelColor: monitorContainer._dimColor
         valueColor: monitorContainer._textColor
         barColor: monitorContainer._accentColor
-        trackColor: Qt.rgba(1, 1, 1, 0.1)
+        trackColor: Qt.rgba(monitorContainer._textColor.r, monitorContainer._textColor.g, monitorContainer._textColor.b, 0.12)
 
         Sparkline {
           visible: monitorContainer._showGraph && ResourceService.cpuHistory.length > 1
@@ -150,7 +150,7 @@ BasePlugin {
         labelColor: monitorContainer._dimColor
         valueColor: monitorContainer._textColor
         barColor: monitorContainer._accentColor
-        trackColor: Qt.rgba(1, 1, 1, 0.1)
+        trackColor: Qt.rgba(monitorContainer._textColor.r, monitorContainer._textColor.g, monitorContainer._textColor.b, 0.12)
 
         Text {
           text: ResourceService.memUsed + " MB / " + ResourceService.memTotal + " MB"
@@ -169,7 +169,7 @@ BasePlugin {
         labelColor: monitorContainer._dimColor
         valueColor: monitorContainer._textColor
         barColor: monitorContainer._accentColor
-        trackColor: Qt.rgba(1, 1, 1, 0.1)
+        trackColor: Qt.rgba(monitorContainer._textColor.r, monitorContainer._textColor.g, monitorContainer._textColor.b, 0.12)
 
         RowLayout {
           Layout.fillWidth: true
