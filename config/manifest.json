@@ -1714,6 +1714,11 @@
         "ofl": "saira",
         "file": "Saira[wdth,wght].ttf",
         "fcName": "Saira"
+      },
+      {
+        "ofl": "geist",
+        "file": "Geist[wght].ttf",
+        "fcName": "Geist"
       }
     ]
   },
