@@ -328,7 +328,7 @@ PanelWindow {
             text: smartPopup.formatTime(TimerService.remaining)
             color: Theme.textDisplay
             font.pixelSize: Theme.fontSizeDisplay
-            font.family: Theme.fontFamilyDeco
+            font.family: Theme.fontFamilyDisplay
           }
 
           ProgressBar {

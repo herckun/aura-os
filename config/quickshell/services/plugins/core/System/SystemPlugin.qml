@@ -53,17 +53,17 @@ BasePlugin {
 
       Column { spacing: Theme.spaceXxs; width: parent.width / 3
         Text { text: "CPU"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-        Text { text: ResourceService.cpuUsage + "%"; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDeco }
+        Text { text: ResourceService.cpuUsage + "%"; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
       }
 
       Column { spacing: Theme.spaceXxs; width: parent.width / 3
         Text { text: "MEM"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-        Text { text: ResourceService.memUsed + "MB"; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDeco }
+        Text { text: ResourceService.memUsed + "MB"; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
       }
 
       Column { spacing: Theme.spaceXxs; width: parent.width / 3
         Text { text: UpdatesService.hasUpdates ? "UPDATES" : "STATUS"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-        Text { text: UpdatesService.hasUpdates ? UpdatesService.pendingUpdates + " PKG" : "UP TO DATE"; color: UpdatesService.hasUpdates ? Theme.warning : Theme.textSecondary; font.pixelSize: Theme.fontSizeBody; font.family: Theme.fontFamilyDeco }
+        Text { text: UpdatesService.hasUpdates ? UpdatesService.pendingUpdates + " PKG" : "UP TO DATE"; color: UpdatesService.hasUpdates ? Theme.warning : Theme.textSecondary; font.pixelSize: Theme.fontSizeBody; font.family: Theme.fontFamilyDisplay }
       }
     }
 
@@ -78,17 +78,17 @@ BasePlugin {
 
         Column { spacing: Theme.spaceXxs; width: parent.width / 3
           Text { text: "LOAD"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-          Text { text: ResourceService.gpuLoad; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDeco }
+          Text { text: ResourceService.gpuLoad; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
         }
 
         Column { spacing: Theme.spaceXxs; width: parent.width / 3
           Text { text: "TEMP"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-          Text { text: ResourceService.gpuTemp; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDeco }
+          Text { text: ResourceService.gpuTemp; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
         }
 
         Column { spacing: Theme.spaceXxs; width: parent.width / 3
           Text { text: "CLOCK"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-          Text { text: ResourceService.gpuClock; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDeco }
+          Text { text: ResourceService.gpuClock; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
         }
       }
 
