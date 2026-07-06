@@ -6,7 +6,7 @@
   "fonts": {
     "fontFamily": "\"Inter\", \"Space Grotesk\", sans-serif",
     "fontFamilyMono": "\"JetBrains Mono\", \"Space Mono\", monospace",
-    "fontFamilyDisplay": "\"Oxanium\", \"Doto\", monospace"
+    "fontFamilyDeco": "\"Oxanium\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#2E3440",

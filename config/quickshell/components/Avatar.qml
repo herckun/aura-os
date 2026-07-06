@@ -28,7 +28,7 @@ Item {
     text: root.fallbackText
     color: Theme.accent
     font.pixelSize: Math.round(root.size * 0.42)
-    font.family: Theme.fontFamilyDisplay
+    font.family: Theme.fontFamilyDeco
     font.weight: Font.Bold
     visible: !root._hasImage
   }

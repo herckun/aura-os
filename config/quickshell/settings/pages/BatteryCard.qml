@@ -30,7 +30,7 @@ Column {
       text: Math.round(root.battery.percentage) + "%"
       color: root.battery.percentage < 20 ? Theme.warning : Theme.textDisplay
       font.pixelSize: Theme.fontSizeDisplayLarge
-      font.family: Theme.fontFamilyDisplay
+      font.family: Theme.fontFamilyDeco
       font.letterSpacing: -0.03
       font.weight: Font.DemiBold
       anchors.verticalCenter: parent.verticalCenter

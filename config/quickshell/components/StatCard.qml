@@ -30,7 +30,7 @@ Surface {
       text: root.value
       color: Theme.textDisplay
       font.pixelSize: Theme.fontSizeTitle
-      font.family: Theme.fontFamilyDisplay
+      font.family: Theme.fontFamilyDeco
       elide: Text.ElideRight
       maximumLineCount: 1
       Layout.fillWidth: true

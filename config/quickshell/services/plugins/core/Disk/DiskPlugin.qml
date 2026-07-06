@@ -96,7 +96,7 @@ BasePlugin {
           text: ResourceService.diskUsed
           color: Theme.textDisplay
           font.pixelSize: Theme.fontSizeTitle
-          font.family: Theme.fontFamilyDisplay
+          font.family: Theme.fontFamilyDeco
         }
         Text {
           text: "/ " + ResourceService.diskTotal

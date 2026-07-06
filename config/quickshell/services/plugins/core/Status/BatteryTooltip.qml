@@ -90,7 +90,7 @@ PanelWindow {
           text: Math.round(BatteryService.percentage)
           color: Theme.textDisplay
           font.pixelSize: Theme.fontSizeDisplay
-          font.family: Theme.fontFamilyDisplay
+          font.family: Theme.fontFamilyDeco
           font.weight: Font.Bold
         }
 

@@ -131,6 +131,7 @@ Singleton {
 
   readonly property string fontFamily: _t("fontFamily")
   readonly property string fontFamilyDisplay: _t("fontFamilyDisplay")
+  readonly property string fontFamilyDeco: _t("fontFamilyDeco")
   readonly property string fontFamilyMono: _t("fontFamilyMono")
   readonly property string fontFamilyIcons: _t("fontFamilyIcons")
 

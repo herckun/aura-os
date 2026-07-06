@@ -6,7 +6,7 @@
   "fonts": {
     "fontFamily": "\"Archivo\", \"Space Grotesk\", sans-serif",
     "fontFamilyMono": "\"Martian Mono\", \"Space Mono\", monospace",
-    "fontFamilyDisplay": "\"VT323\", \"Doto\", monospace"
+    "fontFamilyDeco": "\"VT323\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#1D2021",

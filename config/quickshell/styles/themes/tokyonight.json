@@ -6,7 +6,7 @@
   "fonts": {
     "fontFamily": "\"Outfit\", \"Space Grotesk\", sans-serif",
     "fontFamilyMono": "\"Sometype Mono\", \"Space Mono\", monospace",
-    "fontFamilyDisplay": "\"Orbitron\", \"Doto\", monospace"
+    "fontFamilyDeco": "\"Orbitron\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#1A1B26",

@@ -107,7 +107,7 @@ FloatingWindow {
         text: AppInfo.displayName.toUpperCase()
         color: Theme.textDisplay
         font.pixelSize: Theme.fontSizeLabel
-        font.family: Theme.fontFamilyDisplay
+        font.family: Theme.fontFamilyDeco
         font.letterSpacing: 2
         Layout.alignment: Qt.AlignVCenter
       }

@@ -105,7 +105,7 @@ PanelWindow {
               : "OFFLINE"
             color: NetworkService.online ? Theme.textDisplay : Theme.textDisabled
             font.pixelSize: Theme.fontSizeTitle
-            font.family: Theme.fontFamilyDisplay
+            font.family: Theme.fontFamilyDeco
             font.weight: Font.Bold
             elide: Text.ElideRight
           }

@@ -88,7 +88,7 @@ PanelWindow {
             text: WeatherService.temp
             color: Theme.textDisplay
             font.pixelSize: Theme.fontSizeTitle2
-            font.family: Theme.fontFamilyDisplay
+            font.family: Theme.fontFamilyDeco
             font.weight: Font.Bold
           }
 

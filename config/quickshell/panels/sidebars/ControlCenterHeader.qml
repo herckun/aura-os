@@ -127,7 +127,7 @@ Section {
           text: Qt.formatDateTime(DateTimeService.currentDate, "HH")
           color: Theme.textDisplay
           font.pixelSize: Theme.fontSizeDisplay
-          font.family: Theme.fontFamilyDisplay
+          font.family: Theme.fontFamilyDeco
           font.letterSpacing: 0.02
         }
 
@@ -135,7 +135,7 @@ Section {
           text: ":"
           color: Theme.textDisabled
           font.pixelSize: Theme.fontSizeDisplay
-          font.family: Theme.fontFamilyDisplay
+          font.family: Theme.fontFamilyDeco
           font.letterSpacing: 0.02
 
           SequentialAnimation on opacity {
@@ -150,7 +150,7 @@ Section {
           text: Qt.formatDateTime(DateTimeService.currentDate, "mm")
           color: Theme.textDisplay
           font.pixelSize: Theme.fontSizeDisplay
-          font.family: Theme.fontFamilyDisplay
+          font.family: Theme.fontFamilyDeco
           font.letterSpacing: 0.02
         }
       }

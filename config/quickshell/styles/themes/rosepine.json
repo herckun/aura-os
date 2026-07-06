@@ -6,7 +6,7 @@
   "fonts": {
     "fontFamily": "\"Manrope\", \"Space Grotesk\", sans-serif",
     "fontFamilyMono": "\"Red Hat Mono\", \"Space Mono\", monospace",
-    "fontFamilyDisplay": "\"Fraunces\", \"Doto\", monospace"
+    "fontFamilyDeco": "\"Fraunces\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#191724",

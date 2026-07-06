@@ -295,7 +295,7 @@ BasePlugin {
       Text {
         id: dayText
         text: ""
-        font.family: Theme.fontFamilyDisplay
+        font.family: Theme.fontFamilyDeco
         font.pixelSize: Theme.fontSizeHeading
         font.weight: Font.Bold
         font.letterSpacing: 8
@@ -329,7 +329,7 @@ BasePlugin {
       Text {
         id: timeTextM
         text: ""
-        font.family: Theme.fontFamilyDisplay
+        font.family: Theme.fontFamilyDeco
         font.pixelSize: Theme.fontSizeDisplayXl
         font.weight: Font.Bold
         font.letterSpacing: 2
@@ -379,7 +379,7 @@ BasePlugin {
       Text {
         id: dayTextM
         text: ""
-        font.family: Theme.fontFamilyDisplay
+        font.family: Theme.fontFamilyDeco
         font.pixelSize: Theme.fontSizeHeading
         font.weight: Font.Bold
         font.letterSpacing: 8
@@ -420,7 +420,7 @@ BasePlugin {
         Text {
           id: dayTextH
           text: ""
-          font.family: Theme.fontFamilyDisplay
+          font.family: Theme.fontFamilyDeco
           font.pixelSize: Theme.fontSizeDisplay
           font.weight: Font.Bold
           font.letterSpacing: 6

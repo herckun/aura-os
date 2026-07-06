@@ -79,7 +79,7 @@ ColumnLayout {
         text: AppInfo.displayName.toUpperCase()
         color: Theme.textDisplay
         font.pixelSize: Theme.fontSizeHeading
-        font.family: Theme.fontFamilyDisplay
+        font.family: Theme.fontFamilyDeco
         font.letterSpacing: 4
       }
 

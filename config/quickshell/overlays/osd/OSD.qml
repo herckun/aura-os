@@ -94,7 +94,7 @@ PanelWindow {
         text: Math.round(osd.value * 100)
         color: Theme.textDisplay
         font.pixelSize: Theme.fontSizeTitle
-        font.family: Theme.fontFamilyDisplay
+        font.family: Theme.fontFamilyDeco
         font.weight: Font.Bold
       }
 

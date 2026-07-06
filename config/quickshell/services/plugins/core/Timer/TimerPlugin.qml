@@ -60,7 +60,7 @@ BasePlugin {
             "00:00:00"
       color: TimerService.running ? Theme.accent : Theme.textDisplay
       font.pixelSize: Theme.fontSizeHeading
-      font.family: Theme.fontFamilyDisplay
+      font.family: Theme.fontFamilyDeco
       font.letterSpacing: 0.04
       anchors.horizontalCenter: parent.horizontalCenter
     }

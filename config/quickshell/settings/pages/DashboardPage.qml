@@ -107,7 +107,7 @@ ColumnLayout {
             text: ResourceService.cpuUsage
             color: Theme.textDisplay
             font.pixelSize: Theme.fontSizeDisplay
-            font.family: Theme.fontFamilyDisplay
+            font.family: Theme.fontFamilyDeco
           }
           Text {
             text: "%"
@@ -122,7 +122,7 @@ ColumnLayout {
             text: ResourceService.cpuTemp !== "" ? ResourceService.cpuTemp + "°" : ""
             color: Theme.warning
             font.pixelSize: Theme.fontSizeTitle
-            font.family: Theme.fontFamilyDisplay
+            font.family: Theme.fontFamilyDeco
             Layout.alignment: Qt.AlignBottom
             Layout.bottomMargin: Theme.spaceXs
           }
@@ -157,7 +157,7 @@ ColumnLayout {
             text: ResourceService.memUsed
             color: Theme.textDisplay
             font.pixelSize: Theme.fontSizeDisplay
-            font.family: Theme.fontFamilyDisplay
+            font.family: Theme.fontFamilyDeco
           }
           Text {
             text: "MB"

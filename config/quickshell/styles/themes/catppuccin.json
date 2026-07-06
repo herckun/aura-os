@@ -6,7 +6,7 @@
   "fonts": {
     "fontFamily": "\"Nunito\", \"Space Grotesk\", sans-serif",
     "fontFamilyMono": "\"Cascadia Code\", \"Space Mono\", monospace",
-    "fontFamilyDisplay": "\"Baloo 2\", \"Doto\", monospace"
+    "fontFamilyDeco": "\"Baloo 2\", \"Doto\", monospace"
   },
   "colors": {
     "background": "#1E1E2E",

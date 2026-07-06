@@ -32,6 +32,7 @@
   "typography": {
     "fontFamily": "\"Space Grotesk\", \"DM Sans\", system-ui, sans-serif",
     "fontFamilyDisplay": "\"Saira\", \"Doto\", monospace",
+    "fontFamilyDeco": "\"Doto\", \"Saira\", monospace",
     "fontFamilyMono": "\"Space Mono\", \"JetBrains Mono\", monospace",
     "fontFamilyIcons": "\"JetBrainsMono Nerd Font Mono\", \"JetBrainsMono Nerd Font\", \"FiraCode Nerd Font Mono\", monospace",
     "sizes": {
