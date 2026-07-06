@@ -90,12 +90,20 @@ PanelWindow {
 
       // ── Value ─────────────────────────────────────
       Text {
+        id: valueText
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: Math.round(valueText.width / 2 - (valueMetrics.tightBoundingRect.x + valueMetrics.tightBoundingRect.width / 2))
         text: Math.round(osd.value * 100)
         color: Theme.textDisplay
         font.pixelSize: Theme.fontSizeTitle
         font.family: Theme.fontFamilyDisplay
         font.weight: Font.Bold
+
+        TextMetrics {
+          id: valueMetrics
+          text: valueText.text
+          font: valueText.font
+        }
       }
 
       // ── Progress bar ──────────────────────────────
