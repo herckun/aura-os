@@ -75,7 +75,8 @@ FloatingWindow {
 
   Surface {
     anchors.fill: parent
-    radius: Theme.radiusLarge
+    radius: 0
+    bordered: false
     color: Theme.background
 
     DotMatrixBackground {
