@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQml
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import "../../../../styles"
 import "../../../../components"
 import "../../../../services"
@@ -284,90 +285,126 @@ BasePlugin {
             visible: !LyricsService.loading && LyricsService.hasLyrics && MediaService.playbackStatus !== "Stopped" && LyricsService.currentLineIndex >= 0 && LyricsService.currentLineIndex < LyricsService.lines.length - 1
             clip: true
 
-            Column {
-                id: lyricsCol
-                width: parent.width
-                y: {
-                    var idx = LyricsService.currentLineIndex;
-                    if (idx < 0)
-                        return 0;
+            Item {
+                id: lyricsContent
+                anchors.fill: parent
+                visible: false
 
-                    var currentItem = lyricsCol.children[idx];
-                    if (!currentItem)
-                        return 0;
+                Column {
+                    id: lyricsCol
+                    width: parent.width
+                    y: {
+                        var idx = LyricsService.currentLineIndex;
+                        if (idx < 0)
+                            return 0;
 
-                    var centerTarget = lyricsView.height / 2 - currentItem.height / 2;
-                    var offset = centerTarget - currentItem.y;
-                    var minOffset = -(lyricsCol.height - lyricsView.height);
-                    if (minOffset > 0)
-                        minOffset = 0;
-                    return Math.max(minOffset, Math.min(0, offset));
-                }
+                        var currentItem = lyricsCol.children[idx];
+                        if (!currentItem)
+                            return 0;
 
-                Behavior on y {
-                    enabled: Theme.animationsEnabled
-                    NumberAnimation {
-                        duration: Theme.animationNormal
-                        easing.type: Easing.OutQuad
-                    }
-                }
-
-                Repeater {
-                    model: {
-                        if (!LyricsService.hasLyrics || LyricsService.lines.length === 0)
-                            return [];
-                        var result = [];
-                        for (var i = 0; i < LyricsService.lines.length; i++) {
-                            result.push({
-                                lineIndex: i,
-                                text: LyricsService.lines[i].text,
-                                isCurrent: i === LyricsService.currentLineIndex
-                            });
-                        }
-                        return result;
+                        var centerTarget = lyricsView.height / 2 - currentItem.height / 2;
+                        var offset = centerTarget - currentItem.y;
+                        var minOffset = -(lyricsCol.height - lyricsView.height);
+                        if (minOffset > 0)
+                            minOffset = 0;
+                        return Math.max(minOffset, Math.min(0, offset));
                     }
 
-                    delegate: Item {
-                        required property var modelData
-                        width: lyricsCol.width
-                        height: Math.max(lyricsContainer._minLineHeight, lineText.implicitHeight + 10)
-
-                        Rectangle {
-                            anchors.left: parent.left
-                            anchors.leftMargin: Theme.spaceXs
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 2
-                            height: Math.min(parent.height - 10, lineText.implicitHeight)
-                            radius: 1
-                            color: lyricsContainer._accentColor
-                            visible: modelData.isCurrent
+                    Behavior on y {
+                        enabled: Theme.animationsEnabled
+                        NumberAnimation {
+                            duration: Theme.animationNormal
+                            easing.type: Easing.OutQuad
                         }
+                    }
 
-                        Text {
-                            id: lineText
-                            anchors {
-                                left: parent.left
-                                leftMargin: Theme.spaceMd
-                                right: parent.right
-                                rightMargin: Theme.spaceSm
-                                verticalCenter: parent.verticalCenter
+                    Repeater {
+                        model: {
+                            if (!LyricsService.hasLyrics || LyricsService.lines.length === 0)
+                                return [];
+                            var result = [];
+                            for (var i = 0; i < LyricsService.lines.length; i++) {
+                                result.push({
+                                    lineIndex: i,
+                                    text: LyricsService.lines[i].text,
+                                    isCurrent: i === LyricsService.currentLineIndex
+                                });
                             }
-                            text: modelData.text
-                            color: modelData.isCurrent ? lyricsContainer._accentColor : lyricsContainer._dimColor
-                            font.pixelSize: modelData.isCurrent ? lyricsContainer._lineFont : lyricsContainer._lineFont - 1
-                            font.weight: modelData.isCurrent ? Font.Bold : Font.Normal
-                            font.family: Theme.fontFamilyDisplay
-                            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                            return result;
+                        }
 
-                            Behavior on color {
-                                enabled: Theme.animationsEnabled
-                                ColorAnimation {
-                                    duration: Theme.animationNormal
+                        delegate: Item {
+                            required property var modelData
+                            width: lyricsCol.width
+                            height: Math.max(lyricsContainer._minLineHeight, lineText.implicitHeight + 10)
+
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.leftMargin: Theme.spaceXs
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 2
+                                height: Math.min(parent.height - 10, lineText.implicitHeight)
+                                radius: 1
+                                color: lyricsContainer._accentColor
+                                visible: modelData.isCurrent
+                            }
+
+                            Text {
+                                id: lineText
+                                anchors {
+                                    left: parent.left
+                                    leftMargin: Theme.spaceMd
+                                    right: parent.right
+                                    rightMargin: Theme.spaceSm
+                                    verticalCenter: parent.verticalCenter
+                                }
+                                text: modelData.text
+                                color: modelData.isCurrent ? lyricsContainer._accentColor : lyricsContainer._dimColor
+                                font.pixelSize: modelData.isCurrent ? lyricsContainer._lineFont : lyricsContainer._lineFont - 1
+                                font.weight: modelData.isCurrent ? Font.Bold : Font.Normal
+                                font.family: Theme.fontFamilyDisplay
+                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+                                Behavior on color {
+                                    enabled: Theme.animationsEnabled
+                                    ColorAnimation {
+                                        duration: Theme.animationNormal
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
+
+            Rectangle {
+                id: fadeMask
+                anchors.fill: parent
+                visible: false
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0.0
+                        color: "transparent"
+                    }
+                    GradientStop {
+                        position: 0.22
+                        color: "white"
+                    }
+                    GradientStop {
+                        position: 0.78
+                        color: "white"
+                    }
+                    GradientStop {
+                        position: 1.0
+                        color: "transparent"
+                    }
+                }
+            }
+
+            OpacityMask {
+                anchors.fill: parent
+                source: lyricsContent
+                maskSource: fadeMask
             }
         }
     }
