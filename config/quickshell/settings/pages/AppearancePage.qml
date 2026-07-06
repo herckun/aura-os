@@ -15,7 +15,7 @@ Column {
   Card {
     width: parent.width
     title: "THEME"
-    description: "Colors and fonts for the shell, terminal and apps — applies instantly"
+    description: "Colors and fonts for the shell, terminal and apps"
 
     GridLayout {
       width: parent.width
