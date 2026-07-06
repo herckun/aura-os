@@ -10,7 +10,8 @@ Singleton {
   property bool _pendingApply: false
 
   function init(): void {
-    if (Store.freshInstall) _applyWhenReady()
+    if (Store.freshInstall || Store.plugins.resetPending === true)
+      _applyWhenReady()
   }
 
   function apply(): void {
@@ -30,23 +31,38 @@ Singleton {
       for (var key in dl)
         if (locs.indexOf(key) < 0) locs.push(key)
 
+      var entries = []
+      var anyOn = false
       for (var j = 0; j < locs.length; j++) {
         var loc = locs[j]
         var spec = dl[loc] || {}
         var on = spec.enabled !== undefined ? spec.enabled === true : declared.indexOf(loc) >= 0
-        enabled[p.id + "@" + loc] = on
+        if (on) anyOn = true
+        entries.push({ loc: loc, spec: spec, on: on })
+      }
 
-        if (on) {
-          if (!byLocation[loc]) byLocation[loc] = []
-          byLocation[loc].push({ id: p.id, order: spec.order !== undefined ? spec.order : 100 })
+      if (!anyOn)
+        for (var e = 0; e < entries.length; e++)
+          if (declared.indexOf(entries[e].loc) >= 0) entries[e].on = true
+
+      for (var n = 0; n < entries.length; n++) {
+        var entry = entries[n]
+        enabled[p.id + "@" + entry.loc] = entry.on
+
+        if (entry.on) {
+          if (!byLocation[entry.loc]) byLocation[entry.loc] = []
+          byLocation[entry.loc].push({ id: p.id, order: entry.spec.order !== undefined ? entry.spec.order : 100 })
         }
 
-        if (spec.settings)
-          for (var sk in spec.settings)
-            settings[p.id + "@" + loc + ":" + sk] = spec.settings[sk]
+        if (entry.on && entry.loc === "desktop")
+          settings[p.id + "@desktop:autoPosition"] = true
 
-        if (spec.position && spec.position.x !== undefined && spec.position.y !== undefined)
-          widgets[p.id] = { x: spec.position.x, y: spec.position.y }
+        if (entry.spec.settings)
+          for (var sk in entry.spec.settings)
+            settings[p.id + "@" + entry.loc + ":" + sk] = entry.spec.settings[sk]
+
+        if (entry.spec.position && entry.spec.position.x !== undefined && entry.spec.position.y !== undefined)
+          widgets[p.id] = { x: entry.spec.position.x, y: entry.spec.position.y }
       }
     }
 
@@ -69,6 +85,8 @@ Singleton {
     var w = Object.assign({}, Store.toObject(Store.desktop.widgets))
     for (var id in widgets) w[id] = Object.assign({}, w[id] || {}, widgets[id])
     Store.desktop.widgets = w
+
+    Store.plugins.resetPending = false
   }
 
   function _applyWhenReady(): void {
@@ -83,6 +101,13 @@ Singleton {
     target: Store
     function onFreshInstallChanged() {
       if (Store.freshInstall) svc._applyWhenReady()
+    }
+  }
+
+  Connections {
+    target: Store.plugins
+    function onResetPendingChanged() {
+      if (Store.plugins.resetPending) svc._applyWhenReady()
     }
   }
 

@@ -86,6 +86,7 @@ MODE="welcome"      # welcome | install | uninstall | community
 INSTALL_MODE=""     # express | expert
 NO_DEPS=false
 NO_BACKUP=false
+RESET_LAYOUT=false
 NONINTERACTIVE=false
 CONFIRM_EACH=false
 COMMUNITY_URL=""
@@ -170,6 +171,7 @@ _show_help() {
     --no-backup          Skip config snapshot
     --skip-icons         Skip icon sync
     --skip-sfx           Skip sound effects sync
+    --reset-layout       Reset the plugin layout to defaults (otherwise your layout is preserved)
 
 EOF
   exit 0
@@ -187,6 +189,7 @@ while [[ $# -gt 0 ]]; do
     --no-backup)      NO_BACKUP=true; RUN_BACKUP=false; shift ;;
     --skip-icons)     RUN_ICONS=false; shift ;;
     --skip-sfx)       RUN_SFX=false; shift ;;
+    --reset-layout)   RESET_LAYOUT=true; shift ;;
     *) _err "Unknown option: $1"; exit 1 ;;
   esac
 done
@@ -211,6 +214,7 @@ count_install_steps() {
   $RUN_SCRIPTS && (( TUI_STEP_TOTAL++ )) || true
   $RUN_SCRIPTS && $RUN_THEME && (( TUI_STEP_TOTAL++ )) || true
   $RUN_PLUGINS && (( TUI_STEP_TOTAL++ )) || true
+  $RESET_LAYOUT && (( TUI_STEP_TOTAL++ )) || true
 }
 
 do_install() {
@@ -242,6 +246,7 @@ do_install() {
   $RUN_SCRIPTS && run_step "Desktop scripts" "deploy_desktop_scripts"
   $RUN_SCRIPTS && $RUN_THEME && run_step "Generate GTK/Qt themes" "generate_gtk_qt_themes"
   $RUN_PLUGINS && run_step "Plugins" "deploy_plugins_step"
+  $RESET_LAYOUT && run_step "Reset plugin layout" "reset_plugin_layout"
 
   finish_install
 }

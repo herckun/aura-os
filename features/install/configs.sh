@@ -162,6 +162,28 @@ deploy_sddm_theme() {
   fi
 }
 
+reset_plugin_layout() {
+  local f="$CONFIG_DIR/$APP_NAME/settings.json"
+  if [[ ! -f "$f" ]]; then
+    log_info "No settings.json — default layout applies on first shell start"
+    return 0
+  fi
+  python3 - "$f" <<'PY'
+import json, sys
+path = sys.argv[1]
+with open(path) as fh:
+    s = json.load(fh)
+plugins = s.get("plugins")
+if not isinstance(plugins, dict):
+    plugins = {}
+    s["plugins"] = plugins
+plugins["resetPending"] = True
+with open(path, "w") as fh:
+    json.dump(s, fh, indent=2)
+PY
+  log_ok "Plugin layout reset scheduled — defaults apply on next shell start"
+}
+
 deploy_wleave_config() {
   copy_config "$REPO_DIR/config/wleave" "$CONFIG_DIR/wleave"
   log_ok "wleave config deployed"

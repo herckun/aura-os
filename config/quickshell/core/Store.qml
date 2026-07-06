@@ -141,6 +141,7 @@ Singleton {
       }
 
       property JsonObject plugins: JsonObject {
+        property bool resetPending: false
         property var enabled: ({})
         property var order: ({})
         property var settings: ({})
