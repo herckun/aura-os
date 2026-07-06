@@ -15,7 +15,7 @@ Column {
   Card {
     width: parent.width
     title: "THEME"
-    description: "Color preset for the whole desktop"
+    description: "Color theme for the whole desktop"
 
     GridLayout {
       width: parent.width
@@ -24,17 +24,17 @@ Column {
       rowSpacing: Theme.spaceSm
 
       Repeater {
-        model: ThemeService.presets
+        model: ThemeService.themes
 
         delegate: Rectangle {
-          id: presetCard
+          id: themeCard
           required property var modelData
           readonly property var _pc: modelData.colors || ({})
           readonly property bool selected: ThemeService.active === modelData.id
           Layout.fillWidth: true
           Layout.preferredHeight: 68
           radius: Theme.radiusMedium
-          color: presetCard._pc.background || "#000000"
+          color: themeCard._pc.background || "#000000"
           border.width: selected ? 2 : Theme.borderWidth
           border.color: selected ? Theme.accent : Theme.borderVisible
 
@@ -50,9 +50,9 @@ Column {
 
               Repeater {
                 model: [
-                  presetCard._pc.backgroundTertiary || "#1A1A1A",
-                  presetCard._pc.textSecondary || "#999999",
-                  presetCard._pc.textPrimary || "#E8E8E8",
+                  themeCard._pc.backgroundTertiary || "#1A1A1A",
+                  themeCard._pc.textSecondary || "#999999",
+                  themeCard._pc.textPrimary || "#E8E8E8",
                   modelData.accent || "#D71921"
                 ]
 
@@ -67,8 +67,8 @@ Column {
 
             Text {
               anchors.horizontalCenter: parent.horizontalCenter
-              text: (presetCard.modelData.name || presetCard.modelData.id).toUpperCase()
-              color: presetCard._pc.textPrimary || "#E8E8E8"
+              text: (themeCard.modelData.name || themeCard.modelData.id).toUpperCase()
+              color: themeCard._pc.textPrimary || "#E8E8E8"
               font.pixelSize: Theme.fontSizeMicro
               font.family: Theme.fontFamilyMono
               font.letterSpacing: 0.08
@@ -78,7 +78,7 @@ Column {
           MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: ThemeService.apply(presetCard.modelData.id)
+            onClicked: ThemeService.apply(themeCard.modelData.id)
           }
         }
       }

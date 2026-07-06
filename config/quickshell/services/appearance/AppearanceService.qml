@@ -99,7 +99,7 @@ Singleton {
 
   readonly property string themeEngineState: JSON.stringify({
     accent: Store.theme.accent.replace("#", ""),
-    preset: Store.theme.preset,
+    theme: Store.theme.name,
     shellMode: ModeService.mode,
     transparency: transparencyEnabled,
     animations: animationsEnabled,

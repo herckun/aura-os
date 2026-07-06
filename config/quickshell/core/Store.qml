@@ -79,7 +79,7 @@ Singleton {
       }
 
       property JsonObject theme: JsonObject {
-        property string preset: "aura"
+        property string name: "aura"
         property string accent: "#D71921"
         property bool accentManual: false
         property bool monochrome: false

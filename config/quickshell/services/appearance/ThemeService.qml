@@ -10,16 +10,16 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC STATE
   // ═══════════════════════════════════════════════════════════════
-  property var presets: []
-  readonly property string active: Store.theme.preset || "aura"
+  property var themes: []
+  readonly property string active: Store.theme.name || "aura"
 
   // ═══════════════════════════════════════════════════════════════
   //  PUBLIC API
   // ═══════════════════════════════════════════════════════════════
-  function apply(presetId: string): void {
-    var p = svc._find(presetId)
+  function apply(themeId: string): void {
+    var p = svc._find(themeId)
     if (!p) return
-    Store.theme.preset = presetId
+    Store.theme.name = themeId
     if (p.accent) {
       Store.theme.accent = p.accent
       Store.theme.accentManual = false
@@ -34,9 +34,9 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  PRIVATE HELPERS
   // ═══════════════════════════════════════════════════════════════
-  function _find(presetId: string): var {
-    for (var i = 0; i < svc.presets.length; i++)
-      if (svc.presets[i].id === presetId) return svc.presets[i]
+  function _find(themeId: string): var {
+    for (var i = 0; i < svc.themes.length; i++)
+      if (svc.themes[i].id === themeId) return svc.themes[i]
     return null
   }
 
@@ -56,13 +56,13 @@ Singleton {
       "    p['id'] = os.path.splitext(os.path.basename(f))[0]\n" +
       "    out.append(p)\n" +
       "print(json.dumps(out))",
-      AppInfo.configHome + "/quickshell/styles/presets"]
+      AppInfo.configHome + "/quickshell/styles/themes"]
     stdout: StdioCollector { waitForEnd: true }
     onExited: {
       try {
-        svc.presets = JSON.parse(stdout.text)
+        svc.themes = JSON.parse(stdout.text)
       } catch(e) {
-        svc.presets = []
+        svc.themes = []
       }
     }
   }

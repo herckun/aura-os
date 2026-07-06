@@ -11,10 +11,10 @@ Singleton {
   readonly property bool darkMode: _relativeLuminance(background) < 0.5
 
   property var _data: ({})
-  property var _preset: ({})
+  property var _theme: ({})
 
-  readonly property string preset: Store.theme.preset || "aura"
-  readonly property string presetName: _preset.name || "AURA"
+  readonly property string themeId: Store.theme.name || "aura"
+  readonly property string themeName: _theme.name || "AURA"
 
   readonly property color background: _c("background")
   readonly property color backgroundSecondary: _c("backgroundSecondary")
@@ -56,7 +56,7 @@ Singleton {
     return result
   }
 
-  readonly property color monoAccent: _preset.monoAccent ? Qt.color(_preset.monoAccent) : Qt.color("#E8E8E8")
+  readonly property color monoAccent: _theme.monoAccent ? Qt.color(_theme.monoAccent) : Qt.color("#E8E8E8")
   readonly property color accentPure: _ensureVisibleAccent(Qt.color(Store.theme.accent))
   readonly property color accent: monochrome ? monoAccent : accentPure
 
@@ -164,7 +164,7 @@ Singleton {
   }
 
   function _c(key: string): color {
-    var p = root._preset.colors
+    var p = root._theme.colors
     if (p && p[key]) return Qt.color(p[key])
     var v = _data.colors ? _data.colors[key] : null
     return v ? Qt.color(v) : "#000000"
@@ -191,7 +191,7 @@ Singleton {
   }
 
   function _t(key: string): string {
-    var f = root._preset.fonts
+    var f = root._theme.fonts
     if (f && f[key]) return f[key]
     return _data.typography ? (_data.typography[key] || "") : ""
   }
@@ -257,7 +257,7 @@ Singleton {
   }
 
   Process {
-    id: _themeLoader
+    id: _dataLoader
     command: ["cat", Qt.resolvedUrl("theme.json").toString().replace("file://", "")]
     stdout: StdioCollector { waitForEnd: true }
     onExited: {
@@ -286,33 +286,33 @@ Singleton {
     }
   }
 
-  onPresetChanged: _presetReload.restart()
+  onThemeIdChanged: _themeReload.restart()
 
   Timer {
-    id: _presetReload
+    id: _themeReload
     interval: 1
     repeat: false
     onTriggered: {
-      _presetLoader.running = false
-      _presetLoader.running = true
+      _themeLoader.running = false
+      _themeLoader.running = true
     }
   }
 
   Process {
-    id: _presetLoader
-    command: ["cat", Qt.resolvedUrl("presets/").toString().replace("file://", "") + root.preset + ".json"]
+    id: _themeLoader
+    command: ["cat", Qt.resolvedUrl("themes/").toString().replace("file://", "") + root.themeId + ".json"]
     stdout: StdioCollector { waitForEnd: true }
     onExited: {
       try {
-        root._preset = JSON.parse(stdout.text)
+        root._theme = JSON.parse(stdout.text)
       } catch(e) {
-        root._preset = ({})
+        root._theme = ({})
       }
     }
   }
 
   Component.onCompleted: {
+    _dataLoader.running = true
     _themeLoader.running = true
-    _presetLoader.running = true
   }
 }

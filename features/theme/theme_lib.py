@@ -36,19 +36,19 @@ def _load_json(path):
         return None
 
 
-def active_preset_id():
+def active_theme_id():
     config_home = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
     settings = _load_json(os.path.join(config_home, "aura-os", "settings.json")) or {}
-    preset = str((settings.get("theme") or {}).get("preset") or "aura")
-    return preset if preset.replace("-", "").replace("_", "").isalnum() else "aura"
+    theme_id = str((settings.get("theme") or {}).get("name") or "aura")
+    return theme_id if theme_id.replace("-", "").replace("_", "").isalnum() else "aura"
 
 
-def load_preset(preset_id=None):
-    pid = preset_id or active_preset_id()
+def load_theme(theme_id=None):
+    tid = theme_id or active_theme_id()
     for d in _styles_dirs():
-        preset = _load_json(os.path.join(d, "presets", pid + ".json"))
-        if preset:
-            return preset
+        theme = _load_json(os.path.join(d, "themes", tid + ".json"))
+        if theme:
+            return theme
     return {}
 
 
@@ -60,7 +60,7 @@ def find_theme_json():
             break
     if not theme:
         return {}
-    preset = load_preset()
+    preset = load_theme()
     if preset.get("colors"):
         merged = dict(theme.get("colors", {}))
         merged.update(preset["colors"])
@@ -70,7 +70,7 @@ def find_theme_json():
         typ.update(preset["fonts"])
         theme["typography"] = typ
     if preset.get("accent"):
-        theme["presetAccent"] = preset["accent"]
+        theme["themeAccent"] = preset["accent"]
     if preset.get("monoAccent"):
         theme["monoAccent"] = preset["monoAccent"]
     return theme
