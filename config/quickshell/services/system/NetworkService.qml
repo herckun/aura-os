@@ -19,6 +19,7 @@ Singleton {
   property string ethernetDevice: ""
   property string ethernetConnection: ""
   property var wiredConnections: []
+  property var vpnConnections: []
   property bool wifiEnabled: false
   property bool hasWifi: false
   property var availableNetworks: []
@@ -213,6 +214,7 @@ Singleton {
 
           var conns = []
           var savedWifi = []
+          var vpns = []
           if (wiredText) {
             var lines = wiredText.split("\n")
             for (var i = 0; i < lines.length; i++) {
@@ -226,11 +228,18 @@ Singleton {
                 })
               } else if (parts[1] === "802-11-wireless") {
                 savedWifi.push(parts[0])
+              } else if (parts[1] === "vpn" || parts[1] === "wireguard") {
+                vpns.push({
+                  name: parts[0],
+                  type: parts[1],
+                  active: parts.length > 2 && parts[2] !== ""
+                })
               }
             }
           }
           svc.wiredConnections = conns
           svc.savedWifiNetworks = savedWifi
+          svc.vpnConnections = vpns
 
           if (svc.primarySsid !== "") {
             ProcessPool.runTracked(

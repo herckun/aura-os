@@ -14,6 +14,8 @@ Item {
   property string _pendingSsid: ""
   property bool _savedFailed: false
 
+  readonly property var _vpnPluginProviders: VpnService.providers.filter(function(p) { return !p.builtin })
+
   readonly property var _wifiNetworks: {
     var nets = NetworkService.availableNetworks.slice()
     var saved = NetworkService.savedWifiNetworks
@@ -534,6 +536,138 @@ Item {
         }
 
         ErrorText { errorText: BluetoothService.lastError }
+      }
+    }
+
+    // ── VPN ───────────────────────────────────────────────────────────
+    Surface {
+      width: parent.width
+      height: vpnCol.implicitHeight + Theme.spaceLg * 2
+      radius: Theme.radiusMedium
+      border.color: Theme.border
+      padding: Theme.spaceLg
+
+      Column {
+        id: vpnCol
+        width: parent.width
+        spacing: Theme.spaceMd
+
+        RowLayout {
+          width: parent.width
+          spacing: Theme.spaceSm
+
+          Surface {
+            Layout.preferredWidth: 36
+            Layout.preferredHeight: 36
+            level: 2
+            bordered: false
+            radius: Theme.radiusMedium
+
+            Icon {
+              anchors.centerIn: parent
+              source: Icons.get("shield")
+              size: 16
+              color: VpnService.connected ? Theme.accent : Theme.textDisabled
+            }
+          }
+
+          Column {
+            Layout.fillWidth: true
+            spacing: Theme.spaceXxs
+
+            Text {
+              width: parent.width
+              text: "VPN"
+              color: Theme.textPrimary
+              font.pixelSize: Theme.fontSizeLabel
+              font.family: Theme.fontFamilyMono
+              font.weight: Font.Bold
+              font.letterSpacing: 0.08
+            }
+
+            Text {
+              width: parent.width
+              text: VpnService.connecting ? "Connecting..."
+                : VpnService.connected ? VpnService.label + (VpnService.detail !== "" && VpnService.detail !== VpnService.label ? "  " + VpnService.detail : "")
+                : VpnService.available ? "Not connected"
+                : "No providers"
+              color: VpnService.connected ? Theme.success : Theme.textDisabled
+              font.pixelSize: Theme.fontSizeMicro
+              font.family: Theme.fontFamilyMono
+              elide: Text.ElideRight
+            }
+          }
+
+          Toggle {
+            toggleWidth: 38
+            toggleHeight: 20
+            checked: VpnService.connected
+            enabled: VpnService.available && !VpnService.connecting
+            onToggled: VpnService.toggle()
+            Layout.alignment: Qt.AlignVCenter
+          }
+        }
+
+        Column {
+          width: parent.width
+          spacing: Theme.space2
+          visible: NetworkService.vpnConnections.length > 0
+
+          SectionLabel { label: "PROFILES" }
+
+          Repeater {
+            model: NetworkService.vpnConnections
+
+            DeviceRow {
+              width: parent.width
+              icon: "shield"
+              name: modelData.name
+              subtitle: modelData.type
+              active: modelData.active
+              busy: VpnService.nmBusyName === modelData.name
+              showToggle: true
+              toggleChecked: modelData.active
+              onToggled: function(v) {
+                if (v) VpnService.nmConnect(modelData.name)
+                else VpnService.nmDisconnect(modelData.name)
+              }
+            }
+          }
+        }
+
+        Column {
+          width: parent.width
+          spacing: Theme.space2
+          visible: root._vpnPluginProviders.length > 0
+
+          SectionLabel { label: "PROVIDERS" }
+
+          Repeater {
+            model: root._vpnPluginProviders
+
+            DeviceRow {
+              width: parent.width
+              icon: modelData.icon
+              name: modelData.label
+              subtitle: modelData.connected ? (modelData.detail || "Connected") : ""
+              active: modelData.connected
+              busy: modelData.connecting
+              tagLabel: modelData.id === Store.vpn.provider && !modelData.connected ? "LAST USED" : ""
+              showAction: true
+              actionLabel: modelData.connected ? "DISCONNECT" : "CONNECT"
+              onActionClicked: {
+                if (modelData.connected) VpnService.disconnectProvider(modelData.id)
+                else VpnService.connectProvider(modelData.id)
+              }
+            }
+          }
+        }
+
+        EmptyState {
+          visible: !VpnService.available
+          icon: "shield"
+          stateText: "NO VPN PROVIDERS"
+        }
       }
     }
 

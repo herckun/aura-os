@@ -22,7 +22,6 @@ Column {
   function _locationLabel(loc: string): string {
     switch (loc) {
       case "controlcenter_row": return "CONTROL CENTER"
-      case "controlcenter_toggle": return "QUICK TOGGLES"
       default: return loc.replace(/_/g, " ").toUpperCase()
     }
   }

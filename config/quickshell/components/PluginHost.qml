@@ -12,8 +12,6 @@ Item {
   property int columns: 3
   property bool sectioned: false
   property string onlyPluginId: ""
-  property string mode: "component"
-  property var extraItems: []
   property Component delegate: null
 
   property var activeItem: null
@@ -22,28 +20,13 @@ Item {
     ? PluginService.getPluginsForLocation(root.location).filter(function(p) {
         if (root.onlyPluginId !== "" && p.id !== root.onlyPluginId) return false
         if (!PluginService.isPluginEnabledForLocation(p.id, root.location)) return false
-        if (root.mode === "data") return !!_toggleData(p)
         return root.delegate !== null || root._resolveComponent(p) !== null
       }) : []
-
-  readonly property var items: {
-    if (root.mode !== "data") return root.plugins
-    var r = root.extraItems.slice()
-    for (var i = 0; i < root.plugins.length; i++) {
-      var t = _toggleData(root.plugins[i])
-      if (t) r.push(t)
-    }
-    return r
-  }
-
-  function _toggleData(pluginInstance) {
-    return pluginInstance && pluginInstance.manifest ? pluginInstance.manifest.controlCenterToggle : null
-  }
 
   function _resolveComponent(pluginInstance) {
     if (!pluginInstance) return null
     var prop = PluginService.componentMap[root.location]
-    if (!prop || prop === "controlCenterToggle") return null
+    if (!prop) return null
     return pluginInstance[prop] || null
   }
 
@@ -110,7 +93,7 @@ Item {
     id: _colLayout
     Column {
       spacing: Theme.spaceSm
-      Repeater { model: root.items; delegate: root.delegate || _defaultDelegate }
+      Repeater { model: root.plugins; delegate: root.delegate || _defaultDelegate }
     }
   }
 
@@ -118,7 +101,7 @@ Item {
     id: _rowLayout
     RowLayout {
       spacing: Theme.spaceSm
-      Repeater { model: root.items; delegate: root.delegate || _rowDelegate }
+      Repeater { model: root.plugins; delegate: root.delegate || _rowDelegate }
     }
   }
 
@@ -129,7 +112,7 @@ Item {
       columns: root.columns
       columnSpacing: Theme.spaceSm
       rowSpacing: Theme.spaceSm
-      Repeater { model: root.items; delegate: root.delegate || _defaultDelegate }
+      Repeater { model: root.plugins; delegate: root.delegate || _defaultDelegate }
     }
   }
 
@@ -137,7 +120,7 @@ Item {
     id: _freeLayout
     Item {
       anchors.fill: parent
-      Repeater { model: root.items; delegate: root.delegate || _defaultDelegate }
+      Repeater { model: root.plugins; delegate: root.delegate || _defaultDelegate }
     }
   }
 }

@@ -18,6 +18,7 @@ Item {
   property string text: ""
   property bool hoverEffect: true
   property alias label: root.text
+  property string sublabel: ""
 
   property string variant: "default"
   property variant size: "md"
@@ -71,12 +72,9 @@ Item {
     interval: root.busyTimeout
     repeat: false
     onTriggered: {
-      if (root.busy) {
-        if (root.actionId === "" || !ProcessPool.isBusy(root.actionId))
-          root.busy = false
-        else
-          restart()
-      }
+      if (!root.busy || root.actionId === "") return
+      if (!ProcessPool.isBusy(root.actionId)) root.busy = false
+      else restart()
     }
   }
 
@@ -114,7 +112,7 @@ Item {
   width: {
     if (fillWidth) return -1
     if (shape === "circle" || shape === "icon") return buttonWidth
-    if (shape === "tile") return Math.max(80, _tileColumn.implicitWidth + Theme.spaceSm * 2)
+    if (shape === "tile") return 80
     if (shape === "link") return _linkLabel.implicitWidth
     var cw = _hasIcon ? (_defaultIcon.width + Theme.spaceXs + _defaultLabel.width) : _defaultLabel.width
     var px = paddingX >= 0 ? paddingX : padding
@@ -130,6 +128,7 @@ Item {
   }
   implicitWidth: width
   implicitHeight: height
+  readonly property real tileContentHeight: Math.max(60, _tileColumn.implicitHeight + Theme.spaceSm * 2)
 
   property int padding: _sizePreset.padding
   property int paddingX: -1
@@ -337,6 +336,7 @@ Item {
     Column {
       id: _tileColumn
       anchors.centerIn: parent
+      width: root.width - Theme.spaceSm * 2
       spacing: Theme.spaceXs
       visible: shape === "tile"
 
@@ -361,12 +361,29 @@ Item {
       }
 
       Text {
-        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width
+        horizontalAlignment: Text.AlignHCenter
         text: root.text.toUpperCase()
         color: Theme.contrastTextColor(_bgColor)
         font.pixelSize: Theme.fontSizeMicro
         font.family: Theme.fontFamilyMono
         font.letterSpacing: 0.08
+        elide: Text.ElideRight
+      }
+
+      Text {
+        width: parent.width
+        horizontalAlignment: Text.AlignHCenter
+        text: root.sublabel.toUpperCase()
+        color: Theme.contrastTextColor(_bgColor)
+        opacity: 0.65
+        font.pixelSize: Theme.fontSizeMicro
+        font.family: Theme.fontFamilyMono
+        font.letterSpacing: 0.08
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        maximumLineCount: 2
+        elide: Text.ElideRight
+        visible: root.sublabel !== ""
       }
     }
 

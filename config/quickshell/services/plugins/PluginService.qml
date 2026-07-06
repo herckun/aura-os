@@ -66,7 +66,6 @@ Singleton {
     if (!plugin || !plugin.manifest) return false
     var prop = componentMap[location]
     if (!prop) return (plugin.manifest.locations || []).indexOf(location) >= 0
-    if (prop === "controlCenterToggle") return !!plugin.manifest.controlCenterToggle
     return !!plugin[prop]
   }
 
@@ -220,7 +219,6 @@ Singleton {
   readonly property var componentMap: ({
     "connectivity": "connectivityComponent",
     "controlcenter_row": "controlCenterComponent",
-    "controlcenter_toggle": "controlCenterToggle",
     "overview": "overviewComponent",
     "audio": "audioComponent",
     "appearance": "appearanceComponent",

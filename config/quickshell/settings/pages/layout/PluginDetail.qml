@@ -72,7 +72,6 @@ Surface {
 
       Badge {
         text: root.location === "controlcenter_row" ? "CONTROL CENTER"
-            : root.location === "controlcenter_toggle" ? "QUICK TOGGLES"
             : root.location.replace(/_/g, " ").toUpperCase()
         size: "sm"
         visible: root.location !== ""

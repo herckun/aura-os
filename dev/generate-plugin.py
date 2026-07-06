@@ -33,7 +33,6 @@ SHELL_VERSION = "2.0"   # shell version plugins target (see core/AppInfo.qml)
 LOCATION_COMPONENT = {
     "connectivity": "connectivityComponent",
     "controlcenter_row": "controlCenterComponent",
-    "controlcenter_toggle": "controlCenterToggle",
     "overview": "overviewComponent",
     "audio": "audioComponent",
     "appearance": "appearanceComponent",

@@ -15,6 +15,7 @@ Singleton {
   property alias wallpaper: adapter.wallpaper
   property alias media: adapter.media
   property alias network: adapter.network
+  property alias vpn: adapter.vpn
   property alias sfx: adapter.sfx
   property alias hotareas: adapter.hotareas
   property alias keybindings: adapter.keybindings
@@ -106,6 +107,11 @@ Singleton {
         property string lastConnectionType: ""
         property string lastSsid: ""
         property string lastWiredName: ""
+      }
+
+      property JsonObject vpn: JsonObject {
+        property string provider: ""
+        property string nmConnection: ""
       }
 
       property JsonObject sfx: JsonObject {

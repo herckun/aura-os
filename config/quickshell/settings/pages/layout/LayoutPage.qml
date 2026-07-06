@@ -55,9 +55,8 @@ Column {
     { key: "bar", label: "Bar", icon: "workspaces", kind: "bar",
       locations: ["bar_left", "bar_center", "bar_right"] },
     { key: "controlcenter", label: "Control Center", icon: "controlcenter", kind: "zones", align: "right",
-      locations: ["controlcenter_toggle", "controlcenter_row"],
+      locations: ["controlcenter_row"],
       zones: [
-        { location: "controlcenter_toggle", label: "QUICK TOGGLES", vertical: false },
         { location: "controlcenter_row", label: "CARDS — TOP TO BOTTOM", vertical: true }
       ] },
     { key: "overview", label: "Overview", icon: "grid", kind: "zones",
