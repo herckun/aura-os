@@ -65,6 +65,10 @@ def find_theme_json():
         merged = dict(theme.get("colors", {}))
         merged.update(preset["colors"])
         theme["colors"] = merged
+    if preset.get("fonts"):
+        typ = dict(theme.get("typography", {}))
+        typ.update(preset["fonts"])
+        theme["typography"] = typ
     if preset.get("accent"):
         theme["presetAccent"] = preset["accent"]
     if preset.get("monoAccent"):

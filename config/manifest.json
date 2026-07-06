@@ -1559,6 +1559,91 @@
         "ofl": "doto",
         "file": "Doto[ROND,wght].ttf",
         "fcName": "Doto"
+      },
+      {
+        "ofl": "inter",
+        "file": "Inter[opsz,wght].ttf",
+        "fcName": "Inter"
+      },
+      {
+        "ofl": "jetbrainsmono",
+        "file": "JetBrainsMono[wght].ttf",
+        "fcName": "JetBrains Mono"
+      },
+      {
+        "ofl": "outfit",
+        "file": "Outfit[wght].ttf",
+        "fcName": "Outfit"
+      },
+      {
+        "ofl": "sora",
+        "file": "Sora[wght].ttf",
+        "fcName": "Sora"
+      },
+      {
+        "ofl": "firacode",
+        "file": "FiraCode[wght].ttf",
+        "fcName": "Fira Code"
+      },
+      {
+        "ofl": "nunito",
+        "file": "Nunito[wght].ttf",
+        "fcName": "Nunito"
+      },
+      {
+        "ofl": "cascadiacode",
+        "file": "CascadiaCode[wght].ttf",
+        "fcName": "Cascadia Code"
+      },
+      {
+        "ofl": "archivo",
+        "file": "Archivo[wdth,wght].ttf",
+        "fcName": "Archivo"
+      },
+      {
+        "ofl": "manrope",
+        "file": "Manrope[wght].ttf",
+        "fcName": "Manrope"
+      },
+      {
+        "ofl": "redhatmono",
+        "file": "RedHatMono[wght].ttf",
+        "fcName": "Red Hat Mono"
+      },
+      {
+        "ofl": "sourcesans3",
+        "file": "SourceSans3[wght].ttf",
+        "fcName": "Source Sans 3"
+      },
+      {
+        "ofl": "sourcecodepro",
+        "file": "SourceCodePro[wght].ttf",
+        "fcName": "Source Code Pro"
+      },
+      {
+        "ofl": "karla",
+        "file": "Karla[wght].ttf",
+        "fcName": "Karla"
+      },
+      {
+        "ofl": "notosansmono",
+        "file": "NotoSansMono[wdth,wght].ttf",
+        "fcName": "Noto Sans Mono"
+      },
+      {
+        "ofl": "librefranklin",
+        "file": "LibreFranklin[wght].ttf",
+        "fcName": "Libre Franklin"
+      },
+      {
+        "ofl": "splinesansmono",
+        "file": "SplineSansMono[wght].ttf",
+        "fcName": "Spline Sans Mono"
+      },
+      {
+        "ofl": "monasans",
+        "file": "MonaSans[wdth,wght].ttf",
+        "fcName": "Mona Sans"
       }
     ]
   },

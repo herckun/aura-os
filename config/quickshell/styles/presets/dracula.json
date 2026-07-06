@@ -3,6 +3,10 @@
   "dark": true,
   "accent": "#BD93F9",
   "monoAccent": "#F8F8F2",
+  "fonts": {
+    "fontFamily": "\"Sora\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"Fira Code\", \"Space Mono\", monospace"
+  },
   "colors": {
     "background": "#21222C",
     "backgroundSecondary": "#282A36",

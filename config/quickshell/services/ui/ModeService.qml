@@ -26,27 +26,27 @@ Singleton {
             0: {
                 name: "DEFAULT",
                 icon: "device-desktop",
-                description: "Full desktop with bar and hot areas"
+                description: "Docked bar, hot areas, blur and glass on"
             },
             1: {
                 name: "ZEN",
                 icon: "sun",
-                description: "Clean canvas — panels appear on demand"
+                description: "Floating bar, roomy spacing, hot areas kept"
             },
             2: {
                 name: "FOCUS",
                 icon: "target",
-                description: "Productivity — simplified, distraction-free"
+                description: "Minimal bar, flat compact chrome, no glass"
             },
             3: {
                 name: "GAMING",
                 icon: "zap",
-                description: "Full-screen — minimal overlays"
+                description: "Bar hidden, zero gaps, animations off"
             },
             4: {
                 name: "THEATER",
                 icon: "moon",
-                description: "Media-centric — large widgets, dark chrome"
+                description: "Floating bar, plush spacing, slow motion"
             }
         })
 

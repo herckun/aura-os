@@ -1,0 +1,40 @@
+{
+  "name": "GITHUB",
+  "dark": true,
+  "accent": "#58A6FF",
+  "monoAccent": "#E6EDF3",
+  "fonts": {
+    "fontFamily": "\"Mona Sans\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"JetBrains Mono\", \"Space Mono\", monospace"
+  },
+  "colors": {
+    "background": "#0D1117",
+    "backgroundSecondary": "#161B22",
+    "backgroundTertiary": "#21262D",
+    "border": "#21262D",
+    "borderVisible": "#30363D",
+    "textDisplay": "#F0F6FC",
+    "textPrimary": "#E6EDF3",
+    "textSecondary": "#8B949E",
+    "textDisabled": "#6E7681",
+    "success": "#3FB950",
+    "warning": "#D29922",
+    "error": "#F85149",
+    "interactive": "#58A6FF",
+    "controlBackground": "#161B22",
+    "controlBackgroundHover": "#21262D",
+    "controlBackgroundPressed": "#30363D",
+    "controlBackgroundActive": "#21262D",
+    "controlBorder": "#21262D",
+    "controlBorderHover": "#30363D",
+    "controlBorderPressed": "#3D444D",
+    "separator": "#21262D",
+    "workspaceActive": "#F0F6FC",
+    "workspaceInactive": "#30363D",
+    "borderActive": "#3D444D",
+    "buttonHoverOverlay": "#1F242C",
+    "buttonBorderHover": "#30363D",
+    "buttonBorderPressed": "#3D444D",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}

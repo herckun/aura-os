@@ -3,6 +3,10 @@
   "dark": true,
   "accent": "#CBA6F7",
   "monoAccent": "#CDD6F4",
+  "fonts": {
+    "fontFamily": "\"Nunito\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"Cascadia Code\", \"Space Mono\", monospace"
+  },
   "colors": {
     "background": "#1E1E2E",
     "backgroundSecondary": "#27273A",

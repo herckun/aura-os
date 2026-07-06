@@ -3,6 +3,10 @@
   "dark": true,
   "accent": "#7AA2F7",
   "monoAccent": "#C0CAF5",
+  "fonts": {
+    "fontFamily": "\"Outfit\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"JetBrains Mono\", \"Space Mono\", monospace"
+  },
   "colors": {
     "background": "#1A1B26",
     "backgroundSecondary": "#1F2335",

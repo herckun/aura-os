@@ -191,6 +191,8 @@ Singleton {
   }
 
   function _t(key: string): string {
+    var f = root._preset.fonts
+    if (f && f[key]) return f[key]
     return _data.typography ? (_data.typography[key] || "") : ""
   }
 
