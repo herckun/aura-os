@@ -14,6 +14,79 @@ Column {
 
   Card {
     width: parent.width
+    title: "THEME"
+    description: "Color preset for the whole desktop"
+
+    GridLayout {
+      width: parent.width
+      columns: 4
+      columnSpacing: Theme.spaceSm
+      rowSpacing: Theme.spaceSm
+
+      Repeater {
+        model: ThemeService.presets
+
+        delegate: Rectangle {
+          id: presetCard
+          required property var modelData
+          readonly property var _pc: modelData.colors || ({})
+          readonly property bool selected: ThemeService.active === modelData.id
+          Layout.fillWidth: true
+          Layout.preferredHeight: 68
+          radius: Theme.radiusMedium
+          color: presetCard._pc.background || "#000000"
+          border.width: selected ? 2 : Theme.borderWidth
+          border.color: selected ? Theme.accent : Theme.borderVisible
+
+          Behavior on border.color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
+
+          Column {
+            anchors.centerIn: parent
+            spacing: Theme.spaceSm
+
+            Row {
+              spacing: Theme.spaceXs
+              anchors.horizontalCenter: parent.horizontalCenter
+
+              Repeater {
+                model: [
+                  presetCard._pc.backgroundTertiary || "#1A1A1A",
+                  presetCard._pc.textSecondary || "#999999",
+                  presetCard._pc.textPrimary || "#E8E8E8",
+                  modelData.accent || "#D71921"
+                ]
+
+                Rectangle {
+                  required property var modelData
+                  width: 12; height: 12
+                  radius: 6
+                  color: modelData
+                }
+              }
+            }
+
+            Text {
+              anchors.horizontalCenter: parent.horizontalCenter
+              text: (presetCard.modelData.name || presetCard.modelData.id).toUpperCase()
+              color: presetCard._pc.textPrimary || "#E8E8E8"
+              font.pixelSize: Theme.fontSizeMicro
+              font.family: Theme.fontFamilyMono
+              font.letterSpacing: 0.08
+            }
+          }
+
+          MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: ThemeService.apply(presetCard.modelData.id)
+          }
+        }
+      }
+    }
+  }
+
+  Card {
+    width: parent.width
     title: "ACCENT COLOR"
     description: "Primary signal color for the interface"
 

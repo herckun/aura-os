@@ -22,16 +22,54 @@ def clean_font(f, default="monospace"):
     return f.split(",")[0].strip().replace('"', "").replace("'", "")
 
 
-def find_theme_json():
+def _styles_dirs():
     here = os.path.dirname(os.path.realpath(__file__))
-    for p in (os.path.join(here, "../../config/quickshell/styles/theme.json"),
-              os.path.expanduser("~/.config/quickshell/styles/theme.json")):
-        try:
-            with open(p) as f:
-                return json.load(f)
-        except (OSError, ValueError):
-            continue
+    return (os.path.join(here, "../../config/quickshell/styles"),
+            os.path.expanduser("~/.config/quickshell/styles"))
+
+
+def _load_json(path):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def active_preset_id():
+    config_home = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
+    settings = _load_json(os.path.join(config_home, "aura-os", "settings.json")) or {}
+    preset = str((settings.get("theme") or {}).get("preset") or "aura")
+    return preset if preset.replace("-", "").replace("_", "").isalnum() else "aura"
+
+
+def load_preset(preset_id=None):
+    pid = preset_id or active_preset_id()
+    for d in _styles_dirs():
+        preset = _load_json(os.path.join(d, "presets", pid + ".json"))
+        if preset:
+            return preset
     return {}
+
+
+def find_theme_json():
+    theme = None
+    for d in _styles_dirs():
+        theme = _load_json(os.path.join(d, "theme.json"))
+        if theme:
+            break
+    if not theme:
+        return {}
+    preset = load_preset()
+    if preset.get("colors"):
+        merged = dict(theme.get("colors", {}))
+        merged.update(preset["colors"])
+        theme["colors"] = merged
+    if preset.get("accent"):
+        theme["presetAccent"] = preset["accent"]
+    if preset.get("monoAccent"):
+        theme["monoAccent"] = preset["monoAccent"]
+    return theme
 
 
 def normalize_accent(blob, default=DEFAULT_ACCENT):

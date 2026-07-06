@@ -8,9 +8,13 @@ import "../services"
 Singleton {
   id: root
 
-  readonly property bool darkMode: true
+  readonly property bool darkMode: _relativeLuminance(background) < 0.5
 
   property var _data: ({})
+  property var _preset: ({})
+
+  readonly property string preset: Store.theme.preset || "aura"
+  readonly property string presetName: _preset.name || "AURA"
 
   readonly property color background: _c("background")
   readonly property color backgroundSecondary: _c("backgroundSecondary")
@@ -18,8 +22,8 @@ Singleton {
   readonly property color border: _c("border")
   readonly property color borderVisible: _c("borderVisible")
 
-  readonly property color panelBackground: transparencyEnabled ? Qt.rgba(0, 0, 0, 0.85) : _c("background")
-  readonly property color panelBackgroundSecondary: transparencyEnabled ? Qt.rgba(0.067, 0.067, 0.067, 0.85) : _c("backgroundSecondary")
+  readonly property color panelBackground: transparencyEnabled ? Qt.rgba(background.r, background.g, background.b, 0.85) : background
+  readonly property color panelBackgroundSecondary: transparencyEnabled ? Qt.rgba(backgroundSecondary.r, backgroundSecondary.g, backgroundSecondary.b, 0.85) : backgroundSecondary
 
   readonly property color textDisplay: _c("textDisplay")
   readonly property color textPrimary: _c("textPrimary")
@@ -52,8 +56,9 @@ Singleton {
     return result
   }
 
+  readonly property color monoAccent: _preset.monoAccent ? Qt.color(_preset.monoAccent) : Qt.color("#E8E8E8")
   readonly property color accentPure: _ensureVisibleAccent(Qt.color(Store.theme.accent))
-  readonly property color accent: monochrome ? "#E8E8E8" : accentPure
+  readonly property color accent: monochrome ? monoAccent : accentPure
 
   readonly property color controlBackground: _c("controlBackground")
   readonly property color controlBackgroundHover: _c("controlBackgroundHover")
@@ -159,6 +164,8 @@ Singleton {
   }
 
   function _c(key: string): color {
+    var p = root._preset.colors
+    if (p && p[key]) return Qt.color(p[key])
     var v = _data.colors ? _data.colors[key] : null
     return v ? Qt.color(v) : "#000000"
   }
@@ -220,6 +227,7 @@ Singleton {
   }
 
   function _ensureVisibleAccent(c: color): color {
+    if (!darkMode) return c
     var lum = _luminance(c)
     if (lum >= 0.2) return c
     var brightened = Qt.hsla(c.hslHue, c.hslSaturation, Math.max(c.hslLightness, 0.45), 1)
@@ -267,5 +275,33 @@ Singleton {
     }
   }
 
-  Component.onCompleted: _themeLoader.running = true
+  onPresetChanged: _presetReload.restart()
+
+  Timer {
+    id: _presetReload
+    interval: 1
+    repeat: false
+    onTriggered: {
+      _presetLoader.running = false
+      _presetLoader.running = true
+    }
+  }
+
+  Process {
+    id: _presetLoader
+    command: ["cat", Qt.resolvedUrl("presets/").toString().replace("file://", "") + root.preset + ".json"]
+    stdout: StdioCollector { waitForEnd: true }
+    onExited: {
+      try {
+        root._preset = JSON.parse(stdout.text)
+      } catch(e) {
+        root._preset = ({})
+      }
+    }
+  }
+
+  Component.onCompleted: {
+    _themeLoader.running = true
+    _presetLoader.running = true
+  }
 }

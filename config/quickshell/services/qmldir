@@ -5,6 +5,7 @@ singleton HyprlandService 1.0 hyprland/HyprlandService.qml
 singleton KeybindingService 1.0 hyprland/KeybindingService.qml
 singleton AppearanceService 1.0 appearance/AppearanceService.qml
 singleton IconService 1.0 appearance/IconService.qml
+singleton ThemeService 1.0 appearance/ThemeService.qml
 singleton WallpaperService 1.0 appearance/WallpaperService.qml
 singleton AudioService 1.0 system/AudioService.qml
 singleton BatteryService 1.0 system/BatteryService.qml

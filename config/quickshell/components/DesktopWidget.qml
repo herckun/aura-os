@@ -137,15 +137,8 @@ Item {
 
   function _updateBackground(): void {
     if (!root.showBackground) return
-    var wp = WallpaperService.background
-    if (!wp || wp.toString() === "#000000") {
-      root._widgetBgColor = Theme.backgroundSecondary
-    } else {
-      var lum = WallpaperService.relativeLuminance(wp)
-      var opacity = AppearanceService.transparencyEnabled ? 0.75 : 1.0
-      root._widgetBgColor = lum > 0.5 ? Qt.rgba(1, 1, 1, opacity) : Qt.rgba(0, 0, 0, opacity)
-    }
-    root._widgetTextColor = WallpaperService.contrastTextColor(root._widgetBgColor)
+    root._widgetBgColor = Theme.backgroundSecondary
+    root._widgetTextColor = Theme.textPrimary
     root._widgetDimColor = Qt.rgba(root._widgetTextColor.r, root._widgetTextColor.g, root._widgetTextColor.b, 0.5)
     var accent = Theme.accent
     var bgLum = WallpaperService.relativeLuminance(root._widgetBgColor)
@@ -307,6 +300,10 @@ Item {
     target: Theme
     function onAccentChanged() {
       root._updateBackground()
+    }
+    function onBackgroundSecondaryChanged() {
+      root._updateBackground()
+      Qt.callLater(root._updateContrast)
     }
   }
 
