@@ -73,12 +73,12 @@ BasePlugin {
         default: true
       },
       {
-        key: "widgetSize",
-        label: "WIDGET SIZE",
-        description: "Scale of the widget",
+        key: "scale",
+        label: "SCALE",
+        description: "Widget size relative to default",
         type: "stepper",
-        min: 80,
-        max: 150,
+        min: 60,
+        max: 160,
         step: 10,
         unit: "%",
         default: 100
@@ -110,8 +110,6 @@ BasePlugin {
     property bool _showMemory: PluginService.getPluginSetting("resourcemonitor", "showMemory", "desktop") ?? true
     property bool _showGpu: PluginService.getPluginSetting("resourcemonitor", "showGpu", "desktop") ?? true
     property bool _showGraph: PluginService.getPluginSetting("resourcemonitor", "showGraph", "desktop") ?? true
-    property real _widgetSize: PluginService.getPluginSetting("resourcemonitor", "widgetSize", "desktop") ?? 100
-    readonly property real _scale: monitorContainer._widgetSize / 100
 
     property var desktopWidget: null
 
@@ -121,12 +119,11 @@ BasePlugin {
 
     ColumnLayout {
       id: mainCol
-      spacing: Theme.spaceSm * monitorContainer._scale
+      spacing: Theme.spaceSm
 
       MetricGauge {
         visible: monitorContainer._showCpu
         Layout.fillWidth: true
-        scale: monitorContainer._scale
         label: "CPU"
         value: ResourceService.cpuUsage.toFixed(1) + "%"
         fraction: ResourceService.cpuUsage / 100
@@ -138,7 +135,7 @@ BasePlugin {
         Sparkline {
           visible: monitorContainer._showGraph && ResourceService.cpuHistory.length > 1
           Layout.fillWidth: true
-          Layout.preferredHeight: 40 * monitorContainer._scale
+          Layout.preferredHeight: 40
           values: ResourceService.cpuHistory
           lineColor: monitorContainer._accentColor
         }
@@ -147,7 +144,6 @@ BasePlugin {
       MetricGauge {
         visible: monitorContainer._showMemory
         Layout.fillWidth: true
-        scale: monitorContainer._scale
         label: "MEM"
         value: ResourceService.memPct.toFixed(1) + "%"
         fraction: ResourceService.memPct / 100
@@ -159,7 +155,7 @@ BasePlugin {
         Text {
           text: ResourceService.memUsed + " MB / " + ResourceService.memTotal + " MB"
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeCaption * monitorContainer._scale)
+          font.pixelSize: Theme.fontSizeCaption
           color: monitorContainer._dimColor
         }
       }
@@ -167,7 +163,6 @@ BasePlugin {
       MetricGauge {
         visible: monitorContainer._showGpu && ResourceService.gpuAvailable && ResourceService.gpuHasData
         Layout.fillWidth: true
-        scale: monitorContainer._scale
         label: "GPU"
         value: ResourceService.gpuLoad
         fraction: (parseFloat(ResourceService.gpuLoad) || 0) / 100
@@ -183,7 +178,7 @@ BasePlugin {
             visible: ResourceService.gpuTemp !== "---"
             text: ResourceService.gpuTemp
             font.family: Theme.fontFamilyMono
-            font.pixelSize: Math.round(Theme.fontSizeCaption * monitorContainer._scale)
+            font.pixelSize: Theme.fontSizeCaption
             color: monitorContainer._dimColor
           }
 
@@ -191,7 +186,7 @@ BasePlugin {
             visible: ResourceService.gpuVramUsed !== "N/A"
             text: ResourceService.gpuVramUsed + " / " + ResourceService.gpuVramTotal
             font.family: Theme.fontFamilyMono
-            font.pixelSize: Math.round(Theme.fontSizeCaption * monitorContainer._scale)
+            font.pixelSize: Theme.fontSizeCaption
             color: monitorContainer._dimColor
           }
         }

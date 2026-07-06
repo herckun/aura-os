@@ -15,7 +15,7 @@ BasePlugin {
     pluginId: "lyrics"
     manifest: ({
             author: "herckun",
-            version: "1.0",
+            version: "1.1",
             shellVersion: "2.0",
             name: "Lyrics",
             description: "Synced lyrics from currently playing track",
@@ -52,17 +52,6 @@ BasePlugin {
                     default: true
                 },
                 {
-                    key: "fontSize",
-                    label: "FONT SIZE",
-                    description: "Lyrics text size",
-                    type: "stepper",
-                    min: 16,
-                    max: 32,
-                    step: 2,
-                    unit: "px",
-                    default: 22
-                },
-                {
                     key: "maxLines",
                     label: "VISIBLE LINES",
                     description: "Number of lyric lines to show",
@@ -70,18 +59,18 @@ BasePlugin {
                     min: 3,
                     max: 11,
                     step: 2,
-                    default: 7
+                    default: 5
                 },
                 {
-                    key: "widgetWidth",
-                    label: "WIDTH",
-                    description: "Widget width",
+                    key: "scale",
+                    label: "SCALE",
+                    description: "Widget size relative to default",
                     type: "stepper",
-                    min: 300,
-                    max: 600,
-                    step: 20,
-                    unit: "px",
-                    default: 420
+                    min: 60,
+                    max: 160,
+                    step: 10,
+                    unit: "%",
+                    default: 100
                 }
             ]
         })
@@ -103,19 +92,15 @@ BasePlugin {
     // ── UI components ────────────────────────────────────────────────
     property Component desktopComponent: Item {
         id: lyricsContainer
-        width: _widgetWidth
-        height: _totalHeight
+        width: 300
+        height: header.height + 1 + lyricsContainer._lyricsAreaHeight
 
-        property int _fontSize: PluginService.getPluginSetting("lyrics", "fontSize", "desktop") ?? 22
-        property int _maxLines: PluginService.getPluginSetting("lyrics", "maxLines", "desktop") ?? 7
-        property int _widgetWidth: PluginService.getPluginSetting("lyrics", "widgetWidth", "desktop") ?? 420
+        property int _maxLines: PluginService.getPluginSetting("lyrics", "maxLines", "desktop") ?? 5
         property var desktopWidget: null
 
-        readonly property int _minLineHeight: _fontSize + 16
+        readonly property int _lineFont: Theme.fontSizeBody
+        readonly property int _minLineHeight: _lineFont + 12
         readonly property int _lyricsAreaHeight: _maxLines * _minLineHeight
-        readonly property int _headerHeight: 72
-        readonly property int _footerHeight: 40
-        readonly property int _totalHeight: _headerHeight + _lyricsAreaHeight + _footerHeight
 
         readonly property color _textColor: desktopWidget ? desktopWidget.widgetTextColor : Theme.textPrimary
         readonly property color _dimColor: desktopWidget ? desktopWidget.widgetDimColor : Theme.textSecondary
@@ -126,37 +111,37 @@ BasePlugin {
         Item {
             id: header
             width: parent.width
-            height: lyricsContainer._headerHeight
+            height: headerCol.implicitHeight + Theme.spaceSm
 
             Row {
                 id: bars
                 anchors.left: parent.left
-                anchors.leftMargin: Theme.spaceSm
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 3
+                anchors.leftMargin: Theme.spaceXs
+                anchors.verticalCenter: headerCol.verticalCenter
+                spacing: 2
                 visible: MediaService.playbackStatus === "Playing" && LyricsService.hasLyrics
 
                 Repeater {
-                    model: 4
+                    model: 3
 
                     Rectangle {
                         required property int index
-                        width: 3
-                        radius: 1.5
+                        width: 2
+                        radius: 1
                         color: lyricsContainer._accentColor
 
                         SequentialAnimation on height {
                             running: MediaService.playbackStatus === "Playing"
                             loops: Animation.Infinite
                             NumberAnimation {
-                                from: 4
-                                to: 16
+                                from: 3
+                                to: 11
                                 duration: 400 + index * 100
                                 easing.type: Easing.InOutQuad
                             }
                             NumberAnimation {
-                                from: 16
-                                to: 4
+                                from: 11
+                                to: 3
                                 duration: 400 + index * 100
                                 easing.type: Easing.InOutQuad
                             }
@@ -166,19 +151,21 @@ BasePlugin {
             }
 
             Column {
+                id: headerCol
                 anchors.left: bars.visible ? bars.right : parent.left
-                anchors.leftMargin: Theme.spaceSm
-                anchors.right: parent.right
+                anchors.leftMargin: bars.visible ? Theme.spaceSm : Theme.spaceXs
+                anchors.right: counter.left
                 anchors.rightMargin: Theme.spaceSm
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 4
+                anchors.top: parent.top
+                spacing: 2
 
                 Text {
-                    text: LyricsService.loading ? "Searching..." : LyricsService.currentTrack || "No track"
+                    text: LyricsService.loading ? "SEARCHING..." : (LyricsService.currentTrack || "NO TRACK").toUpperCase()
                     color: lyricsContainer._textColor
-                    font.pixelSize: lyricsContainer._fontSize - 6
+                    font.pixelSize: Theme.fontSizeCaption
                     font.weight: Font.Bold
-                    font.family: Theme.fontFamilyDisplay
+                    font.family: Theme.fontFamilyMono
+                    font.letterSpacing: 0.06
                     elide: Text.ElideRight
                     width: parent.width
                 }
@@ -186,7 +173,7 @@ BasePlugin {
                 Text {
                     text: LyricsService.currentArtist || ""
                     color: lyricsContainer._dimColor
-                    font.pixelSize: lyricsContainer._fontSize - 8
+                    font.pixelSize: Theme.fontSizeMicro
                     font.family: Theme.fontFamilyMono
                     font.letterSpacing: 0.04
                     elide: Text.ElideRight
@@ -195,24 +182,42 @@ BasePlugin {
                 }
             }
 
-            Rectangle {
-                anchors.bottom: parent.bottom
-                width: parent.width
-                height: 1
-                color: Qt.rgba(lyricsContainer._dimColor.r, lyricsContainer._dimColor.g, lyricsContainer._dimColor.b, 0.15)
+            Text {
+                id: counter
+                anchors.right: parent.right
+                anchors.rightMargin: Theme.spaceXs
+                anchors.top: parent.top
+                text: {
+                    if (!LyricsService.hasLyrics || LyricsService.lines.length === 0)
+                        return "";
+                    var idx = LyricsService.currentLineIndex;
+                    return (idx < 0 ? "—" : idx + 1) + "/" + LyricsService.lines.length;
+                }
+                color: lyricsContainer._dimColor
+                font.pixelSize: Theme.fontSizeMicro
+                font.family: Theme.fontFamilyMono
+                opacity: 0.6
             }
+        }
+
+        Rectangle {
+            id: headerDivider
+            anchors.top: header.bottom
+            width: parent.width
+            height: 1
+            color: Qt.rgba(lyricsContainer._dimColor.r, lyricsContainer._dimColor.g, lyricsContainer._dimColor.b, 0.15)
         }
 
         // ── Empty / state messages ─────────────────────────────────
         Item {
-            anchors.top: header.bottom
+            anchors.top: headerDivider.bottom
             width: parent.width
             height: lyricsContainer._lyricsAreaHeight
             visible: !LyricsService.hasLyrics || MediaService.playbackStatus === "Stopped" || (LyricsService.hasLyrics && LyricsService.currentLineIndex < 0 && MediaService.playbackStatus === "Playing") || (LyricsService.hasLyrics && LyricsService.currentLineIndex >= LyricsService.lines.length - 1 && LyricsService.lines.length > 0)
 
             Column {
                 anchors.centerIn: parent
-                spacing: Theme.spaceMd
+                spacing: Theme.spaceSm
 
                 Icon {
                     source: {
@@ -224,9 +229,9 @@ BasePlugin {
                             return Icons.get("stop");
                         return "";
                     }
-                    size: 48
+                    size: 22
                     color: lyricsContainer._dimColor
-                    opacity: 0.2
+                    opacity: 0.25
                     anchors.horizontalCenter: parent.horizontalCenter
                     visible: source !== ""
 
@@ -234,12 +239,12 @@ BasePlugin {
                         running: LyricsService.loading
                         loops: Animation.Infinite
                         NumberAnimation {
-                            to: 0.4
+                            to: 0.45
                             duration: 800
                             easing.type: Easing.InOutQuad
                         }
                         NumberAnimation {
-                            to: 0.2
+                            to: 0.25
                             duration: 800
                             easing.type: Easing.InOutQuad
                         }
@@ -249,21 +254,22 @@ BasePlugin {
                 Text {
                     text: {
                         if (LyricsService.loading)
-                            return "Looking for lyrics...";
+                            return "LOOKING FOR LYRICS...";
                         if (!MediaService.hasPlayer)
-                            return "Play something";
+                            return "PLAY SOMETHING";
                         if (MediaService.playbackStatus === "Stopped")
-                            return "Playback stopped";
+                            return "PLAYBACK STOPPED";
                         if (!LyricsService.hasLyrics)
-                            return "No lyrics found";
+                            return "NO LYRICS FOUND";
                         if (LyricsService.currentLineIndex < 0)
-                            return "Get ready";
-                        return "End of lyrics";
+                            return "GET READY";
+                        return "END OF LYRICS";
                     }
                     color: lyricsContainer._dimColor
-                    font.pixelSize: lyricsContainer._fontSize - 4
+                    font.pixelSize: Theme.fontSizeMicro
                     font.family: Theme.fontFamilyMono
-                    opacity: 0.4
+                    font.letterSpacing: 0.08
+                    opacity: 0.5
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
@@ -272,7 +278,7 @@ BasePlugin {
         // ── Lyrics view ────────────────────────────────────────────
         Item {
             id: lyricsView
-            anchors.top: header.bottom
+            anchors.top: headerDivider.bottom
             width: parent.width
             height: lyricsContainer._lyricsAreaHeight
             visible: !LyricsService.loading && LyricsService.hasLyrics && MediaService.playbackStatus !== "Stopped" && LyricsService.currentLineIndex >= 0 && LyricsService.currentLineIndex < LyricsService.lines.length - 1
@@ -281,7 +287,7 @@ BasePlugin {
             Rectangle {
                 anchors.top: parent.top
                 width: parent.width
-                height: 40
+                height: 20
                 z: 2
                 gradient: Gradient {
                     GradientStop {
@@ -298,7 +304,7 @@ BasePlugin {
             Rectangle {
                 anchors.bottom: parent.bottom
                 width: parent.width
-                height: 40
+                height: 20
                 z: 2
                 gradient: Gradient {
                     GradientStop {
@@ -359,24 +365,15 @@ BasePlugin {
                     delegate: Item {
                         required property var modelData
                         width: lyricsCol.width
-                        height: Math.max(lyricsContainer._minLineHeight, lineText.implicitHeight + 16)
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.leftMargin: Theme.spaceSm
-                            anchors.rightMargin: Theme.spaceSm
-                            radius: Theme.radiusSmall
-                            color: Qt.rgba(lyricsContainer._accentColor.r, lyricsContainer._accentColor.g, lyricsContainer._accentColor.b, 0.08)
-                            visible: modelData.isCurrent
-                        }
+                        height: Math.max(lyricsContainer._minLineHeight, lineText.implicitHeight + 10)
 
                         Rectangle {
                             anchors.left: parent.left
-                            anchors.leftMargin: Theme.spaceSm
+                            anchors.leftMargin: Theme.spaceXs
                             anchors.verticalCenter: parent.verticalCenter
-                            width: 3
-                            height: Math.min(parent.height - 16, lineText.implicitHeight)
-                            radius: 1.5
+                            width: 2
+                            height: Math.min(parent.height - 10, lineText.implicitHeight)
+                            radius: 1
                             color: lyricsContainer._accentColor
                             visible: modelData.isCurrent
                         }
@@ -385,9 +382,9 @@ BasePlugin {
                             id: lineText
                             anchors {
                                 left: parent.left
-                                leftMargin: Theme.spaceLg
+                                leftMargin: Theme.spaceMd
                                 right: parent.right
-                                rightMargin: Theme.spaceMd
+                                rightMargin: Theme.spaceSm
                                 verticalCenter: parent.verticalCenter
                             }
                             text: modelData.text
@@ -400,13 +397,14 @@ BasePlugin {
                             }
                             font.pixelSize: {
                                 if (modelData.isCurrent)
-                                    return lyricsContainer._fontSize;
+                                    return lyricsContainer._lineFont;
                                 if (modelData.distance <= 1)
-                                    return lyricsContainer._fontSize - 2;
-                                return lyricsContainer._fontSize - 4;
+                                    return lyricsContainer._lineFont - 1;
+                                return lyricsContainer._lineFont - 2;
                             }
                             font.weight: modelData.isCurrent ? Font.Bold : (modelData.distance <= 1 ? Font.Medium : Font.Normal)
                             font.family: Theme.fontFamilyDisplay
+                            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                             opacity: {
                                 if (LyricsService.currentLineIndex < 0)
                                     return 0.6;
@@ -418,8 +416,6 @@ BasePlugin {
                                     return 0.35;
                                 return 0.15;
                             }
-                            wrapMode: Text.WordWrap
-
                             Behavior on color {
                                 enabled: Theme.animationsEnabled
                                 ColorAnimation {
@@ -434,32 +430,6 @@ BasePlugin {
                             }
                         }
                     }
-                }
-            }
-        }
-
-        // ── Footer ─────────────────────────────────────────────────
-        Item {
-            anchors.top: lyricsView.visible ? lyricsView.bottom : header.bottom
-            width: parent.width
-            height: lyricsContainer._footerHeight
-
-            Row {
-                anchors.centerIn: parent
-                spacing: Theme.spaceXs
-                visible: LyricsService.hasLyrics && LyricsService.lines.length > 0
-
-                Text {
-                    text: {
-                        var idx = LyricsService.currentLineIndex;
-                        if (idx < 0)
-                            return "— / " + LyricsService.lines.length;
-                        return (idx + 1) + " / " + LyricsService.lines.length;
-                    }
-                    color: lyricsContainer._dimColor
-                    font.pixelSize: Theme.fontSizeMicro
-                    font.family: Theme.fontFamilyMono
-                    opacity: 0.5
                 }
             }
         }

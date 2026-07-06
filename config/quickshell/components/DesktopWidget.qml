@@ -21,6 +21,7 @@ Item {
   }
   property bool autoPosition: plugin ? (PluginService.getPluginSetting(plugin.id, "autoPosition", "desktop") ?? false) : false
   readonly property bool showBackground: plugin ? (PluginService.getPluginSetting(plugin.id, "showBackground", "desktop") ?? false) : false
+  readonly property real widgetScale: plugin ? ((PluginService.getPluginSetting(plugin.id, "scale", "desktop") ?? 100) / 100) : 1
 
   // ── Internal state ─────────────────────────────────────────
   property real _committedX: 0
@@ -52,8 +53,8 @@ Item {
 
   function _repositionAfterModeChange(): void {
     if (!widgetLoader.item) return
-    var w = widgetLoader.item.width
-    var h = widgetLoader.item.height
+    var w = widgetLoader.item.width * root.widgetScale
+    var h = widgetLoader.item.height * root.widgetScale
     if (w <= 0 || h <= 0) return
 
     var barBottom = root.defaultBarOffset
@@ -161,7 +162,9 @@ Item {
     if (!WallpaperService.mapReady) return
     var wItem = widgetLoader.item
     if (!wItem) return
-    var c = contrastAt(wItem.width / 2, wItem.height / 2, wItem.width, wItem.height)
+    var sw = wItem.width * root.widgetScale
+    var sh = wItem.height * root.widgetScale
+    var c = contrastAt(sw / 2, sh / 2, sw, sh)
     root._bgLuminance = c.bgLuminance
     root._bgColor = c.bgColor
     root._textColor = c.textColor
@@ -172,8 +175,8 @@ Item {
   // ── Region management ──────────────────────────────────────
   function _registerMyRegion(): void {
     if (!plugin || !widgetLoader.item) return
-    var w = widgetLoader.item.width
-    var h = widgetLoader.item.height
+    var w = widgetLoader.item.width * root.widgetScale
+    var h = widgetLoader.item.height * root.widgetScale
     if (w > 0 && h > 0) {
       DesktopLayoutService.registerRegion(plugin.id, _committedX, _committedY, w, h)
     }
@@ -198,8 +201,10 @@ Item {
   // ── Background rectangle ───────────────────────────────────
   Rectangle {
     id: bgRect
-    anchors.fill: widgetLoader
-    anchors.margins: root.showBackground ? -Theme.spaceMd : 0
+    x: widgetLoader.x - (root.showBackground ? Theme.spaceMd : 0)
+    y: widgetLoader.y - (root.showBackground ? Theme.spaceMd : 0)
+    width: widgetLoader.width * root.widgetScale + (root.showBackground ? Theme.spaceMd * 2 : 0)
+    height: widgetLoader.height * root.widgetScale + (root.showBackground ? Theme.spaceMd * 2 : 0)
     radius: Theme.radiusMedium
     color: {
       if (!root.showBackground) return "transparent"
@@ -253,6 +258,8 @@ Item {
   // ── Loader ─────────────────────────────────────────────────
   Loader {
     id: widgetLoader
+    scale: root.widgetScale
+    transformOrigin: Item.TopLeft
     sourceComponent: plugin ? plugin.desktopComponent : null
     onLoaded: {
       if (item && item.hasOwnProperty("desktopWidget")) {
@@ -345,8 +352,8 @@ Item {
 
     x: _dragging ? _frozenX : widgetLoader.x
     y: _dragging ? _frozenY : widgetLoader.y
-    width: widgetLoader.item ? widgetLoader.item.width : 0
-    height: widgetLoader.item ? widgetLoader.item.height : 0
+    width: widgetLoader.item ? widgetLoader.item.width * root.widgetScale : 0
+    height: widgetLoader.item ? widgetLoader.item.height * root.widgetScale : 0
 
     onPressed: function(mouse) {
       _dragging = true

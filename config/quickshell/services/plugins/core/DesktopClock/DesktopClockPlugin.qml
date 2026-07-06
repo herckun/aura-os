@@ -67,13 +67,13 @@ BasePlugin {
         default: true
       },
       {
-        key: "clockSize",
-        label: "CLOCK SIZE",
-        description: "Scale of the clock",
+        key: "scale",
+        label: "SCALE",
+        description: "Widget size relative to default",
         type: "stepper",
-        min: 80,
-        max: 150,
-        step: 5,
+        min: 60,
+        max: 160,
+        step: 10,
         unit: "%",
         default: 100
       },
@@ -127,8 +127,6 @@ BasePlugin {
     property bool _format24h: PluginService.getPluginSetting("desktopclock", "format24h", "desktop") ?? true
     property bool _showSeconds: PluginService.getPluginSetting("desktopclock", "showSeconds", "desktop") ?? false
     property bool _showDate: PluginService.getPluginSetting("desktopclock", "showDate", "desktop") ?? true
-    property real _clockSize: PluginService.getPluginSetting("desktopclock", "clockSize", "desktop") ?? 100
-    readonly property real _scale: clockContainer._clockSize / 100
 
     // ── DesktopWidget bridge ──────────────────────────────────
     property var desktopWidget: null
@@ -220,7 +218,7 @@ BasePlugin {
           id: timeHH
           text: ""
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeDisplayXl * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeDisplayXl
           font.weight: Font.Bold
           font.letterSpacing: 4
           Layout.alignment: Qt.AlignHCenter
@@ -240,7 +238,7 @@ BasePlugin {
           id: timeMM
           text: ""
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeDisplayXl * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeDisplayXl
           font.weight: Font.Bold
           font.letterSpacing: 4
           Layout.alignment: Qt.AlignHCenter
@@ -262,7 +260,7 @@ BasePlugin {
           visible: clockContainer._showSeconds
           text: ""
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeSubhead * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeSubhead
           font.weight: Font.Medium
           font.letterSpacing: 8
           Layout.alignment: Qt.AlignHCenter
@@ -275,7 +273,7 @@ BasePlugin {
           visible: !clockContainer._format24h
           text: ""
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeSubhead * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeSubhead
           font.weight: Font.Medium
           font.letterSpacing: 2
           Layout.alignment: Qt.AlignHCenter
@@ -288,7 +286,7 @@ BasePlugin {
       Rectangle {
         Layout.alignment: Qt.AlignHCenter
         Layout.bottomMargin: Theme.spaceSm
-        width: Math.round(36 * clockContainer._scale)
+        width: 36
         height: 3
         radius: 1.5
         color: clockContainer._accentContrast
@@ -298,7 +296,7 @@ BasePlugin {
         id: dayText
         text: ""
         font.family: Theme.fontFamilyDisplay
-        font.pixelSize: Math.round(Theme.fontSizeHeading * clockContainer._scale)
+        font.pixelSize: Theme.fontSizeHeading
         font.weight: Font.Bold
         font.letterSpacing: 8
         horizontalAlignment: Text.AlignHCenter
@@ -313,7 +311,7 @@ BasePlugin {
         visible: clockContainer._showDate
         text: ""
         font.family: Theme.fontFamilyMono
-        font.pixelSize: Math.round(Theme.fontSizeLabel * clockContainer._scale)
+        font.pixelSize: Theme.fontSizeLabel
         font.weight: Font.Medium
         font.letterSpacing: 6
         horizontalAlignment: Text.AlignHCenter
@@ -332,7 +330,7 @@ BasePlugin {
         id: timeTextM
         text: ""
         font.family: Theme.fontFamilyDisplay
-        font.pixelSize: Math.round(Theme.fontSizeDisplayXl * clockContainer._scale)
+        font.pixelSize: Theme.fontSizeDisplayXl
         font.weight: Font.Bold
         font.letterSpacing: 2
         Layout.alignment: Qt.AlignHCenter
@@ -359,7 +357,7 @@ BasePlugin {
           visible: clockContainer._showSeconds
           text: ""
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeSubhead * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeSubhead
           font.weight: Font.Medium
           font.letterSpacing: 8
           color: clockContainer._accentContrast
@@ -370,7 +368,7 @@ BasePlugin {
           visible: !clockContainer._format24h
           text: ""
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeSubhead * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeSubhead
           font.weight: Font.Medium
           font.letterSpacing: 2
           property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
@@ -382,7 +380,7 @@ BasePlugin {
         id: dayTextM
         text: ""
         font.family: Theme.fontFamilyDisplay
-        font.pixelSize: Math.round(Theme.fontSizeHeading * clockContainer._scale)
+        font.pixelSize: Theme.fontSizeHeading
         font.weight: Font.Bold
         font.letterSpacing: 8
         horizontalAlignment: Text.AlignHCenter
@@ -398,7 +396,7 @@ BasePlugin {
         visible: clockContainer._showDate
         text: ""
         font.family: Theme.fontFamilyMono
-        font.pixelSize: Math.round(Theme.fontSizeLabel * clockContainer._scale)
+        font.pixelSize: Theme.fontSizeLabel
         font.weight: Font.Medium
         font.letterSpacing: 6
         horizontalAlignment: Text.AlignHCenter
@@ -423,7 +421,7 @@ BasePlugin {
           id: dayTextH
           text: ""
           font.family: Theme.fontFamilyDisplay
-          font.pixelSize: Math.round(Theme.fontSizeDisplay * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeDisplay
           font.weight: Font.Bold
           font.letterSpacing: 6
           Layout.bottomMargin: Theme.spaceXs
@@ -444,7 +442,7 @@ BasePlugin {
           visible: clockContainer._showDate
           text: ""
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeLabel * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeLabel
           font.weight: Font.Medium
           font.letterSpacing: 4
           property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
@@ -457,7 +455,7 @@ BasePlugin {
         width: 3
         radius: 1.5
         Layout.fillHeight: true
-        Layout.preferredHeight: Theme.fontSizeDisplay * clockContainer._scale
+        Layout.preferredHeight: Theme.fontSizeDisplay
         color: clockContainer._accentContrast
         Layout.alignment: Qt.AlignVCenter
       }
@@ -474,7 +472,7 @@ BasePlugin {
             id: timeLabelH
             text: ""
             font.family: Theme.fontFamilyMono
-            font.pixelSize: Math.round(Theme.fontSizeHeading * clockContainer._scale)
+            font.pixelSize: Theme.fontSizeHeading
             font.weight: Font.Bold
             font.letterSpacing: 4
             property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
@@ -486,7 +484,7 @@ BasePlugin {
             visible: !clockContainer._format24h
             text: ""
             font.family: Theme.fontFamilyMono
-            font.pixelSize: Math.round(Theme.fontSizeCaption * clockContainer._scale)
+            font.pixelSize: Theme.fontSizeCaption
             font.weight: Font.Medium
             font.letterSpacing: 2
             property var _c: clockContainer.desktopWidget ? clockContainer.desktopWidget.contrastFor(this) : null
@@ -502,7 +500,7 @@ BasePlugin {
           text: ""
           color: clockContainer._accentContrast
           font.family: Theme.fontFamilyMono
-          font.pixelSize: Math.round(Theme.fontSizeSubhead * clockContainer._scale)
+          font.pixelSize: Theme.fontSizeSubhead
           font.weight: Font.Medium
           font.letterSpacing: 8
           horizontalAlignment: Text.AlignHCenter
@@ -519,7 +517,7 @@ BasePlugin {
 
       Canvas {
         id: analogClock
-        readonly property int _size: Math.round(240 * clockContainer._scale)
+        readonly property int _size: 240
         width: _size
         height: _size
         implicitWidth: _size
@@ -629,7 +627,7 @@ BasePlugin {
         text: Qt.formatDateTime(DateTimeService.currentDate, "dddd").toUpperCase()
           + "  " + Qt.formatDateTime(DateTimeService.currentDate, "MMMM d").toUpperCase()
         font.family: Theme.fontFamilyMono
-        font.pixelSize: Math.round(Theme.fontSizeLabel * clockContainer._scale)
+        font.pixelSize: Theme.fontSizeLabel
         font.letterSpacing: 4
         horizontalAlignment: Text.AlignHCenter
         anchors.horizontalCenter: parent.horizontalCenter

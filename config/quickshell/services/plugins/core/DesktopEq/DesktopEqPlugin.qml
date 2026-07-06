@@ -68,15 +68,15 @@ BasePlugin {
         default: 4
       },
       {
-        key: "vizHeight",
-        label: "VISUALIZER HEIGHT",
-        description: "Maximum height of the visualizer",
+        key: "scale",
+        label: "SCALE",
+        description: "Widget size relative to default",
         type: "stepper",
-        min: 40,
-        max: 120,
+        min: 60,
+        max: 160,
         step: 10,
-        unit: "px",
-        default: 64
+        unit: "%",
+        default: 100
       },
       {
         key: "useAccent",
@@ -132,7 +132,7 @@ BasePlugin {
     property bool _isWave: PluginService.getPluginSetting("audioviz", "vizStyle", "desktop") === "wave"
     property int _barW: PluginService.getPluginSetting("audioviz", "barWidth", "desktop") ?? 8
     property int _barS: PluginService.getPluginSetting("audioviz", "barSpacing", "desktop") ?? 4
-    property int _vizH: PluginService.getPluginSetting("audioviz", "vizHeight", "desktop") ?? 64
+    readonly property int _vizH: 64
     property bool _useAccent: PluginService.getPluginSetting("audioviz", "useAccent", "desktop") ?? true
     property bool _reflection: PluginService.getPluginSetting("audioviz", "reflection", "desktop") ?? true
     property bool _showWhenPaused: PluginService.getPluginSetting("audioviz", "showWhenPaused", "desktop") ?? false
