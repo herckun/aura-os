@@ -1065,6 +1065,11 @@ echo "[gtk-qt-theme] Kvantum: ${APP_DISPLAY} theme generated (rounded corners, a
 # GSettings + xsettingsd
 # ═══════════════════════════════════════════════════════════════
 gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" 2>/dev/null || true
+_current_gtk_theme="$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || echo "")"
+if [[ "$_current_gtk_theme" == "'${APP_THEME_KEY}'" ]]; then
+  gsettings set org.gnome.desktop.interface gtk-theme "Adwaita" 2>/dev/null || true
+  sleep 0.3
+fi
 gsettings set org.gnome.desktop.interface gtk-theme "${APP_THEME_KEY}" 2>/dev/null || true
 gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark" 2>/dev/null || true
 gsettings set org.gnome.desktop.interface font-name "${FONT_SANS} 10" 2>/dev/null || true
