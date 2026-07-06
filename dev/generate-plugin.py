@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate a new plugin that extends BasePlugin (the golden rule).
-
-BasePlugin already handles registration, enabled-state, PluginService signal
-wiring, lifecycle and the _set/_setArray helpers — so this only scaffolds the
-manifest, lifecycle hooks and one UI Component per location. See docs/PLUGINS.md.
+Generate a new plugin that extends BasePlugin.
 
 Usage:
   dev/generate-plugin.py                         # interactive
@@ -25,11 +21,8 @@ REPO = Path(__file__).resolve().parent.parent
 PLUGINS_DIR = REPO / "config" / "quickshell" / "services" / "plugins"
 CATEGORIES = ("core", "extra", "community")
 DEFAULT_AUTHOR = "herckun"
-SHELL_VERSION = "2.0"   # shell version plugins target (see core/AppInfo.qml)
+SHELL_VERSION = "2.0"
 
-# location -> UI Component property (mirrors PluginService.componentMap).
-# Locations not listed here (e.g. "settings") have no UI component — their
-# presence is settings-driven.
 LOCATION_COMPONENT = {
     "connectivity": "connectivityComponent",
     "controlcenter_row": "controlCenterComponent",
@@ -57,7 +50,7 @@ def plugin_id(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
 
-def qml_bool_or(v: str, typ: str) -> str:
+def qml_value(v: str, typ: str) -> str:
     if typ == "toggle":
         return "true" if str(v).lower() in ("1", "true", "yes", "on") else "false"
     if typ == "stepper":
@@ -84,11 +77,13 @@ def render_settings(settings) -> str:
     lines = []
     for s in settings:
         dv = s["default"] if s["default"] is not None else None
-        dv = qml_bool_or(dv, s["type"]) if dv is not None else SETTING_DEFAULTS[s["type"]]
+        dv = qml_value(dv, s["type"]) if dv is not None else SETTING_DEFAULTS[s["type"]]
         label = re.sub(r"[^A-Za-z0-9]+", " ", s["key"]).strip().upper()
         extra = ""
         if s["type"] == "stepper":
             extra = ", min: 0, max: 100, step: 1"
+        elif s["type"] == "select":
+            extra = f", options: [{dv}]" if dv != '""' else ", options: []"
         lines.append(
             f'      {{ key: "{s["key"]}", label: "{label}", description: "", '
             f'type: "{s["type"]}", default: {dv}{extra} }}'
@@ -99,13 +94,58 @@ def render_settings(settings) -> str:
 def render_on_setting_changed(settings) -> str:
     if not settings:
         return "  function onSettingChanged(key, value): void {}"
-    cases = "\n".join(
-        f'    case "{s["key"]}": /* apply {s["key"]} */ break' for s in settings
-    )
+    cases = "\n".join(f'      case "{s["key"]}": break' for s in settings)
     return (
         "  function onSettingChanged(key, value): void {\n"
         "    switch (key) {\n"
         f"{cases}\n"
+        "    }\n"
+        "  }"
+    )
+
+
+def bar_component(name: str) -> str:
+    return (
+        "  property Component barComponent: Row {\n"
+        "    spacing: Theme.spaceSm\n\n"
+        "    Text {\n"
+        "      anchors.verticalCenter: parent.verticalCenter\n"
+        f'      text: "{name}"\n'
+        "      color: Theme.textSecondary\n"
+        "      font.pixelSize: Theme.fontSizeCaption\n"
+        "      font.family: Theme.fontFamilyMono\n"
+        "    }\n"
+        "  }"
+    )
+
+
+def desktop_component(name: str) -> str:
+    return (
+        "  property Component desktopComponent: Item {\n"
+        "    width: placeholder.implicitWidth\n"
+        "    height: placeholder.implicitHeight\n\n"
+        "    Text {\n"
+        "      id: placeholder\n"
+        f'      text: "{name}"\n'
+        "      color: Theme.textSecondary\n"
+        "      font.pixelSize: Theme.fontSizeCaption\n"
+        "      font.family: Theme.fontFamilyMono\n"
+        "    }\n"
+        "  }"
+    )
+
+
+def panel_component(prop: str, name: str) -> str:
+    return (
+        f"  property Component {prop}: Column {{\n"
+        "    width: parent.width\n"
+        "    spacing: Theme.spaceSm\n\n"
+        f'    SectionLabel {{ label: "{name.upper()}" }}\n\n'
+        "    Text {\n"
+        f'      text: "Edit {prop} in this plugin"\n'
+        "      color: Theme.textSecondary\n"
+        "      font.pixelSize: Theme.fontSizeCaption\n"
+        "      font.family: Theme.fontFamilyMono\n"
         "    }\n"
         "  }"
     )
@@ -118,39 +158,22 @@ def render_components(locations, name) -> str:
         if not prop or prop in seen:
             continue
         seen.add(prop)
-        blocks.append(
-            f"  property Component {prop}: Column {{\n"
-            f"    width: parent.width\n"
-            f"    spacing: Theme.spaceSm\n\n"
-            f'    SectionLabel {{ label: "{name.upper()}" }}\n\n'
-            f"    Text {{\n"
-            f'      text: "Edit {prop} in this plugin"\n'
-            f"      color: Theme.textSecondary\n"
-            f"      font.pixelSize: Theme.fontSizeCaption\n"
-            f"      font.family: Theme.fontFamilyMono\n"
-            f"    }}\n"
-            f"  }}"
-        )
-    if not blocks:
-        return "  // No UI location selected — add a `property Component <x>Component` when needed."
-    return "\n\n".join(blocks)
+        if prop == "barComponent":
+            blocks.append(bar_component(name))
+        elif prop == "desktopComponent":
+            blocks.append(desktop_component(name))
+        else:
+            blocks.append(panel_component(prop, name))
+    return "\n\n".join(blocks) + "\n" if blocks else ""
 
 
 TEMPLATE = '''pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
 import "../../../../styles"
 import "../../../../components"
 import "../../../../core"
 import "../../../"
-
-// ═══════════════════════════════════════════════════════════════════
-//  {name} — extends BasePlugin (registration, enabled-state, signal
-//  wiring, lifecycle and helpers are all handled by the base). Fill in
-//  the sections below; keep the section headers (see docs/PLUGINS.md).
-// ═══════════════════════════════════════════════════════════════════
 
 BasePlugin {{
   id: root
@@ -165,7 +188,6 @@ BasePlugin {{
     description: "{description}",
     icon: "{icon}",
     locations: {locations_json},
-    icons: {{}},
     {settings}
   }})
 
@@ -174,7 +196,6 @@ BasePlugin {{
   // ── Internal state ───────────────────────────────────────────────
 
   // ── Signal handlers ──────────────────────────────────────────────
-  // Connections to OTHER services; PluginService signals are on the base.
 
   // ── Public API ───────────────────────────────────────────────────
 
@@ -183,21 +204,13 @@ BasePlugin {{
   // ── Timers ───────────────────────────────────────────────────────
 
   // ── Lifecycle ────────────────────────────────────────────────────
-  // Start polling / processes here (fires on enable + at startup if enabled).
   function onActivated(): void {{}}
-
-  // Counterpart to onActivated.
   function onDeactivated(): void {{}}
-
 {on_setting_changed}
-
-  // Stop EVERY timer / process / poll this plugin owns. Called on disable
-  // and destruction — must be safe to call repeatedly.
   function stopAllActivity(): void {{}}
 
   // ── UI components ────────────────────────────────────────────────
-{components}
-}}
+{components}}}
 '''
 
 
