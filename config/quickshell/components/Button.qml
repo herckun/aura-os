@@ -97,7 +97,11 @@ Item {
   readonly property bool _isFlat: shape === "link" || shape === "icon"
   readonly property bool _hasIcon: icon !== ""
 
-  readonly property color _ft: Theme.contrastTextColor(_bgColor)
+  function _fg(bg: color): color {
+    return bg.a < 0.4 ? Theme.textPrimary : Theme.contrastTextColor(bg)
+  }
+
+  readonly property color _ft: _fg(_bgColor)
   readonly property color _fh: Theme.contrastTextColor(_fbh)
   readonly property color _fb: bgColor.a > 0 ? bgColor :
     _isAccent ? Theme.accent : Theme.backgroundTertiary
@@ -284,7 +288,7 @@ Item {
       anchors.centerIn: parent
       source: Icons.get(icon)
       size: root.iconSize
-      color: Theme.contrastTextColor(_bgColor)
+      color: _fg(_bgColor)
       visible: shape === "circle" && icon !== ""
 
       Behavior on color {
@@ -296,7 +300,7 @@ Item {
     Text {
       anchors.centerIn: parent
       text: root.text
-      color: Theme.contrastTextColor(_bgColor)
+      color: _fg(_bgColor)
       font.pixelSize: root.iconSize
       font.family: labelFontFamily
       visible: shape === "circle" && root.text !== "" && icon === ""
@@ -347,7 +351,7 @@ Item {
         Spinner {
           anchors.centerIn: parent
           spinnerSize: 16
-          spinnerColor: Theme.contrastTextColor(_bgColor)
+          spinnerColor: _fg(_bgColor)
           visible: busy
         }
 
@@ -355,7 +359,7 @@ Item {
           anchors.centerIn: parent
           source: Icons.get(icon)
           size: 18
-          color: Theme.contrastTextColor(_bgColor)
+          color: _fg(_bgColor)
           visible: !busy
         }
       }
@@ -364,7 +368,7 @@ Item {
         width: parent.width
         horizontalAlignment: Text.AlignHCenter
         text: root.text.toUpperCase()
-        color: Theme.contrastTextColor(_bgColor)
+        color: _fg(_bgColor)
         font.pixelSize: Theme.fontSizeMicro
         font.family: Theme.fontFamilyMono
         font.letterSpacing: 0.08
@@ -375,7 +379,7 @@ Item {
         width: parent.width
         horizontalAlignment: Text.AlignHCenter
         text: root.sublabel.toUpperCase()
-        color: Theme.contrastTextColor(_bgColor)
+        color: _fg(_bgColor)
         opacity: 0.65
         font.pixelSize: Theme.fontSizeMicro
         font.family: Theme.fontFamilyMono
@@ -408,7 +412,7 @@ Item {
     busy: root.busy
     radius: root.radius
     overlayColor: root.overlayColor
-    spinnerColor: Theme.contrastTextColor(_bgColor)
+    spinnerColor: _fg(_bgColor)
     z: 1
   }
 
