@@ -5,7 +5,7 @@
   "monoAccent": "#C0CAF5",
   "fonts": {
     "fontFamily": "\"Outfit\", \"Space Grotesk\", sans-serif",
-    "fontFamilyMono": "\"JetBrains Mono\", \"Space Mono\", monospace"
+    "fontFamilyMono": "\"Sometype Mono\", \"Space Mono\", monospace"
   },
   "colors": {
     "background": "#1A1B26",

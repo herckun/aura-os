@@ -15,7 +15,7 @@ Column {
   Card {
     width: parent.width
     title: "THEME"
-    description: "Color theme for the whole desktop"
+    description: "Colors and fonts for the shell, terminal and apps — applies instantly"
 
     GridLayout {
       width: parent.width
@@ -218,7 +218,7 @@ Column {
   Card {
     width: parent.width
     title: "SHELL MODE"
-    description: "Choose your desktop experience — sets layout, theme, and visual effects"
+    description: "How the desktop behaves — bar, spacing density, effects and timing"
 
     BentoSwitcher {
       width: parent.width

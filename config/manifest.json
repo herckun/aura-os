@@ -1644,6 +1644,21 @@
         "ofl": "monasans",
         "file": "MonaSans[wdth,wght].ttf",
         "fcName": "Mona Sans"
+      },
+      {
+        "ofl": "geistmono",
+        "file": "GeistMono[wght].ttf",
+        "fcName": "Geist Mono"
+      },
+      {
+        "ofl": "sometypemono",
+        "file": "SometypeMono[wght].ttf",
+        "fcName": "Sometype Mono"
+      },
+      {
+        "ofl": "martianmono",
+        "file": "MartianMono[wdth,wght].ttf",
+        "fcName": "Martian Mono"
       }
     ]
   },
