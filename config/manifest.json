@@ -1812,28 +1812,12 @@
       "description": "Music streaming"
     },
     {
-      "id": "obs",
-      "name": "OBS Studio",
-      "category": "media",
-      "pkg": "obs-studio",
-      "source": "repo",
-      "description": "Screen recording and streaming"
-    },
-    {
       "id": "vlc",
       "name": "VLC",
       "category": "media",
       "pkg": "vlc",
       "source": "repo",
       "description": "Media player"
-    },
-    {
-      "id": "steam",
-      "name": "Steam",
-      "category": "media",
-      "pkg": "steam",
-      "source": "repo",
-      "description": "Game platform (needs multilib)"
     },
     {
       "id": "bitwarden",
