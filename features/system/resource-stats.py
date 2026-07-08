@@ -10,7 +10,7 @@ PROC <pid> <name> <cpu_pct> [...]
 
 Single subprocess call, zero fork overhead.
 """
-import os, json
+import os, json, glob
 
 def read_int(path):
     try:
@@ -65,15 +65,83 @@ def memory():
     except:
         return (0, 0)
 
-def cpu_temp():
-    base = "/sys/class/thermal"
-    if not os.path.isdir(base):
+import os
+import glob
+
+def read_int(path):
+    try:
+        with open(path, 'r') as f:
+            return int(f.read().strip())
+    except (IOError, ValueError, OSError):
         return None
-    for entry in sorted(os.listdir(base)):
-        tpath = os.path.join(base, entry, "temp")
-        val = read_int(tpath)
+
+def cpu_temp():
+    k10_paths = glob.glob("/sys/devices/pci*/0000:*/hwmon/hwmon*/temp1_input")
+    for path in k10_paths:
+        hwmon_dir = os.path.dirname(path)
+        name_file = os.path.join(hwmon_dir, "name")
+        if os.path.exists(name_file):
+            try:
+                with open(name_file, 'r') as f:
+                    if 'k10temp' in f.read():
+                        val = read_int(path)
+                        if val and val > 0:
+                            return round(val / 1000)
+            except:
+                pass
+    
+    hwmon_paths = glob.glob("/sys/class/hwmon/hwmon*/temp*_input")
+    for path in hwmon_paths:
+        hwmon_dir = os.path.dirname(path)
+        name_file = os.path.join(hwmon_dir, "name")
+        label_file = os.path.join(os.path.dirname(path), "temp1_label")
+        
+        if os.path.exists(name_file):
+            try:
+                with open(name_file, 'r') as f:
+                    name = f.read().strip()
+                    if 'k10temp' in name or 'coretemp' in name:
+                        val = read_int(path)
+                        if val and val > 0:
+                            return round(val / 1000)
+            except:
+                pass
+        
+        if os.path.exists(label_file):
+            try:
+                with open(label_file, 'r') as f:
+                    label = f.read().strip()
+                    if 'Tctl' in label or 'Package' in label or 'CPU' in label:
+                        val = read_int(path)
+                        if val and val > 0:
+                            return round(val / 1000)
+            except:
+                pass
+    
+    for path in hwmon_paths:
+        val = read_int(path)
         if val and val > 0:
+            hwmon_dir = os.path.dirname(path)
+            name_file = os.path.join(hwmon_dir, "name")
+            if os.path.exists(name_file):
+                try:
+                    with open(name_file, 'r') as f:
+                        if 'amdgpu' in f.read():
+                            continue
+                except:
+                    pass
             return round(val / 1000)
+    
+    try:
+        import subprocess
+        import re
+        result = subprocess.run(['sensors'], capture_output=True, text=True, timeout=2)
+        match = re.search(r'Tctl:\s+\+(\d+\.\d+)°C', result.stdout)
+        if match:
+            return round(float(match.group(1)))
+    except:
+        pass
+    
     return None
 
 def disk():

@@ -39,6 +39,8 @@ Singleton {
   property string gpuVramUsed: "---"
   property string gpuVramTotal: "---"
   property string gpuVramPct: "0"
+  property string rawVramUsed: "0"
+  property string rawVramTotal: "0"
   property string gpuVendor: ""
   property bool gpuAvailable: false
   property bool gpuHasData: false
@@ -235,6 +237,10 @@ Singleton {
 
     var vramUsed = _safeInt(lines[2])
     var vramTotal = _safeInt(lines[3])
+
+    svc.rawVramUsed = vramUsed
+    svc.rawVramTotal = vramTotal
+
     svc.gpuVramUsed = _formatBytes(String(vramUsed))
     svc.gpuVramTotal = _formatBytes(String(vramTotal))
     svc.gpuVramPct = vramTotal > 0 ? String(Math.round((vramUsed / vramTotal) * 100)) : "0"
@@ -265,6 +271,10 @@ Singleton {
 
     var vramUsed = _safeInt(parts[2]) * 1048576
     var vramTotal = _safeInt(parts[3]) * 1048576
+
+    svc.rawVramUsed = vramUsed
+    svc.rawVramTotal = vramTotal
+
     svc.gpuVramUsed = _formatBytes(String(vramUsed))
     svc.gpuVramTotal = _formatBytes(String(vramTotal))
     svc.gpuVramPct = vramTotal > 0 ? String(Math.round((vramUsed / vramTotal) * 100)) : "0"

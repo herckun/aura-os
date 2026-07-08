@@ -170,17 +170,21 @@ BasePlugin {
         valueColor: monitorContainer._textColor
         barColor: monitorContainer._accentColor
         trackColor: Qt.rgba(monitorContainer._textColor.r, monitorContainer._textColor.g, monitorContainer._textColor.b, 0.12)
+      }
+
+      MetricGauge {
+        visible: monitorContainer._showGpu && ResourceService.gpuAvailable && ResourceService.gpuHasData
+        Layout.fillWidth: true
+        label: "VRAM"
+        value: ResourceService.gpuVramPct + "%"
+        fraction: (parseFloat(ResourceService.rawVramUsed) || 0) / (parseFloat(ResourceService.rawVramTotal) || 1)
+        labelColor: monitorContainer._dimColor
+        valueColor: monitorContainer._textColor
+        barColor: monitorContainer._accentColor
+        trackColor: Qt.rgba(monitorContainer._textColor.r, monitorContainer._textColor.g, monitorContainer._textColor.b, 0.12)
 
         RowLayout {
           Layout.fillWidth: true
-
-          Text {
-            visible: ResourceService.gpuTemp !== "---"
-            text: ResourceService.gpuTemp
-            font.family: Theme.fontFamilyMono
-            font.pixelSize: Theme.fontSizeCaption
-            color: monitorContainer._dimColor
-          }
 
           Text {
             visible: ResourceService.gpuVramUsed !== "N/A"
