@@ -81,4 +81,15 @@ GridLayout {
     active: PerformanceService.profile === 0
     onClicked: PerformanceService.switchProfile(PerformanceService.profile === 0 ? 1 : 0)
   }
+
+  Button {
+    shape: "tile"
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    Layout.preferredHeight: tileContentHeight
+    icon: AudioService.muted ? "volume-mute" : "volume"
+    label: "SOUND"
+    active: !AudioService.muted
+    onClicked: AudioService.toggleMute()
+  }
 }
