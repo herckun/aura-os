@@ -92,26 +92,40 @@ PanelWindow {
     anchors.fill: parent
     radius: Theme.radiusLarge
 
-    Button {
-      anchors.top: parent.top
-      anchors.right: parent.right
-      anchors.topMargin: Theme.spaceSm
-      anchors.rightMargin: Theme.spaceSm
-      shape: "icon"
-      icon: "gear"
-      size: "xs"
-      showBackground: false
-      onClicked: netPopup._openSettings()
-    }
-
     Column {
       id: contentCol
       anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: Theme.spaceMd }
       spacing: Theme.spaceSm
 
+      // ── Title row ──────────────────────────────────
+      Item {
+        width: parent.width
+        height: settingsBtn.height
+
+        Text {
+          anchors.left: parent.left
+          anchors.verticalCenter: parent.verticalCenter
+          text: "NETWORK"
+          color: Theme.textDisabled
+          font.pixelSize: Theme.fontSizeMicro
+          font.family: Theme.fontFamilyMono
+          font.letterSpacing: 0.08
+        }
+
+        Button {
+          id: settingsBtn
+          anchors.right: parent.right
+          shape: "icon"
+          icon: "gear"
+          size: "xs"
+          showBackground: false
+          onClicked: netPopup._openSettings()
+        }
+      }
+
       // ── Current connection ─────────────────────────
       CollapsibleHeader {
-        width: parent.width - 28
+        width: parent.width
         expanded: netPopup.switching
         onToggled: netPopup.switching = !netPopup.switching
 
