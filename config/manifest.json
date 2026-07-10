@@ -11,6 +11,9 @@
     "source": "tabler",
     "cdn": "https://raw.githubusercontent.com/tabler/tabler-icons/main/icons/outline",
     "map": {
+      "activity": "activity",
+      "arrow-down": "arrow-down",
+      "arrow-up": "arrow-up",
       "arrow-clockwise": "arrow-forward",
       "arrow-counter-clockwise": "arrow-back",
       "arrows-clockwise": "refresh",

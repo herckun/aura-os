@@ -32,6 +32,11 @@ Singleton {
   property string lastConnectionType: ""
   property string lastError: ""
 
+  property bool liveStatsEnabled: false
+  property real downRate: -1
+  property real upRate: -1
+  property int pingMs: -1
+
   signal networkConnected(string ssid)
   signal networkFailed(string msg)
   signal passwordRequired(string ssid, bool savedFailed)
@@ -40,6 +45,9 @@ Singleton {
   //  INTERNAL STATE
   // ═══════════════════════════════════════════════════════════════
   property bool _autoConnectAttempted: false
+  property real _lastRxBytes: -1
+  property real _lastTxBytes: -1
+  property double _lastStatsAt: 0
 
   readonly property int _basePollInterval: 5000
   readonly property int _baseRescanInterval: 1500
@@ -77,6 +85,58 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  LIFECYCLE
   // ═══════════════════════════════════════════════════════════════
+  onLiveStatsEnabledChanged: {
+    if (!liveStatsEnabled) {
+      downRate = -1
+      upRate = -1
+      pingMs = -1
+      _lastRxBytes = -1
+      _lastTxBytes = -1
+    }
+  }
+
+  property Timer _liveStatsTimer: Timer {
+    interval: PerformanceService.scaleInterval(2000)
+    running: svc.liveStatsEnabled
+    repeat: true
+    triggeredOnStart: true
+    onTriggered: svc._sampleLiveStats()
+  }
+
+  function _sampleLiveStats(): void {
+    ProcessPool.runTracked("Net live stats", ["sh", "-c",
+      "cat /proc/net/dev; echo '===PING==='; ping -n -c1 -W1 1.1.1.1 2>/dev/null | grep -oE 'time=[0-9.]+' | head -1"], {
+      id: "net-live-stats",
+      callback: function(r) {
+        var parts = (r.stdout || "").split("===PING===")
+        var rx = 0
+        var tx = 0
+        var lines = (parts[0] || "").split("\n")
+        for (var i = 0; i < lines.length; i++) {
+          var sep = lines[i].indexOf(":")
+          if (sep < 0) continue
+          var dev = lines[i].substring(0, sep).trim()
+          if (dev === "lo") continue
+          var fields = lines[i].substring(sep + 1).trim().split(/\s+/)
+          if (fields.length < 9) continue
+          rx += parseInt(fields[0]) || 0
+          tx += parseInt(fields[8]) || 0
+        }
+        var now = Date.now()
+        if (svc._lastRxBytes >= 0 && now > svc._lastStatsAt) {
+          var dt = (now - svc._lastStatsAt) / 1000
+          svc.downRate = Math.max(0, (rx - svc._lastRxBytes) / dt)
+          svc.upRate = Math.max(0, (tx - svc._lastTxBytes) / dt)
+        }
+        svc._lastRxBytes = rx
+        svc._lastTxBytes = tx
+        svc._lastStatsAt = now
+        var m = (parts[1] || "").match(/time=([0-9.]+)/)
+        svc.pingMs = m ? Math.round(parseFloat(m[1])) : -1
+      }
+    })
+  }
+
   property Timer _restoreTimer: Timer {
     interval: 400
     repeat: false

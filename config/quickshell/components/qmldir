@@ -8,6 +8,8 @@ Button 1.0 Button.qml
 Card 1.0 Card.qml
 Checkbox 1.0 Checkbox.qml
 Chip 1.0 Chip.qml
+CollapsibleHeader 1.0 CollapsibleHeader.qml
+Collapsible 1.0 Collapsible.qml
 ColorSwatch 1.0 ColorSwatch.qml
 CreditsSection 1.0 CreditsSection.qml
 DesktopWidget 1.0 DesktopWidget.qml
