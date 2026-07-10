@@ -15,6 +15,7 @@ Column {
     {
       label: "WIFI",
       actionId: "wifi-toggle",
+      settingsPage: "connectivity",
       icon: function () { return "wifi" },
       available: function () { return NetworkService.hasWifi },
       isActive: function () { return NetworkService.wifiEnabled },
@@ -23,6 +24,7 @@ Column {
     {
       label: "BT",
       actionId: "bt-toggle",
+      settingsPage: "connectivity",
       icon: function () { return "bluetooth" },
       available: function () { return BluetoothService.hasBluetooth },
       isActive: function () { return BluetoothService.enabled && BluetoothService.devices.length > 0 },
@@ -30,6 +32,7 @@ Column {
     },
     {
       label: "VPN",
+      settingsPage: "connectivity",
       icon: function () { return VpnService.activeProvider ? VpnService.activeProvider.icon : "shield" },
       sublabel: function () {
         return !VpnService.connected ? ""
@@ -43,18 +46,21 @@ Column {
     },
     {
       label: "MONO",
+      settingsPage: "appearance",
       icon: function () { return "palette" },
       isActive: function () { return Theme.monochrome },
       toggle: function () { Theme.setMonochrome(!Theme.monochrome) }
     },
     {
       label: "POWER",
+      settingsPage: "dashboard",
       icon: function () { return "zap" },
       isActive: function () { return PerformanceService.profile === 0 },
       toggle: function () { PerformanceService.switchProfile(PerformanceService.profile === 0 ? 1 : 0) }
     },
     {
       label: "SOUND",
+      settingsPage: "audio",
       icon: function () { return AudioService.muted ? "volume-mute" : "volume" },
       isActive: function () { return !AudioService.muted },
       toggle: function () { AudioService.toggleMute() }
@@ -124,6 +130,12 @@ Column {
           actionId: !isMore && t.actionId ? t.actionId : ""
           active: !isMore && t.isActive()
           onClicked: isMore ? root.expanded = !root.expanded : t.toggle()
+          onRightClicked: {
+            if (!isMore && t.settingsPage) {
+              ControlCenterService.visible = false
+              IpcService.navigatePanel("settings", t.settingsPage)
+            }
+          }
         }
       }
     }

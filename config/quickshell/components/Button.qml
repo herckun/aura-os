@@ -395,12 +395,15 @@ Item {
       preventStealing: true
       hoverEnabled: !busy
       cursorShape: busy ? Qt.WaitCursor : Qt.PointingHandCursor
-      acceptedButtons: shape === "icon" ? (Qt.LeftButton | Qt.RightButton) : Qt.LeftButton
+      acceptedButtons: Qt.LeftButton | Qt.RightButton
       onClicked: (mouse) => {
         if (busy) return
+        if (mouse.button === Qt.RightButton) {
+          root.rightClicked()
+          return
+        }
         if (root.actionId !== "") root.busy = true
-        if (shape === "icon" && mouse.button === Qt.RightButton) root.rightClicked()
-        else root.clicked()
+        root.clicked()
       }
     }
   }
