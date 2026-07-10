@@ -11,6 +11,7 @@ singleton AudioService 1.0 system/AudioService.qml
 singleton BatteryService 1.0 system/BatteryService.qml
 singleton BluetoothService 1.0 system/BluetoothService.qml
 singleton BrightnessService 1.0 system/BrightnessService.qml
+singleton LockService 1.0 system/LockService.qml
 singleton NetworkService 1.0 system/NetworkService.qml
 singleton PerformanceService 1.0 system/PerformanceService.qml
 singleton RequestService 1.0 system/RequestService.qml

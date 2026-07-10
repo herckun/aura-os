@@ -1435,6 +1435,14 @@
         "pkg": "hyprsunset"
       },
       {
+        "bin": "hyprlock",
+        "pkg": "hyprlock"
+      },
+      {
+        "bin": "hypridle",
+        "pkg": "hypridle"
+      },
+      {
         "bin": "awww-daemon",
         "pkg": "awww"
       },

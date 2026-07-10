@@ -11,8 +11,14 @@ deploy_hypr_config() {
     _mon_bak="$(mktemp "/tmp/${APP_NAME}-monitors-XXXXXX")"
     cp -f "$_mon" "$_mon_bak"
   fi
+  local _lock="$CONFIG_DIR/hypr/hyprlock-theme.conf" _lock_bak=""
+  if [[ -f "$_lock" ]] && head -1 "$_lock" | grep -q '@managed: hyprlock-theme'; then
+    _lock_bak="$(mktemp "/tmp/${APP_NAME}-hyprlock-XXXXXX")"
+    cp -f "$_lock" "$_lock_bak"
+  fi
   copy_config "$REPO_DIR/config/hypr" "$CONFIG_DIR/hypr"
   sed -i "s|@APP_NAME@|${APP_NAME}|g" "$CONFIG_DIR/hypr/hyprland.lua"
+  [[ -n "$_lock_bak" ]] && mv -f "$_lock_bak" "$_lock"
   if [[ -n "$_mon_bak" ]]; then
     mv -f "$_mon_bak" "$_mon"
     log_ok "Hyprland configs deployed (kept user display config)"
@@ -37,15 +43,22 @@ deploy_qt_styling_env() {
 }
 
 deploy_quickshell_config() {
-  local _icons_bak=""
-  if [[ -d "$CONFIG_DIR/quickshell/icons" ]] && compgen -G "$CONFIG_DIR/quickshell/icons/*.svg" >/dev/null 2>&1; then
-    _icons_bak="$(mktemp -d "/tmp/${APP_NAME}-icons-XXXXXX")"
-    cp -a "$CONFIG_DIR/quickshell/icons/"*.svg "$_icons_bak/"
+  local _keep_bak="" _d
+  for _d in icons sfx; do
+    if [[ -d "$CONFIG_DIR/quickshell/$_d" ]]; then
+      [[ -n "$_keep_bak" ]] || _keep_bak="$(mktemp -d "/tmp/${APP_NAME}-keep-XXXXXX")"
+      mv "$CONFIG_DIR/quickshell/$_d" "$_keep_bak/$_d"
+    fi
+  done
+  local _theme_bak=""
+  if [[ -f "$CONFIG_DIR/quickshell/styles/theme.json" ]]; then
+    _theme_bak="$(mktemp "/tmp/${APP_NAME}-theme-XXXXXX")"
+    cp -f "$CONFIG_DIR/quickshell/styles/theme.json" "$_theme_bak"
   fi
-  local _sfx_bak=""
-  if [[ -d "$CONFIG_DIR/quickshell/sfx" ]] && compgen -G "$CONFIG_DIR/quickshell/sfx/*.oga" >/dev/null 2>&1; then
-    _sfx_bak="$(mktemp -d "/tmp/${APP_NAME}-sfx-XXXXXX")"
-    cp -a "$CONFIG_DIR/quickshell/sfx/"*.oga "$_sfx_bak/"
+  local _themes_bak=""
+  if [[ -d "$CONFIG_DIR/quickshell/styles/themes" ]]; then
+    _themes_bak="$(mktemp -d "/tmp/${APP_NAME}-themes-XXXXXX")"
+    cp -a "$CONFIG_DIR/quickshell/styles/themes/." "$_themes_bak/" 2>/dev/null || true
   fi
   copy_config "$REPO_DIR/config/quickshell" "$CONFIG_DIR/quickshell"
   mkdir -p "$CONFIG_DIR/$APP_NAME"
@@ -55,17 +68,50 @@ deploy_quickshell_config() {
     mkdir -p "$CONFIG_DIR/quickshell/assets"
     cp -a "$REPO_DIR/assets/"* "$CONFIG_DIR/quickshell/assets/" 2>/dev/null || true
   fi
-  if [[ -n "$_icons_bak" ]]; then
-    mkdir -p "$CONFIG_DIR/quickshell/icons"
-    cp -a "$_icons_bak/"*.svg "$CONFIG_DIR/quickshell/icons/" 2>/dev/null || true
-    rm -rf "$_icons_bak"
+  if [[ -n "$_keep_bak" ]]; then
+    for _d in icons sfx; do
+      [[ -d "$_keep_bak/$_d" ]] && mv "$_keep_bak/$_d" "$CONFIG_DIR/quickshell/$_d"
+    done
+    rm -rf "$_keep_bak"
   fi
-  if [[ -n "$_sfx_bak" ]]; then
-    mkdir -p "$CONFIG_DIR/quickshell/sfx"
-    cp -a "$_sfx_bak/"*.oga "$CONFIG_DIR/quickshell/sfx/" 2>/dev/null || true
-    rm -rf "$_sfx_bak"
+  if [[ -n "$_theme_bak" ]]; then
+    _merge_theme_json "$CONFIG_DIR/quickshell/styles/theme.json" "$_theme_bak" \
+      || log_warn "theme.json merge failed — shipped defaults kept"
+    rm -f "$_theme_bak"
+  fi
+  if [[ -n "$_themes_bak" ]]; then
+    local _f _name
+    for _f in "$_themes_bak"/*.json; do
+      [[ -f "$_f" ]] || continue
+      _name="$(basename "$_f")"
+      [[ -e "$CONFIG_DIR/quickshell/styles/themes/$_name" ]] || cp -f "$_f" "$CONFIG_DIR/quickshell/styles/themes/$_name"
+    done
+    rm -rf "$_themes_bak"
   fi
   log_ok "QuickShell deployed"
+}
+
+_merge_theme_json() {
+  local shipped="$1" user="$2"
+  python3 - "$shipped" "$user" <<'PY'
+import json, sys
+shipped_path, user_path = sys.argv[1], sys.argv[2]
+
+def merge(base, over):
+    if isinstance(base, dict) and isinstance(over, dict):
+        out = dict(base)
+        for k, v in over.items():
+            out[k] = merge(base[k], v) if k in base else v
+        return out
+    return over
+
+with open(shipped_path) as fh:
+    shipped = json.load(fh)
+with open(user_path) as fh:
+    user = json.load(fh)
+with open(shipped_path, "w") as fh:
+    json.dump(merge(shipped, user), fh, indent=2)
+PY
 }
 
 sync_tabler_icons() {

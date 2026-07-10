@@ -23,6 +23,7 @@ Singleton {
   property alias search: adapter.search
   property alias plugins: adapter.plugins
   property alias desktop: adapter.desktop
+  property alias lock: adapter.lock
 
   function toArray(v: var): var {
     var out = []
@@ -150,6 +151,10 @@ Singleton {
 
       property JsonObject desktop: JsonObject {
         property var widgets: ({})
+      }
+
+      property JsonObject lock: JsonObject {
+        property bool autoLock: true
       }
     }
   }
