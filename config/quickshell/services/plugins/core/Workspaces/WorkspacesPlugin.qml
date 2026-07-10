@@ -133,7 +133,7 @@ BasePlugin {
 
               delegate: Text {
                 required property var modelData
-                width: parent.width
+                width: parent ? parent.width : 0
                 text: modelData.class || modelData.title || "Window"
                 color: Qt.rgba(Theme.textSecondary.r, Theme.textSecondary.g, Theme.textSecondary.b, 0.7)
                 font.pixelSize: Theme.fontSizeMicro

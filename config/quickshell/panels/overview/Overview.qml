@@ -28,7 +28,15 @@ OverlayPanel {
     property var _overviewPlugins: []
 
     readonly property var _tabs: {
-        var tabs = [];
+        var tabs = [
+            {
+                icon: "arrow-counter-clockwise",
+                label: "RECENT",
+                key: "1",
+                tab: 0,
+                plugin: null
+            }
+        ];
         for (var i = 0; i < _overviewPlugins.length; i++) {
             var p = _overviewPlugins[i];
             var t = p.manifest.overviewTab;
@@ -46,8 +54,11 @@ OverlayPanel {
     }
     property var _activePlugin: (activeTab >= 0 && activeTab < _tabs.length) ? _tabs[activeTab].plugin : null
 
+    onActiveTabChanged: selectedIndex = 0
+
+    readonly property bool _onRecentTab: !isSearching && activeTab === 0
     readonly property bool _hasTabs: !isSearching && _tabs.length > 0
-    readonly property bool _showBody: isSearching || _activePlugin !== null
+    readonly property bool _showBody: isSearching || _onRecentTab || _activePlugin !== null
 
     readonly property var _hints: {
         if (overview.isSearching)
@@ -63,6 +74,25 @@ OverlayPanel {
                 {
                     k: "esc",
                     l: "clear"
+                }
+            ];
+        if (overview._onRecentTab && SearchService.recentRows.length > 0)
+            return [
+                {
+                    k: "↑ ↓",
+                    l: "navigate"
+                },
+                {
+                    k: "↵",
+                    l: "open"
+                },
+                {
+                    k: "tab",
+                    l: "switch"
+                },
+                {
+                    k: "esc",
+                    l: "close"
                 }
             ];
         if (overview._tabs.length > 0)
@@ -91,6 +121,10 @@ OverlayPanel {
         if (overview.isSearching) {
             var n = SearchService.results.length;
             return n === 0 ? "" : n + (n === 1 ? " result" : " results");
+        }
+        if (overview._onRecentTab) {
+            var rn = SearchService.recentRows.length;
+            return rn === 0 ? "" : rn + " recent";
         }
         if (overview._activePlugin)
             return (overview._activePlugin.manifest.name || "").toUpperCase();
@@ -235,10 +269,18 @@ OverlayPanel {
                     if (!SearchService.activate(overview.selectedIndex))
                         overview.visible = false;
                     event.accepted = true;
+                } else if (overview._onRecentTab && SearchService.recentRows.length > 0) {
+                    if (!SearchService.activateRow(SearchService.recentRows[overview.selectedIndex]))
+                        overview.visible = false;
+                    event.accepted = true;
                 }
                 break;
             case Qt.Key_Up:
                 if (searchFocused && overview.isSearching) {
+                    if (overview.selectedIndex > 0)
+                        overview.selectedIndex--;
+                    event.accepted = true;
+                } else if (overview._onRecentTab) {
                     if (overview.selectedIndex > 0)
                         overview.selectedIndex--;
                     event.accepted = true;
@@ -249,6 +291,11 @@ OverlayPanel {
                     var len = SearchService.results.length;
                     if (len > 0)
                         overview.selectedIndex = Math.min(overview.selectedIndex + 1, len - 1);
+                    event.accepted = true;
+                } else if (overview._onRecentTab) {
+                    var rlen = SearchService.recentRows.length;
+                    if (rlen > 0)
+                        overview.selectedIndex = Math.min(overview.selectedIndex + 1, rlen - 1);
                     event.accepted = true;
                 }
                 break;
@@ -377,6 +424,8 @@ OverlayPanel {
                         height: {
                             if (overview.isSearching)
                                 return SearchService.results.length > 0 ? Math.min(380, resultsCol.implicitHeight + Theme.spaceSm * 2) : 120;
+                            if (overview._onRecentTab)
+                                return SearchService.recentRows.length > 0 ? Math.min(380, recentsCol.implicitHeight + Theme.spaceSm * 2) : 120;
                             var ih = pluginHost.implicitHeight || 0;
                             return ih > 0 ? Math.min(460, ih + Theme.spaceSm * 2) : 0;
                         }
@@ -477,6 +526,91 @@ OverlayPanel {
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text: parent._indexing ? "SEARCHING…" : "NO RESULTS"
+                                color: Theme.textDisabled
+                                font.pixelSize: Theme.fontSizeCaption
+                                font.family: Theme.fontFamilyMono
+                                font.letterSpacing: 0.08
+                            }
+                        }
+
+                        Flickable {
+                            id: recentsFlick
+                            anchors.fill: parent
+                            anchors.margins: Theme.spaceSm
+                            contentHeight: recentsCol.implicitHeight
+                            clip: true
+                            boundsBehavior: Flickable.StopAtBounds
+                            visible: overview._onRecentTab && SearchService.recentRows.length > 0
+
+                            function ensureVisible(top, bottom) {
+                                if (top < contentY)
+                                    contentY = Math.max(0, top - Theme.spaceXs)
+                                else if (bottom > contentY + height)
+                                    contentY = Math.min(Math.max(0, contentHeight - height), bottom - height + Theme.spaceXs)
+                            }
+
+                            Column {
+                                id: recentsCol
+                                width: parent.width
+                                spacing: Theme.spaceXxs
+
+                                Repeater {
+                                    model: overview._onRecentTab ? SearchService.recentRows : []
+
+                                    delegate: Column {
+                                        id: recentGroup
+                                        required property int index
+                                        required property var modelData
+                                        width: recentsCol.width
+                                        spacing: Theme.spaceXxs
+
+                                        SectionLabel {
+                                            visible: recentGroup.index === 0
+                                            leftPadding: Theme.spaceMd
+                                            topPadding: Theme.space2
+                                            bottomPadding: Theme.spaceXxs
+                                            label: "Recent"
+                                        }
+
+                                        ResultRow {
+                                            width: parent.width
+                                            result: recentGroup.modelData
+                                            selected: recentGroup.index === overview.selectedIndex
+                                            showSource: false
+                                            onHovered: overview.selectedIndex = recentGroup.index
+                                            onClicked: {
+                                                if (!SearchService.activateRow(recentGroup.modelData))
+                                                    overview.visible = false;
+                                            }
+                                        }
+
+                                        Connections {
+                                            target: overview
+                                            function onSelectedIndexChanged() {
+                                                if (recentGroup.index !== overview.selectedIndex)
+                                                    return;
+                                                recentsFlick.ensureVisible(recentGroup.y, recentGroup.y + recentGroup.height);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.centerIn: parent
+                            spacing: Theme.spaceSm
+                            visible: overview._onRecentTab && SearchService.recentRows.length === 0
+
+                            Icon {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                source: Icons.get("arrow-counter-clockwise")
+                                size: 26
+                                color: Theme.textDisabled
+                            }
+                            Text {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: "NO RECENT ACTIVITY"
                                 color: Theme.textDisabled
                                 font.pixelSize: Theme.fontSizeCaption
                                 font.family: Theme.fontFamilyMono

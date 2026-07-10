@@ -178,9 +178,63 @@ Singleton {
         var r = svc.results[index];
         // An action returning true keeps the launcher open (e.g. a command hint
         // that only prefilled the search box); anything else dismisses it.
-        if (r && typeof r.action === "function")
-            return r.action() === true;
-        return false;
+        var keepOpen = (r && typeof r.action === "function") ? r.action() === true : false;
+        if (!keepOpen)
+            svc._recordRecent(r);
+        return keepOpen;
+    }
+
+    function activateRow(row: var): bool {
+        if (!row || typeof row.action !== "function")
+            return false;
+        return row.action() === true;
+    }
+
+    readonly property var recentRows: {
+        var src = Store.toArray(Store.search.recent);
+        var rows = [];
+        for (var i = 0; i < src.length; i++) {
+            (function (rec) {
+                    if (!rec || !rec.key)
+                        return;
+                    if (rec.kind === "app") {
+                        rows.push({
+                            id: rec.key,
+                            label: rec.label || "",
+                            sublabel: "",
+                            icon: rec.icon || "",
+                            iconKind: "app",
+                            source: "recent",
+                            groupLabel: "Recent",
+                            action: function () {
+                                var entries = LauncherService.desktopEntries;
+                                for (var j = 0; j < entries.length; j++) {
+                                    if ("app:" + (entries[j].exec || entries[j].name) === rec.key) {
+                                        LauncherService.launch(entries[j]);
+                                        svc._touchRecent(rec.key);
+                                        return;
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        rows.push({
+                            id: rec.key,
+                            label: rec.label || "",
+                            sublabel: rec.sublabel || rec.query || "",
+                            icon: rec.icon || "search",
+                            iconKind: rec.iconKind || "symbolic",
+                            iconFallback: rec.iconFallback || "",
+                            source: "recent",
+                            groupLabel: "Recent",
+                            action: function () {
+                                svc._replayRecent(rec);
+                            }
+                        });
+                    }
+                })(src[i]);
+        }
+        return rows;
     }
 
     function requestFill(text: string): void {
@@ -210,6 +264,7 @@ Singleton {
     property var _providers: ([])
     property int _queryId: 0
     property var _buffer: ({})
+    property string _replayId: ""
 
     property Timer _debounce: Timer {
         interval: 150
@@ -217,9 +272,77 @@ Singleton {
         onTriggered: svc._runProviders()
     }
 
+    property Timer _replayTimeout: Timer {
+        interval: 2000
+        repeat: false
+        onTriggered: svc._replayId = ""
+    }
+
     // ═══════════════════════════════════════════════════════════════
     //  PRIVATE HELPERS
     // ═══════════════════════════════════════════════════════════════
+    function _recordRecent(r: var): void {
+        if (!r || !r.id || r.source === "recent")
+            return;
+        var rec = null;
+        if (r.source === "apps")
+            rec = {
+                kind: "app",
+                key: r.id,
+                label: r.label || "",
+                icon: r.icon || "",
+                ts: Date.now()
+            };
+        else if (svc.query && svc.query.length > 0)
+            rec = {
+                kind: "action",
+                key: "action:" + r.id,
+                resultId: r.id,
+                label: r.label || svc.query,
+                sublabel: r.sublabel || "",
+                icon: r.icon || "search",
+                iconKind: r.iconKind || "symbolic",
+                iconFallback: r.iconFallback || "",
+                query: svc.query,
+                source: r.source || "",
+                ts: Date.now()
+            };
+        if (!rec)
+            return;
+        var list = Store.toArray(Store.search.recent).filter(function (e) {
+            return e && e.key !== rec.key;
+        });
+        list.unshift(rec);
+        Store.search.recent = list.slice(0, 10);
+    }
+
+    function _replayRecent(rec: var): void {
+        svc._touchRecent(rec.key);
+        if (!rec.resultId || !rec.query) {
+            svc.requestFill(rec.query || rec.label || "");
+            return;
+        }
+        svc.query = rec.query;
+        svc._replayId = rec.resultId;
+        svc._debounce.stop();
+        svc._runProviders();
+        svc._replayTimeout.restart();
+    }
+
+    function _touchRecent(key: string): void {
+        var list = Store.toArray(Store.search.recent);
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && list[i].key === key) {
+                var rec = list[i];
+                rec.ts = Date.now();
+                list.splice(i, 1);
+                list.unshift(rec);
+                Store.search.recent = list;
+                return;
+            }
+        }
+    }
+
     function _sortProviders(): void {
         svc._providers.sort(function (a, b) {
             return (b.priority || 0) - (a.priority || 0);
@@ -234,6 +357,19 @@ Singleton {
                 merged = merged.concat(rows);
         }
         svc.results = merged.slice(0, 40);
+
+        if (svc._replayId) {
+            for (var j = 0; j < merged.length; j++) {
+                if (merged[j].id === svc._replayId) {
+                    var row = merged[j];
+                    svc._replayId = "";
+                    svc._replayTimeout.stop();
+                    if (typeof row.action === "function")
+                        row.action();
+                    break;
+                }
+            }
+        }
     }
 
     function _mapApps(entries: var): var {

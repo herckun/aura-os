@@ -140,6 +140,7 @@ Singleton {
 
       property JsonObject search: JsonObject {
         property var disabled: ([])
+        property var recent: ([])
       }
 
       property JsonObject plugins: JsonObject {
