@@ -102,10 +102,7 @@ PanelContainer {
       required property var modelData
       required property int index
 
-      property bool removing: false
-
       width: parent.width
-      height: removing ? 0 : implicitHeight
       icon: modelData.icon || ""
       summary: modelData.summary || "Notification"
       body: modelData.body || ""
@@ -114,20 +111,7 @@ PanelContainer {
       notifTime: modelData.time || new Date()
       showDismiss: true
 
-      Behavior on height { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.InOutCubic } }
-
-      Timer {
-        id: removeTimer
-        interval: Theme.animationNormal
-        onTriggered: NotificationService.dismiss(modelData.id)
-      }
-
-      onDismissed: {
-        if (removing) return
-        removing = true
-        if (Theme.animationsEnabled) removeTimer.start()
-        else NotificationService.dismiss(modelData.id)
-      }
+      onDismissed: NotificationService.dismiss(modelData.id)
     }
   }
 

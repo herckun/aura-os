@@ -273,7 +273,6 @@ Item {
       font.family: Theme.fontFamilyMono
       font.weight: Font.Medium
       font.letterSpacing: 0.06
-      font.underline: _isHovered
       visible: shape === "link" && root.text !== ""
 
       Behavior on color {
