@@ -209,8 +209,16 @@ Singleton {
           var wiredText = wiredIdx >= 0 ? text.substring(wiredIdx + wiredSep.length).trim() : ""
 
           svc.parseStatus(statusText)
-          svc.hasWifi = radioText === "enabled" || radioText === "disabled"
-          svc.wifiEnabled = radioText === "enabled"
+          var hasWifiDev = false
+          var devLines = statusText.split("\n")
+          for (var d = 0; d < devLines.length; d++) {
+            if (devLines[d].split(":")[1] === "wifi") {
+              hasWifiDev = true
+              break
+            }
+          }
+          svc.hasWifi = hasWifiDev
+          svc.wifiEnabled = hasWifiDev && radioText === "enabled"
 
           var conns = []
           var savedWifi = []
