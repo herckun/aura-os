@@ -11,6 +11,62 @@ GridLayout {
   property bool expanded: false
   property int _shownCount: 0
 
+  readonly property var toggleModel: [
+    {
+      label: "WIFI",
+      actionId: "wifi-toggle",
+      icon: function () { return "wifi" },
+      available: function () { return NetworkService.hasWifi },
+      isActive: function () { return NetworkService.wifiEnabled },
+      toggle: function () { NetworkService.toggleWifi() }
+    },
+    {
+      label: "BT",
+      actionId: "bt-toggle",
+      icon: function () { return "bluetooth" },
+      available: function () { return BluetoothService.hasBluetooth },
+      isActive: function () { return BluetoothService.enabled && BluetoothService.devices.length > 0 },
+      toggle: function () { BluetoothService.toggle() }
+    },
+    {
+      label: "VPN",
+      icon: function () { return VpnService.activeProvider ? VpnService.activeProvider.icon : "shield" },
+      sublabel: function () {
+        return !VpnService.connected ? ""
+          : VpnService.label !== "VPN" ? VpnService.label
+          : VpnService.detail
+      },
+      busy: function () { return VpnService.connecting },
+      available: function () { return VpnService.available },
+      isActive: function () { return VpnService.connected },
+      toggle: function () { VpnService.toggle() }
+    },
+    {
+      label: "MONO",
+      icon: function () { return "palette" },
+      isActive: function () { return Theme.monochrome },
+      toggle: function () { Theme.setMonochrome(!Theme.monochrome) }
+    },
+    {
+      label: "POWER",
+      icon: function () { return "zap" },
+      isActive: function () { return PerformanceService.profile === 0 },
+      toggle: function () { PerformanceService.switchProfile(PerformanceService.profile === 0 ? 1 : 0) }
+    },
+    {
+      label: "SOUND",
+      icon: function () { return AudioService.muted ? "volume-mute" : "volume" },
+      isActive: function () { return !AudioService.muted },
+      toggle: function () { AudioService.toggleMute() }
+    },
+    {
+      label: "AUTO LOCK",
+      icon: function () { return LockService.autoLock ? "lock" : "lock-open" },
+      isActive: function () { return LockService.autoLock },
+      toggle: function () { LockService.toggleAutoLock() }
+    }
+  ]
+
   width: parent ? parent.width : implicitWidth
   columns: _shownCount <= 0 ? 1
     : _shownCount <= 3 ? _shownCount
@@ -37,97 +93,25 @@ GridLayout {
   onExpandedChanged: relayout()
   Component.onCompleted: relayout()
 
-  Button {
-    property bool available: NetworkService.hasWifi
-    onAvailableChanged: root.relayout()
-    shape: "tile"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredHeight: tileContentHeight
-    icon: "wifi"
-    label: "WIFI"
-    actionId: "wifi-toggle"
-    active: NetworkService.wifiEnabled
-    onClicked: NetworkService.toggleWifi()
-  }
+  Repeater {
+    model: root.toggleModel
 
-  Button {
-    property bool available: BluetoothService.hasBluetooth
-    onAvailableChanged: root.relayout()
-    shape: "tile"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredHeight: tileContentHeight
-    icon: "bluetooth"
-    label: "BT"
-    actionId: "bt-toggle"
-    active: BluetoothService.enabled && BluetoothService.devices.length > 0
-    onClicked: BluetoothService.toggle()
-  }
-
-  Button {
-    property bool available: VpnService.available
-    onAvailableChanged: root.relayout()
-    shape: "tile"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredHeight: tileContentHeight
-    icon: VpnService.activeProvider ? VpnService.activeProvider.icon : "shield"
-    label: "VPN"
-    sublabel: !VpnService.connected ? ""
-      : VpnService.label !== "VPN" ? VpnService.label
-      : VpnService.detail
-    busy: VpnService.connecting
-    active: VpnService.connected
-    onClicked: VpnService.toggle()
-  }
-
-  Button {
-    property bool available: true
-    shape: "tile"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredHeight: tileContentHeight
-    icon: "palette"
-    label: "MONO"
-    active: Theme.monochrome
-    onClicked: Theme.setMonochrome(!Theme.monochrome)
-  }
-
-  Button {
-    property bool available: true
-    shape: "tile"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredHeight: tileContentHeight
-    icon: "zap"
-    label: "POWER"
-    active: PerformanceService.profile === 0
-    onClicked: PerformanceService.switchProfile(PerformanceService.profile === 0 ? 1 : 0)
-  }
-
-  Button {
-    property bool available: true
-    shape: "tile"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredHeight: tileContentHeight
-    icon: AudioService.muted ? "volume-mute" : "volume"
-    label: "SOUND"
-    active: !AudioService.muted
-    onClicked: AudioService.toggleMute()
-  }
-
-  Button {
-    property bool available: true
-    shape: "tile"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredHeight: tileContentHeight
-    icon: LockService.autoLock ? "lock" : "lock-open"
-    label: "AUTO LOCK"
-    active: LockService.autoLock
-    onClicked: LockService.toggleAutoLock()
+    delegate: Button {
+      required property var modelData
+      property bool available: modelData.available ? modelData.available() : true
+      onAvailableChanged: root.relayout()
+      shape: "tile"
+      Layout.fillWidth: true
+      Layout.fillHeight: true
+      Layout.preferredHeight: tileContentHeight
+      icon: modelData.icon()
+      label: modelData.label
+      sublabel: modelData.sublabel ? modelData.sublabel() : ""
+      busy: modelData.busy ? modelData.busy() : false
+      actionId: modelData.actionId || ""
+      active: modelData.isActive()
+      onClicked: modelData.toggle()
+    }
   }
 
   Button {
