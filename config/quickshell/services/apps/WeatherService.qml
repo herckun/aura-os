@@ -21,6 +21,7 @@ Singleton {
   property string countryCode: ""
   property bool hasData: false
   property bool fetching: false
+  property double lastFetchedAt: 0
 
   property string feelsLike: "--"
   property string humidity: "--"
@@ -220,6 +221,7 @@ Singleton {
 
           svc.hasData = true
           svc.loaded = true
+          svc.lastFetchedAt = Date.now()
         } catch (e) {
           svc.loaded = true
         }

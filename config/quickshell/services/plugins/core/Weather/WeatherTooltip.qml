@@ -114,19 +114,31 @@ PanelWindow {
         }
       }
 
-      Row {
+      RowLayout {
+        width: parent.width
         spacing: Theme.spaceXs
 
         Icon {
-          anchors.verticalCenter: parent.verticalCenter
           source: Icons.get("map-pin")
           size: Theme.fontSizeMicro
           color: Theme.textDisabled
         }
 
         Text {
-          anchors.verticalCenter: parent.verticalCenter
+          Layout.fillWidth: true
           text: (WeatherService.location + (WeatherService.countryCode ? ", " + WeatherService.countryCode.toUpperCase() : "")).toUpperCase()
+          color: Theme.textDisabled
+          font.pixelSize: Theme.fontSizeMicro
+          font.family: Theme.fontFamilyMono
+          font.letterSpacing: 0.06
+          elide: Text.ElideRight
+        }
+
+        Text {
+          text: WeatherService.lastFetchedAt > 0
+            ? Qt.formatTime(new Date(WeatherService.lastFetchedAt), "HH:mm")
+            : ""
+          visible: WeatherService.lastFetchedAt > 0
           color: Theme.textDisabled
           font.pixelSize: Theme.fontSizeMicro
           font.family: Theme.fontFamilyMono

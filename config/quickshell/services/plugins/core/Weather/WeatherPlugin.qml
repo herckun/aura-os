@@ -97,92 +97,100 @@ BasePlugin {
 
     RowLayout {
       width: parent.width
-      spacing: Theme.spaceSm
+      spacing: Theme.spaceMd
 
       Text {
+        Layout.alignment: Qt.AlignVCenter
         text: WeatherService.wmoIcon(WeatherService.weatherCode)
         color: Theme.textPrimary
-        font.pixelSize: Theme.fontSizeDisplay
+        font.pixelSize: Theme.fontSizeTitle2
         font.family: Theme.fontFamilyMono
       }
 
       Column {
-        spacing: Theme.spaceXxs
         Layout.fillWidth: true
+        spacing: Theme.space2
 
-        Text {
-          text: WeatherService.temp
-          color: Theme.textDisplay
-          font.pixelSize: Theme.fontSizeTitle2
-          font.family: Theme.fontFamilyDisplay
-          font.bold: true
-        }
-
-        Text {
-          text: WeatherService.weather
-          color: Theme.textSecondary
-          font.pixelSize: Theme.fontSizeCaption
-          font.family: Theme.fontFamilyMono
-          font.letterSpacing: 0.04
-          elide: Text.ElideRight
+        RowLayout {
           width: parent.width
+          spacing: Theme.spaceSm
+
+          Text {
+            text: WeatherService.temp
+            color: Theme.textDisplay
+            font.pixelSize: Theme.fontSizeTitle
+            font.family: Theme.fontFamilyDisplay
+            font.bold: true
+          }
+
+          Text {
+            Layout.fillWidth: true
+            text: WeatherService.weather.toUpperCase()
+            color: Theme.textSecondary
+            font.pixelSize: Theme.fontSizeCaption
+            font.family: Theme.fontFamilyMono
+            font.letterSpacing: 0.04
+            elide: Text.ElideRight
+          }
         }
 
         Text {
-          text: "FEELS " + WeatherService.feelsLike
+          width: parent.width
+          text: "FEELS " + WeatherService.feelsLike + "  ·  " + WeatherService.location.toUpperCase()
           color: Theme.textDisabled
           font.pixelSize: Theme.fontSizeMicro
           font.family: Theme.fontFamilyMono
-          font.letterSpacing: 0.04
+          font.letterSpacing: 0.06
+          elide: Text.ElideRight
         }
       }
     }
 
-    Item { width: 1; height: 8 }
-
-    Text {
-      text: WeatherService.location
-      color: Theme.textDisabled
-      font.pixelSize: Theme.fontSizeMicro
-      font.family: Theme.fontFamilyMono
-      font.letterSpacing: 0.06
-      elide: Text.ElideRight
+    Divider {
       width: parent.width
+      visible: root._showDetails
     }
-
-    Item { width: 1; height: 8; visible: root._showDetails }
 
     GridLayout {
       width: parent.width
       columns: 3
-      columnSpacing: 0
-      rowSpacing: Theme.controlSpacing
+      columnSpacing: Theme.spaceSm
+      rowSpacing: Theme.spaceXs
       visible: root._showDetails
 
-      Column { Layout.fillWidth: true; spacing: Theme.spaceXxs
-        Text { text: "HUMIDITY"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.08 }
-        Text { text: WeatherService.humidity; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeLabel; font.family: Theme.fontFamilyMono }
-      }
-      Column { Layout.fillWidth: true; spacing: Theme.spaceXxs
-        Text { text: "WIND"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.08; elide: Text.ElideRight; width: parent.width }
-        Text { text: WeatherService.windSpeed + " " + WeatherService.windDir; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeLabel; font.family: Theme.fontFamilyMono; elide: Text.ElideRight; width: parent.width }
-      }
-      Column { Layout.fillWidth: true; spacing: Theme.spaceXxs
-        Text { text: "PRESSURE"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.08 }
-        Text { text: WeatherService.pressure; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeLabel; font.family: Theme.fontFamilyMono }
-      }
-      Column { Layout.fillWidth: true; spacing: Theme.spaceXxs
-        Text { text: "SUNRISE"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.08 }
-        Text { text: WeatherService.sunrise; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeLabel; font.family: Theme.fontFamilyMono }
-      }
-      Column { Layout.fillWidth: true; spacing: Theme.spaceXxs
-        Text { text: "SUNSET"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.08 }
-        Text { text: WeatherService.sunset; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeLabel; font.family: Theme.fontFamilyMono }
-      }
-      Column { Layout.fillWidth: true; spacing: Theme.spaceXxs
-        Text { text: "UV INDEX"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.08 }
-        Text { text: WeatherService.uvIndex; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeLabel; font.family: Theme.fontFamilyMono }
-      }
+      WeatherStat { label: "HUMIDITY"; value: WeatherService.humidity }
+      WeatherStat { label: "WIND"; value: WeatherService.windSpeed + " " + WeatherService.windDir }
+      WeatherStat { label: "PRESSURE"; value: WeatherService.pressure }
+      WeatherStat { label: "UV INDEX"; value: WeatherService.uvIndex }
+      WeatherStat { label: "SUNRISE"; value: WeatherService.sunrise }
+      WeatherStat { label: "SUNSET"; value: WeatherService.sunset }
+    }
+  }
+
+  component WeatherStat: Column {
+    id: statCell
+
+    property string label: ""
+    property string value: ""
+
+    Layout.fillWidth: true
+    spacing: Theme.spaceXxs
+
+    Text {
+      text: statCell.label
+      color: Theme.textDisabled
+      font.pixelSize: Theme.fontSizeMicro
+      font.family: Theme.fontFamilyMono
+      font.letterSpacing: 0.08
+    }
+
+    Text {
+      width: parent.width
+      text: statCell.value
+      color: Theme.textPrimary
+      font.pixelSize: Theme.fontSizeLabel
+      font.family: Theme.fontFamilyMono
+      elide: Text.ElideRight
     }
   }
 }

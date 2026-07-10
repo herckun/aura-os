@@ -66,11 +66,15 @@ BasePlugin {
       "@image": "imageViewer",
       "@pdf": "pdfViewer"
     }
+    var cmd = exec
     if (tokens[exec]) {
-      DefaultAppsService.launch(tokens[exec])
-      return
+      cmd = DefaultAppsService.execFor(tokens[exec])
+      if (!cmd) {
+        DefaultAppsService.launch(tokens[exec])
+        return
+      }
     }
-    ProcessPool.runDetached(["sh", "-c", exec + " >/dev/null 2>&1"])
+    ProcessPool.runDetachedBusy(["sh", "-c", cmd + " >/dev/null 2>&1"], "launch:" + exec, 1500)
   }
 
   // ── Helpers ──────────────────────────────────────────────────────
@@ -117,6 +121,7 @@ BasePlugin {
               Layout.preferredHeight: tileContentHeight
               icon: modelData.icon || "player-play"
               label: (modelData.name || "").toUpperCase()
+              actionId: "launch:" + (modelData.exec || "")
               onClicked: root._launch(modelData.exec)
             }
           }
