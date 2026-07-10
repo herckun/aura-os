@@ -86,13 +86,6 @@ BasePlugin {
         default: true
       },
       {
-        key: "reflection",
-        label: "REFLECTION",
-        description: "Show a faded reflection below",
-        type: "toggle",
-        default: true
-      },
-      {
         key: "showWhenPaused",
         label: "SHOW WHEN PAUSED",
         description: "Keep visible when music is paused",
@@ -134,12 +127,11 @@ BasePlugin {
     property int _barS: PluginService.getPluginSetting("audioviz", "barSpacing", "desktop") ?? 4
     readonly property int _vizH: 64
     property bool _useAccent: PluginService.getPluginSetting("audioviz", "useAccent", "desktop") ?? true
-    property bool _reflection: PluginService.getPluginSetting("audioviz", "reflection", "desktop") ?? true
     property bool _showWhenPaused: PluginService.getPluginSetting("audioviz", "showWhenPaused", "desktop") ?? false
 
     readonly property int _numBands: 7
     readonly property int _totalWidth: _numBands * _barW + (_numBands - 1) * _barS
-    readonly property int _totalHeight: _vizH + (_reflection ? _vizH * 0.4 : 0)
+    readonly property int _totalHeight: _vizH
 
     width: _totalWidth
     height: _totalHeight
@@ -214,7 +206,6 @@ BasePlugin {
         var h = vizContainer._vizH
         var isDots = vizContainer._isDots
         var isWave = vizContainer._isWave
-        var hasReflection = vizContainer._reflection
         var colorStr = vizContainer._vizColor.toString()
         var dimColorStr = vizContainer._vizDimColor.toString()
 
@@ -246,33 +237,6 @@ BasePlugin {
           grad.addColorStop(1, dimColorStr)
           ctx.fillStyle = grad
           ctx.fill()
-
-          if (hasReflection) {
-            ctx.save()
-            ctx.translate(0, h * 2)
-            ctx.scale(1, -0.4)
-            ctx.globalAlpha = 0.15
-
-            ctx.beginPath()
-            ctx.moveTo(0, h)
-            for (var j = 0; j < 7; j++) {
-              var v2 = bands[j] || 0
-              var x2 = j * (w + s) + (w / 2)
-              var y2 = h - (v2 * h)
-              if (j === 0) ctx.lineTo(x2, y2)
-              else {
-                var pX = (j - 1) * (w + s) + (w / 2)
-                var pY = h - ((bands[j-1] || 0) * h)
-                var cX = (pX + x2) / 2
-                ctx.bezierCurveTo(cX, pY, cX, y2, x2, y2)
-              }
-            }
-            ctx.lineTo((6 * (w + s) + w), h)
-            ctx.closePath()
-            ctx.fillStyle = colorStr
-            ctx.fill()
-            ctx.restore()
-          }
         } else {
           // ── BARS / DOTS RENDERING ─────────────────────────
           for (var k = 0; k < 7; k++) {
@@ -316,19 +280,6 @@ BasePlugin {
                 ctx.rect(xB, yB, w, barH)
                 ctx.fillStyle = colorStr
                 ctx.fill()
-              }
-
-              if (hasReflection && barH > 0) {
-                ctx.save()
-                ctx.translate(0, h * 2)
-                ctx.scale(1, -0.4)
-                ctx.globalAlpha = 0.15
-
-                ctx.beginPath()
-                ctx.rect(xB, h - barH, w, barH)
-                ctx.fillStyle = colorStr
-                ctx.fill()
-                ctx.restore()
               }
             }
           }
