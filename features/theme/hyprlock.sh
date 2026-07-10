@@ -37,6 +37,7 @@ print("TEXT_DISPLAY=\"%s\"" % hexval("textDisplay", "#FFFFFF"))
 print("TEXT_PRIMARY=\"%s\"" % fg)
 print("TEXT_SECONDARY=\"%s\"" % hexval("textSecondary", "#999999"))
 print("ACCENT=\"%s\"" % accent)
+print("ERROR=\"%s\"" % hexval("error", "#D44A4A"))
 print("FONT_DISPLAY=\"%s\"" % clean_font(typography.get("fontFamilyDisplay", "Geist")))
 print("FONT_MONO=\"%s\"" % clean_font(typography.get("fontFamilyMono", "Space Mono")))
 ' "$0" "$INPUT_JSON")"
@@ -47,12 +48,14 @@ cat > "$THEME_FILE" << EOF
 # @managed: hyprlock-theme
 \$background = rgb(${BG})
 \$surface = rgb(${SURFACE})
+\$inputBg = rgba(${SURFACE}E6)
 \$border = rgb(${BORDER})
 \$borderVisible = rgb(${BORDER_VISIBLE})
 \$textDisplay = rgb(${TEXT_DISPLAY})
 \$textPrimary = rgb(${TEXT_PRIMARY})
 \$textSecondary = rgb(${TEXT_SECONDARY})
 \$accent = rgb(${ACCENT})
+\$error = rgb(${ERROR})
 \$fontDisplay = ${FONT_DISPLAY}
 \$fontMono = ${FONT_MONO}
 EOF
