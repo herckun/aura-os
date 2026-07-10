@@ -30,13 +30,13 @@ BasePlugin {
         default: JSON.stringify([
           { name: "DEV", apps: [
             { name: "Terminal", icon: "terminal", exec: "@terminal" },
-            { name: "VS Code", icon: "code", exec: "code" },
+            { name: "Editor", icon: "code", exec: "@editor" },
             { name: "Files", icon: "folder", exec: "@files" }
           ]},
           { name: "MEDIA", apps: [
             { name: "Browser", icon: "world", exec: "@browser" },
-            { name: "Spotify", icon: "music", exec: "spotify" },
-            { name: "VLC", icon: "player-play", exec: "vlc" }
+            { name: "Music", icon: "music", exec: "@music" },
+            { name: "Video", icon: "player-play", exec: "@video" }
           ]}
         ])
       }
@@ -56,12 +56,21 @@ BasePlugin {
 
   // ── Public API ───────────────────────────────────────────────────
   function _launch(exec: string): void {
-    var tokens = { "@terminal": "terminal", "@browser": "browser", "@files": "fileManager", "@editor": "editor" }
+    var tokens = {
+      "@terminal": "terminal",
+      "@browser": "browser",
+      "@files": "fileManager",
+      "@editor": "editor",
+      "@music": "audioPlayer",
+      "@video": "videoPlayer",
+      "@image": "imageViewer",
+      "@pdf": "pdfViewer"
+    }
     if (tokens[exec]) {
       DefaultAppsService.launch(tokens[exec])
       return
     }
-    ProcessPool.runTracked("Launch", ["sh", "-c", "nohup " + exec + " >/dev/null 2>&1 &"], "launch-" + exec)
+    ProcessPool.runDetached(["sh", "-c", exec + " >/dev/null 2>&1"])
   }
 
   // ── Helpers ──────────────────────────────────────────────────────
@@ -83,30 +92,31 @@ BasePlugin {
       delegate: Column {
         required property var modelData
         width: parent.width
-        spacing: Theme.spaceSm
+        spacing: Theme.spaceXs
 
         Text {
-          text: modelData.name
+          text: (modelData.name || "").toUpperCase()
           color: Theme.textDisabled
-          font.pixelSize: Theme.fontSizeLabel
+          font.pixelSize: Theme.fontSizeMicro
           font.family: Theme.fontFamilyMono
-          font.letterSpacing: 0.1
+          font.letterSpacing: 0.08
         }
 
-        ButtonGroup {
+        RowLayout {
           width: parent.width
-          fillWidth: true
+          spacing: Theme.spaceSm
 
           Repeater {
             model: modelData.apps || []
 
             delegate: Button {
               required property var modelData
+              shape: "tile"
               Layout.fillWidth: true
-              size: "sm"
-              text: (modelData.name || "").toUpperCase()
+              Layout.fillHeight: true
+              Layout.preferredHeight: tileContentHeight
               icon: modelData.icon || "player-play"
-              actionId: "launch"
+              label: (modelData.name || "").toUpperCase()
               onClicked: root._launch(modelData.exec)
             }
           }

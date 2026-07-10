@@ -49,6 +49,7 @@
       "floppy-disk": "device-floppy",
       "folder": "folder",
       "funnel": "filter",
+      "gauge": "gauge",
       "gear-six": "settings",
       "globe": "globe",
       "grid-four": "grid-4x4",
@@ -57,6 +58,7 @@
       "house": "home",
       "image": "photo",
       "info": "info-circle",
+      "leaf": "leaf",
       "lightbulb": "bulb",
       "lightning": "bolt",
       "link": "link",
@@ -296,10 +298,6 @@
       {
         "id": "dictionary",
         "file": "Dictionary/DictionaryPlugin.qml"
-      },
-      {
-        "id": "docker",
-        "file": "Docker/DockerPlugin.qml"
       },
       {
         "id": "duckduckgo",

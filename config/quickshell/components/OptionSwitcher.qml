@@ -6,6 +6,7 @@ RowLayout {
   id: root
 
   property var options: []
+  property var icons: []
   property int currentIndex: 0
   property string variant: "accent"
   property color selectedColor: "transparent"
@@ -58,11 +59,12 @@ RowLayout {
       shape: "default"
       size: root.size
       Layout.fillWidth: true
-      Layout.minimumWidth: root._maxContentWidth
+      Layout.minimumWidth: root.icons.length > 0 ? 0 : root._maxContentWidth
       buttonHeight: root.controlHeight
       fontSize: root.controlFontSize
       padding: root.controlPadding
-      text: modelData
+      text: root.icons.length > 0 ? "" : modelData
+      icon: root.icons.length > index ? root.icons[index] : ""
       active: index === root.currentIndex
       bgColor: index === root.currentIndex ? root._sc : Theme.backgroundTertiary
       bgHoverColor: Theme.controlBackgroundHover

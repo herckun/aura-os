@@ -25,7 +25,6 @@ CryptoPlugin 1.0 extra/Crypto/CryptoPlugin.qml
 CurrencyPlugin 1.0 extra/Currency/CurrencyPlugin.qml
 DevPackagesPlugin 1.0 extra/DevPackages/DevPackagesPlugin.qml
 DictionaryPlugin 1.0 extra/Dictionary/DictionaryPlugin.qml
-DockerPlugin 1.0 extra/Docker/DockerPlugin.qml
 DuckDuckGoPlugin 1.0 extra/DuckDuckGo/DuckDuckGoPlugin.qml
 EasyEffectsPlugin 1.0 extra/EasyEffects/EasyEffectsPlugin.qml
 FilesPlugin 1.0 extra/Files/FilesPlugin.qml

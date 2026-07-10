@@ -4,12 +4,12 @@ import "../../styles"
 import "../../services"
 import "../../components"
 
-GridLayout {
+Column {
   id: root
 
   readonly property int maxShown: 6
+  readonly property int maxColumns: 3
   property bool expanded: false
-  property int _shownCount: 0
 
   readonly property var toggleModel: [
     {
@@ -67,62 +67,65 @@ GridLayout {
     }
   ]
 
-  width: parent ? parent.width : implicitWidth
-  columns: _shownCount <= 0 ? 1
-    : _shownCount <= 3 ? _shownCount
-    : _shownCount === 4 ? 2
-    : 3
-  columnSpacing: Theme.spaceSm
-  rowSpacing: Theme.spaceSm
+  readonly property var _availableToggles: toggleModel.filter(function (t) {
+    return t.available ? t.available() : true
+  })
+  readonly property bool _overflow: _availableToggles.length > maxShown
 
-  function relayout(): void {
-    var avail = []
-    for (var i = 0; i < children.length; i++) {
-      var c = children[i]
-      if (!c || c === moreTile || !c.hasOwnProperty("available")) continue
-      if (c.available) avail.push(c)
-      else c.visible = false
+  readonly property var _rows: {
+    var tiles = _availableToggles
+      .slice(0, _overflow && !expanded ? maxShown - 1 : _availableToggles.length)
+      .map(function (t) { return { kind: "toggle", toggle: t } })
+    if (_overflow)
+      tiles.push({ kind: "more" })
+    var n = tiles.length
+    if (n === 0)
+      return []
+    var rowCount = Math.ceil(n / maxColumns)
+    var base = Math.floor(n / rowCount)
+    var extra = n % rowCount
+    var rows = []
+    var idx = 0
+    for (var r = 0; r < rowCount; r++) {
+      var size = base + (r < extra ? 1 : 0)
+      rows.push(tiles.slice(idx, idx + size))
+      idx += size
     }
-    var overflow = avail.length > maxShown
-    var cap = overflow && !expanded ? maxShown - 1 : avail.length
-    for (var j = 0; j < avail.length; j++) avail[j].visible = j < cap
-    moreTile.visible = overflow
-    _shownCount = cap + (overflow ? 1 : 0)
+    return rows
   }
 
-  onExpandedChanged: relayout()
-  Component.onCompleted: relayout()
+  spacing: Theme.spaceSm
 
   Repeater {
-    model: root.toggleModel
+    model: root._rows
 
-    delegate: Button {
+    delegate: RowLayout {
+      id: rowItem
       required property var modelData
-      property bool available: modelData.available ? modelData.available() : true
-      onAvailableChanged: root.relayout()
-      shape: "tile"
-      Layout.fillWidth: true
-      Layout.fillHeight: true
-      Layout.preferredHeight: tileContentHeight
-      icon: modelData.icon()
-      label: modelData.label
-      sublabel: modelData.sublabel ? modelData.sublabel() : ""
-      busy: modelData.busy ? modelData.busy() : false
-      actionId: modelData.actionId || ""
-      active: modelData.isActive()
-      onClicked: modelData.toggle()
-    }
-  }
+      width: root.width
+      spacing: Theme.spaceSm
 
-  Button {
-    id: moreTile
-    shape: "tile"
-    Layout.fillWidth: true
-    Layout.fillHeight: true
-    Layout.preferredHeight: tileContentHeight
-    visible: false
-    icon: root.expanded ? "chevron.up" : "chevron.down"
-    label: root.expanded ? "LESS" : "MORE"
-    onClicked: root.expanded = !root.expanded
+      Repeater {
+        model: rowItem.modelData
+
+        delegate: Button {
+          id: tile
+          required property var modelData
+          readonly property var t: modelData.toggle || null
+          readonly property bool isMore: modelData.kind === "more"
+          shape: "tile"
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Layout.preferredHeight: tileContentHeight
+          icon: isMore ? (root.expanded ? "chevron.up" : "chevron.down") : t.icon()
+          label: isMore ? (root.expanded ? "LESS" : "MORE") : t.label
+          sublabel: !isMore && t.sublabel ? t.sublabel() : ""
+          busy: !isMore && t.busy ? t.busy() : false
+          actionId: !isMore && t.actionId ? t.actionId : ""
+          active: !isMore && t.isActive()
+          onClicked: isMore ? root.expanded = !root.expanded : t.toggle()
+        }
+      }
+    }
   }
 }

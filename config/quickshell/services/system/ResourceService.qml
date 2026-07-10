@@ -186,17 +186,10 @@ Singleton {
     return num
   }
 
-  function _extractDigits(text) {
-    if (text === undefined || text === null) return ""
-    var str = text.toString()
-    var result = ""
-    for (var i = 0; i < str.length; i++) {
-      var ch = str.charAt(i)
-      if (ch >= '0' && ch <= '9') {
-        result = result + ch
-      }
-    }
-    return result
+  function _formatClock(mhz) {
+    if (!mhz || mhz <= 0) return "---"
+    if (mhz >= 1000) return (mhz / 1000).toFixed(1) + " GHZ"
+    return mhz + " MHZ"
   }
 
   function _getAmdPollCommand() {
@@ -228,9 +221,7 @@ Singleton {
       return
     }
 
-    var loadVal = _safeString(lines[0]).trim()
-    if (loadVal === "") loadVal = "0"
-    svc.gpuLoad = loadVal + "%"
+    svc.gpuLoad = _safeInt(lines[0]) + "%"
 
     var tempRaw = _safeInt(lines[1])
     svc.gpuTemp = tempRaw > 0 ? Math.round(tempRaw / 1000) + "°" : "---"
@@ -245,9 +236,8 @@ Singleton {
     svc.gpuVramTotal = _formatBytes(String(vramTotal))
     svc.gpuVramPct = vramTotal > 0 ? String(Math.round((vramUsed / vramTotal) * 100)) : "0"
 
-    var clockLine = _safeString(lines[4])
-    var clockNum = _extractDigits(clockLine)
-    svc.gpuClock = clockNum !== "" ? clockNum + " MHZ" : "---"
+    var clockMatch = _safeString(lines[4]).match(/(\d+)\s*mhz/i)
+    svc.gpuClock = _formatClock(clockMatch ? parseInt(clockMatch[1]) : 0)
 
     svc.gpuHasData = true
   }
@@ -279,8 +269,7 @@ Singleton {
     svc.gpuVramTotal = _formatBytes(String(vramTotal))
     svc.gpuVramPct = vramTotal > 0 ? String(Math.round((vramUsed / vramTotal) * 100)) : "0"
 
-    var clockVal = _safeInt(parts[4])
-    svc.gpuClock = clockVal > 0 ? String(clockVal) + " MHZ" : "---"
+    svc.gpuClock = _formatClock(_safeInt(parts[4]))
 
     svc.gpuHasData = true
   }
@@ -302,8 +291,7 @@ Singleton {
     var tempRaw = _safeInt(lines[0])
     svc.gpuTemp = tempRaw > 0 ? String(Math.round(tempRaw / 1000)) + "°" : "---"
 
-    var freqRaw = _safeInt(lines[2])
-    svc.gpuClock = freqRaw > 0 ? String(Math.round(freqRaw / 1000000)) + " MHZ" : "---"
+    svc.gpuClock = _formatClock(Math.round(_safeInt(lines[2]) / 1000000))
 
     svc.gpuVramUsed = "N/A"
     svc.gpuVramTotal = "N/A"

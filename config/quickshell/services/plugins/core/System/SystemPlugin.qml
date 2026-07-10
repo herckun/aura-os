@@ -43,27 +43,64 @@ BasePlugin {
     width: parent.width
     spacing: Theme.spaceSm
 
+    function _fmtMb(mb) {
+      return mb >= 1024 ? (mb / 1024).toFixed(1) + " GB" : Math.round(mb) + " MB"
+    }
+
+    function _barColor(pct) {
+      if (pct > 90) return Theme.error
+      if (pct > 70) return Theme.warning
+      return Theme.accent
+    }
+
     SectionLabel {
       label: "SYSTEM"
     }
 
-    Row {
+    MetricGauge {
       width: parent.width
-      spacing: 0
+      label: "CPU"
+      labelColor: Theme.textDisabled
+      labelLetterSpacing: 0.08
+      value: ResourceService.cpuUsage + "%" + (ResourceService.cpuTemp !== "" ? "  ·  " + ResourceService.cpuTemp + "°C" : "")
+      valueFontSize: Theme.fontSizeLabel
+      fraction: ResourceService.cpuUsage / 100
+      barColor: parent._barColor(ResourceService.cpuUsage)
+    }
 
-      Column { spacing: Theme.spaceXxs; width: parent.width / 3
-        Text { text: "CPU"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-        Text { text: ResourceService.cpuUsage + "%"; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
+    MetricGauge {
+      width: parent.width
+      label: "MEMORY"
+      labelColor: Theme.textDisabled
+      labelLetterSpacing: 0.08
+      value: parent._fmtMb(ResourceService.memUsed) + " / " + parent._fmtMb(ResourceService.memTotal)
+      valueFontSize: Theme.fontSizeLabel
+      fraction: ResourceService.memPct / 100
+      barColor: parent._barColor(ResourceService.memPct)
+    }
+
+    Item {
+      width: parent.width
+      height: updatesLabel.implicitHeight
+
+      Text {
+        id: updatesLabel
+        anchors.left: parent.left
+        text: "UPDATES"
+        color: Theme.textDisabled
+        font.pixelSize: Theme.fontSizeMicro
+        font.family: Theme.fontFamilyMono
+        font.letterSpacing: 0.08
       }
 
-      Column { spacing: Theme.spaceXxs; width: parent.width / 3
-        Text { text: "MEM"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-        Text { text: ResourceService.memUsed + "MB"; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
-      }
-
-      Column { spacing: Theme.spaceXxs; width: parent.width / 3
-        Text { text: UpdatesService.hasUpdates ? "UPDATES" : "STATUS"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-        Text { text: UpdatesService.hasUpdates ? UpdatesService.pendingUpdates + " PKG" : "UP TO DATE"; color: UpdatesService.hasUpdates ? Theme.warning : Theme.textSecondary; font.pixelSize: Theme.fontSizeBody; font.family: Theme.fontFamilyDisplay }
+      Text {
+        anchors.right: parent.right
+        anchors.verticalCenter: updatesLabel.verticalCenter
+        text: UpdatesService.hasUpdates ? UpdatesService.pendingUpdates + " PENDING" : "UP TO DATE"
+        color: UpdatesService.hasUpdates ? Theme.warning : Theme.textSecondary
+        font.pixelSize: Theme.fontSizeCaption
+        font.family: Theme.fontFamilyMono
+        font.letterSpacing: 0.04
       }
     }
 
@@ -71,6 +108,11 @@ BasePlugin {
       width: parent.width
       spacing: Theme.spaceSm
       visible: ResourceService.gpuAvailable && ResourceService.gpuHasData
+
+      SectionLabel {
+        label: "GPU"
+        topPadding: Theme.spaceXs
+      }
 
       Row {
         width: parent.width
@@ -83,7 +125,7 @@ BasePlugin {
 
         Column { spacing: Theme.spaceXxs; width: parent.width / 3
           Text { text: "TEMP"; color: Theme.textDisabled; font.pixelSize: Theme.fontSizeMicro; font.family: Theme.fontFamilyMono; font.letterSpacing: 0.06 }
-          Text { text: ResourceService.gpuTemp; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
+          Text { text: ResourceService.gpuTemp + "C"; color: Theme.textPrimary; font.pixelSize: Theme.fontSizeSubhead; font.family: Theme.fontFamilyDisplay }
         }
 
         Column { spacing: Theme.spaceXxs; width: parent.width / 3

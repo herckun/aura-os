@@ -54,6 +54,7 @@ BasePlugin {
     OptionSwitcher {
       width: parent.width
       options: ["PERF", "BAL", "SAVE"]
+      icons: ["zap", "gauge", "leaf"]
       currentIndex: root._profile
       size: "sm"
       onSelected: (idx) => PerformanceService.switchProfile(idx)
