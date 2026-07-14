@@ -15,6 +15,7 @@ Rectangle {
 
   height: Math.max(Theme.controlHeight + Theme.spaceXxs * 2, chipRow.implicitHeight + Theme.spaceXs * 2)
   radius: Theme.radiusMedium
+  antialiasing: true
   width: chipRow.implicitWidth + Theme.spaceMd * 2
   color: selected ? Theme.accent : Theme.backgroundSecondary
   border.width: Theme.borderWidth
@@ -49,6 +50,7 @@ Rectangle {
       width: countText.implicitWidth + Theme.spaceSm
       height: countText.implicitHeight + Theme.spaceXxs * 2
       radius: height / 2
+      antialiasing: true
       color: root.selected ? Theme.contrastTextColor(Theme.accent) : Theme.backgroundTertiary
 
       Text {

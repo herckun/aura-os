@@ -19,8 +19,8 @@ BasePlugin {
     name: "System",
     description: "CPU, memory, GPU, and updates",
     icon: "cpu",
-    locations: ["controlcenter_row", "bar_right", "dashboard"],
-    defaultLayout: { "bar_right": { enabled: false }, "controlcenter_row": { order: 30 }, "dashboard": { order: 10 } },
+    locations: ["controlcenter_row", "bar_right"],
+    defaultLayout: { "bar_right": { enabled: false }, "controlcenter_row": { order: 30 } },
     settings: []
   })
 
@@ -167,6 +167,7 @@ BasePlugin {
       width: gpuTempLabel.implicitWidth + 12
       height: 20
       radius: Theme.radiusSmall
+      antialiasing: true
       color: Theme.controlBackground
 
       Text {

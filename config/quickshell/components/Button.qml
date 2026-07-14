@@ -198,6 +198,7 @@ Item {
       id: bg
       anchors.fill: parent
       radius: shape === "icon" ? bgRadius : root.radius
+      antialiasing: true
       visible: shape === "link" ? false : (shape !== "icon" || showBackground || _isHovered || _isPressed || active)
 
       color: _bgColor
@@ -411,6 +412,7 @@ Item {
     anchors.fill: parent
     busy: root.busy
     radius: root.radius
+    antialiasing: true
     overlayColor: root.overlayColor
     spinnerColor: _fg(_bgColor)
     z: 1
@@ -432,6 +434,7 @@ Item {
 
     background: Rectangle {
       radius: Theme.radiusSmall
+      antialiasing: true
       color: Theme.backgroundTertiary
       border.width: Theme.borderWidth
       border.color: Theme.border

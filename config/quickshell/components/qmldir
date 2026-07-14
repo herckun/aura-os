@@ -27,6 +27,7 @@ KeybindingRow 1.0 KeybindingRow.qml
 KeyCap 1.0 KeyCap.qml
 KeyHint 1.0 KeyHint.qml
 ListRow 1.0 ListRow.qml
+MenuRow 1.0 MenuRow.qml
 MetricGauge 1.0 MetricGauge.qml
 Modal 1.0 Modal.qml
 Notification 1.0 Notification.qml

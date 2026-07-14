@@ -45,13 +45,14 @@ ColumnLayout {
     })
   }
 
-  PageHeader { title: "ABOUT" }
+  PageHeader { title: "ABOUT"; description: "Version, credits and system info" }
 
   // ── Hero ────────────────────────────────────────
   Rectangle {
     Layout.fillWidth: true
     implicitHeight: heroCol.implicitHeight + Theme.spaceLg * 2
     radius: Theme.radiusMedium
+    antialiasing: true
     color: Theme.backgroundSecondary
     border.width: Theme.borderWidth
     border.color: Theme.border
@@ -135,6 +136,7 @@ ColumnLayout {
     width: parent && parent.tileWidth !== undefined ? parent.tileWidth : 200
     height: tileCol.implicitHeight + Theme.spaceSm * 2
     radius: Theme.radiusSmall
+    antialiasing: true
     color: Theme.controlBackground
     border.width: Theme.borderWidth
     border.color: Theme.border

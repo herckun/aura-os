@@ -19,6 +19,7 @@ Surface {
   width: parent ? parent.width : 0
   height: detailCol.implicitHeight + Theme.spaceMd * 2
   radius: Theme.radiusMedium
+  antialiasing: true
   level: 2
 
   Column {
@@ -34,6 +35,7 @@ Surface {
         Layout.preferredWidth: 36
         Layout.preferredHeight: 36
         radius: Theme.radiusSmall
+        antialiasing: true
         color: root.pluginEnabled ? Theme.accent : Theme.controlBackground
 
         Icon {

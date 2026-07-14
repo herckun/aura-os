@@ -19,8 +19,8 @@ BasePlugin {
     name: "Weather",
     description: "Current weather conditions",
     icon: "sun",
-    locations: ["controlcenter_row", "bar_right", "dashboard"],
-    defaultLayout: { "bar_right": { enabled: false }, "controlcenter_row": { order: 20 }, "dashboard": { order: 30 } },
+    locations: ["controlcenter_row", "bar_right"],
+    defaultLayout: { "bar_right": { enabled: false }, "controlcenter_row": { order: 20 } },
     settings: [
       { key: "showDetails", label: "SHOW DETAILS", type: "toggle", default: true, locations: ["controlcenter_row"] },
       { key: "location", label: "LOCATION", description: "Overrides IP-detected location", type: "text", placeholder: "City, Country", shared: true, default: "" }

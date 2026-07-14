@@ -135,6 +135,7 @@ OverlayPanel {
       Rectangle {
         width: 72; height: 72
         radius: Theme.radiusLarge
+        antialiasing: true
         color: Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.08)
         border.width: 1
         border.color: Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.1)
@@ -186,6 +187,7 @@ OverlayPanel {
         width: counterText.implicitWidth + Theme.spaceMd * 2
         height: 30
         radius: Theme.radiusPill
+        antialiasing: true
         color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.12)
         border.width: 1
         border.color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.25)
@@ -236,6 +238,7 @@ OverlayPanel {
               x: tileCard.x - 8
               y: tileCard.y - 8
               radius: tileCard.radius + 8
+              antialiasing: true
               color: "transparent"
               border.width: 1
               border.color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.2)
@@ -247,6 +250,7 @@ OverlayPanel {
               x: tileCard.x
               y: tileCard.y + (tileItem.isSelected ? 10 : 5)
               radius: tileCard.radius
+              antialiasing: true
               color: Qt.rgba(0, 0, 0, tileItem.isSelected ? 0.4 : 0.1)
               z: -1
 
@@ -258,6 +262,7 @@ OverlayPanel {
               id: tileCard
               anchors.fill: parent
               radius: Theme.radiusLarge
+              antialiasing: true
               color: Theme.backgroundSecondary
               border.width: tileItem.isSelected ? 2 : 1
               border.color: tileItem.isSelected ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25)
@@ -286,6 +291,7 @@ OverlayPanel {
                   width: parent.width
                   height: parent.height - 56
                   radius: Theme.radiusMedium
+                  antialiasing: true
                   color: Theme.background
                   clip: true
 
@@ -312,6 +318,7 @@ OverlayPanel {
                     Rectangle {
                       width: 44; height: 44
                       radius: Theme.radiusMedium
+                      antialiasing: true
                       color: Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.08)
                       border.width: 1
                       border.color: Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.1)
@@ -346,6 +353,7 @@ OverlayPanel {
                     anchors.bottomMargin: 6
                     height: 18
                     radius: Theme.radiusSmall
+                    antialiasing: true
                     color: Qt.rgba(0, 0, 0, 0.45)
 
                     Text {
@@ -386,6 +394,7 @@ OverlayPanel {
                     width: wsRow.width + Theme.spaceSm * 2
                     height: 16
                     radius: Theme.radiusPill
+                    antialiasing: true
                     color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, tileItem.isSelected ? 0.15 : 0.06)
                     anchors.horizontalCenter: parent.horizontalCenter
                     visible: tileItem.modelData.workspace && tileItem.modelData.workspace.id !== undefined
@@ -398,6 +407,7 @@ OverlayPanel {
                       Rectangle {
                         width: 5; height: 5
                         radius: 3
+                        antialiasing: true
                         anchors.verticalCenter: parent.verticalCenter
                         color: tileItem.isSelected ? Theme.accent : Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.4)
                       }
@@ -431,6 +441,7 @@ OverlayPanel {
     color: Theme.backgroundTertiary
     bordered: true
     radius: Theme.radiusPill
+    antialiasing: true
     visible: root._windowCount > 0
     implicitWidth: hintRow.implicitWidth + Theme.spaceLg * 2
     implicitHeight: hintRow.implicitHeight + Theme.spaceSm * 2

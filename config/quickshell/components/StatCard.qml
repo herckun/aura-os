@@ -12,6 +12,7 @@ Surface {
   property bool showBar: true
 
   radius: Theme.radiusMedium
+  antialiasing: true
   border.color: Theme.border
 
   ColumnLayout {

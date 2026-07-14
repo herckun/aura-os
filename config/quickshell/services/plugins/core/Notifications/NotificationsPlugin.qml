@@ -74,6 +74,7 @@ BasePlugin {
         width: parent.width
         height: 36
         radius: Theme.radiusSmall
+        antialiasing: true
         color: notifMouse.containsMouse ? Theme.controlBackgroundHover : Theme.controlBackground
 
         RowLayout {
@@ -85,6 +86,7 @@ BasePlugin {
             Layout.preferredWidth: 3
             Layout.fillHeight: true
             radius: Theme.radiusXs
+            antialiasing: true
             color: Theme.accent
           }
 

@@ -6,6 +6,7 @@ singleton BrightnessService 1.0 BrightnessService.qml
 singleton LockService 1.0 LockService.qml
 singleton NetworkService 1.0 NetworkService.qml
 singleton PerformanceService 1.0 PerformanceService.qml
+singleton PowerService 1.0 PowerService.qml
 singleton RequestService 1.0 RequestService.qml
 singleton ResourceService 1.0 ResourceService.qml
 singleton ScreenshotService 1.0 ScreenshotService.qml

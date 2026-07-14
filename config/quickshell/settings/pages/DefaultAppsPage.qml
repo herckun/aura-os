@@ -10,7 +10,7 @@ ColumnLayout {
   spacing: Theme.spaceLg
   width: parent.width
 
-  PageHeader { title: "DEFAULT APPS" }
+  PageHeader { title: "DEFAULT APPS"; description: "Preferred applications for common tasks" }
 
   Card {
     Layout.fillWidth: true

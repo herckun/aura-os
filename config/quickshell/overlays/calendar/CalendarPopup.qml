@@ -72,6 +72,7 @@ PanelWindow {
     id: calBg
     anchors.fill: parent
     radius: Theme.radiusMedium
+    antialiasing: true
   }
 
   Column {

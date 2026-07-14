@@ -18,6 +18,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: root.size / 2
+    antialiasing: true
     color: Theme.controlBackground
     border.width: Theme.borderWidth
     border.color: root.ringColor
@@ -50,6 +51,7 @@ Item {
     id: mask
     anchors.fill: img
     radius: root.size / 2
+    antialiasing: true
     visible: false
   }
 

@@ -41,6 +41,7 @@ Rectangle {
     width: parent ? parent.width : 200
     height: Math.max(maxHeight, input.implicitHeight + Theme.spaceXs * 2)
     radius: Theme.radiusMedium
+    antialiasing: true
     color: Theme.backgroundSecondary
     border.width: Theme.borderWidth
     border.color: input.activeFocus ? focusedBorderColor : Theme.border
@@ -130,6 +131,7 @@ Rectangle {
             width: Theme.controlHeightSmall
             height: width
             radius: Theme.radiusSmall
+            antialiasing: true
             color: revealArea.containsMouse ? Theme.controlBackgroundHover : "transparent"
             visible: root.revealable
 

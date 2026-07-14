@@ -227,8 +227,7 @@ Singleton {
     "about": "aboutComponent",
     "bar_left": "barComponent",
     "bar_center": "barComponent",
-    "bar_right": "barComponent",
-    "dashboard": "dashboardComponent"
+    "bar_right": "barComponent"
   })
 
   function _groupOf(location: string): string {

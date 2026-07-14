@@ -79,6 +79,7 @@ Column {
     width: parent.width
     height: 28
     radius: Theme.radiusSmall
+    antialiasing: true
     color: Theme.backgroundTertiary
     clip: true
 
@@ -88,6 +89,7 @@ Column {
       height: parent.height
       color: root.battery.percentage < 20 ? Theme.warning : Theme.accent
       radius: Theme.radiusSmall
+      antialiasing: true
 
       Behavior on width {
         enabled: Theme.animationsEnabled
@@ -100,6 +102,7 @@ Column {
         height: parent.height
         color: Qt.lighter(chargeFill.color, 1.3)
         radius: Theme.radiusSmall
+        antialiasing: true
         visible: root.battery.charging
 
         SequentialAnimation on opacity {

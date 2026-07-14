@@ -18,6 +18,7 @@ Item {
   Surface {
     anchors.fill: parent
     radius: Theme.radiusMedium
+    antialiasing: true
     bordered: root.borderEnabled
     color: root.transparentBg ? "transparent" : Theme.backgroundSecondary
     border.color: Theme.border

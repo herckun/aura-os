@@ -20,6 +20,7 @@ Item {
     id: bg
     anchors.fill: parent
     radius: Theme.radiusMedium
+    antialiasing: true
     color: transparentBg ? "transparent" : Theme.panelBackgroundSecondary
     border.width: borderEnabled ? Theme.borderWidth : 0
     border.color: Theme.border

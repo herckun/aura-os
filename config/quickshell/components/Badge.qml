@@ -49,6 +49,7 @@ Rectangle {
   width: implicitWidth
   height: implicitHeight
   radius: Theme.radiusMedium
+  antialiasing: true
   color: _fb
   border.width: variant === "default" ? (size === "xs" ? 0 : Theme.borderWidth) : 0
   border.color: Theme.border

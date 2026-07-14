@@ -2,3 +2,5 @@ BatteryTooltip 1.0 BatteryTooltip.qml
 BatteryWidget 1.0 BatteryWidget.qml
 NetworkTooltip 1.0 NetworkTooltip.qml
 NetworkWidget 1.0 NetworkWidget.qml
+SoundTooltip 1.0 SoundTooltip.qml
+SoundWidget 1.0 SoundWidget.qml

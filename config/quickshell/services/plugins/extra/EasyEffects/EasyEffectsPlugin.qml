@@ -485,6 +485,7 @@ BasePlugin {
           Rectangle {
             width: 8; height: 8
             radius: Theme.radiusSmall
+            antialiasing: true
             color: root.statusColor
             Layout.alignment: Qt.AlignVCenter
             Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationNormal } }

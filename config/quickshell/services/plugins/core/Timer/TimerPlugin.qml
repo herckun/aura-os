@@ -142,6 +142,7 @@ BasePlugin {
           anchors.fill: parent
           visible: timerEditInput.visible
           radius: Theme.radiusMedium
+          antialiasing: true
           color: timerEditInput.activeFocus ? Theme.controlBackground : "transparent"
           border.width: timerEditInput.activeFocus ? 1 : 0
           border.color: Theme.accent

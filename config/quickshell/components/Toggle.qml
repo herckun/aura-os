@@ -37,6 +37,7 @@ Item {
     id: trackBg
     anchors.fill: parent
     radius: height / 2
+    antialiasing: true
     color: root.checked ? root._vto : root._vtf
 
     Behavior on color {
@@ -50,6 +51,7 @@ Item {
     width: root.height - 6
     height: root.height - 6
     radius: width / 2
+    antialiasing: true
     color: root.checked ? root._vho : root._vhf
     x: root.checked ? parent.width - width - 3 : 3
     y: (parent.height - height) / 2

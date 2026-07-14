@@ -32,6 +32,7 @@ Item {
           width: active ? 8 : 5
           height: active ? 8 : 5
           radius: Theme.radiusXs
+          antialiasing: true
           color: active ? Theme.textDisplay : (occupied ? Theme.textSecondary : Theme.border)
 
           Behavior on color {

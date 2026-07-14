@@ -12,6 +12,7 @@ Rectangle {
   implicitWidth: tagRow.implicitWidth + Theme.spaceSm
   implicitHeight: tagRow.implicitHeight + Theme.spaceXxs * 2
   radius: Theme.radiusSmall
+  antialiasing: true
   color: Theme.controlBackground
 
   Row {

@@ -15,6 +15,7 @@ Rectangle {
   width: parent.width
   height: Theme.controlHeight + Theme.spaceSm
   radius: Theme.radiusMedium
+  antialiasing: true
   color: selected
     ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
     : hoverArea.containsMouse

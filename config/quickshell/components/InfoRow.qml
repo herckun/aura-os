@@ -14,6 +14,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: Theme.radiusSmall
+    antialiasing: true
     color: hoverArea.containsMouse ? Theme.controlBackgroundHover : "transparent"
 
     MouseArea {

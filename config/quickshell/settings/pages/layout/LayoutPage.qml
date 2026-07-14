@@ -9,21 +9,18 @@ Column {
   spacing: Theme.spaceLg
   width: parent.width
 
-  Item {
-    width: parent.width
-    height: pageHeader.implicitHeight
+  PageHeader {
+    title: "PLUGINS"
+    description: "Enable plugins and arrange their layout"
+  }
 
-    PageHeader {
-      id: pageHeader
-      title: "PLUGINS"
-      width: parent.width
-    }
+  Row {
+    width: parent.width
+    layoutDirection: Qt.RightToLeft
 
     Button {
       id: restoreBtn
       property bool armed: false
-      anchors.right: parent.right
-      anchors.top: parent.top
       size: "sm"
       icon: "arrow-counter-clockwise"
       text: armed ? "CLICK TO CONFIRM" : "RESTORE DEFAULT LAYOUT"
@@ -64,9 +61,6 @@ Column {
       zones: [{ location: "overview", label: "TABS — LEFT TO RIGHT", vertical: false }] },
     { key: "desktop", label: "Desktop", icon: "monitor", kind: "desktop",
       locations: ["desktop"] },
-    { key: "dashboard", label: "Dashboard", icon: "cpu", kind: "zones",
-      locations: ["dashboard"],
-      zones: [{ location: "dashboard", label: "STATS — LEFT TO RIGHT", vertical: false }] },
     { key: "connectivity", label: "Connectivity", icon: "globe", kind: "zones",
       locations: ["connectivity"],
       zones: [{ location: "connectivity", label: "UTILITIES — TOP TO BOTTOM", vertical: true }] },
@@ -296,6 +290,7 @@ Column {
       width: parent.width
       height: Math.max(trayFlow.implicitHeight + Theme.spaceSm * 2, 46)
       radius: Theme.radiusSmall
+      antialiasing: true
       color: trayDrop.containsDrag ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.08) : Theme.controlBackground
       border.width: Theme.borderWidth
       border.color: trayDrop.containsDrag ? Theme.error : Theme.border

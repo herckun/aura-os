@@ -11,13 +11,14 @@ Column {
   spacing: Theme.spaceLg
   width: parent.width
 
-  PageHeader { title: "AUDIO" }
+  PageHeader { title: "AUDIO"; description: "Output, input devices and volumes" }
 
   // ── Output ─────────────────────────────────────────────────────────
   Surface {
     width: parent.width
     height: outputCol.implicitHeight + Theme.spaceLg * 2
     radius: Theme.radiusMedium
+    antialiasing: true
     border.color: Theme.border
     padding: Theme.spaceLg
 
@@ -36,6 +37,7 @@ Column {
           level: 2
           bordered: false
           radius: Theme.radiusMedium
+          antialiasing: true
 
           Icon {
             anchors.centerIn: parent
@@ -126,6 +128,7 @@ Column {
     width: parent.width
     height: mixerCol.implicitHeight + Theme.spaceLg * 2
     radius: Theme.radiusMedium
+    antialiasing: true
     border.color: Theme.border
     padding: Theme.spaceLg
     visible: AudioService.playbackStreams.length > 0
@@ -145,6 +148,7 @@ Column {
           level: 2
           bordered: false
           radius: Theme.radiusMedium
+          antialiasing: true
 
           Icon {
             anchors.centerIn: parent
@@ -218,6 +222,7 @@ Column {
     width: parent.width
     height: inputCol.implicitHeight + Theme.spaceLg * 2
     radius: Theme.radiusMedium
+    antialiasing: true
     border.color: Theme.border
     padding: Theme.spaceLg
 
@@ -236,6 +241,7 @@ Column {
           level: 2
           bordered: false
           radius: Theme.radiusMedium
+          antialiasing: true
 
           Icon {
             anchors.centerIn: parent
@@ -342,6 +348,7 @@ Column {
             width: parent.width
             height: Theme.controlHeight + Theme.spaceSm
             radius: Theme.radiusSmall
+            antialiasing: true
             color: recHover.containsMouse ? Theme.controlBackgroundHover : "transparent"
 
             property var streamNode: modelData.node
@@ -365,6 +372,7 @@ Column {
                 width: 6
                 height: 6
                 radius: 3
+                antialiasing: true
                 color: recRow.streamMuted ? Theme.textDisabled : Theme.error
               }
 
@@ -395,6 +403,7 @@ Column {
     width: parent.width
     height: sfxRow.height + Theme.spaceLg * 2
     radius: Theme.radiusMedium
+    antialiasing: true
     border.color: Theme.border
     padding: Theme.spaceLg
 

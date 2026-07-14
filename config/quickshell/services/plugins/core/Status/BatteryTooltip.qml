@@ -74,6 +74,7 @@ PanelWindow {
     id: bg
     anchors.fill: parent
     radius: Theme.radiusLarge
+    antialiasing: true
 
     Column {
       id: contentCol

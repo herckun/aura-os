@@ -71,7 +71,7 @@ Item {
     width: parent.width
     spacing: Theme.spaceLg
 
-    PageHeader { title: "CONNECTIVITY" }
+    PageHeader { title: "CONNECTIVITY"; description: "Wi-Fi, Bluetooth and VPN" }
 
     RowLayout {
       width: parent.width
@@ -119,6 +119,7 @@ Item {
       width: parent.width
       height: wiredCol.implicitHeight + Theme.spaceLg * 2
       radius: Theme.radiusMedium
+      antialiasing: true
       border.color: Theme.border
       padding: Theme.spaceLg
       visible: NetworkService.hasEthernet || NetworkService.wiredConnections.length > 0
@@ -138,6 +139,7 @@ Item {
             level: 2
             bordered: false
             radius: Theme.radiusMedium
+            antialiasing: true
 
             Icon {
               anchors.centerIn: parent
@@ -242,6 +244,7 @@ Item {
       width: parent.width
       height: wifiCol.implicitHeight + Theme.spaceLg * 2
       radius: Theme.radiusMedium
+      antialiasing: true
       border.color: Theme.border
       padding: Theme.spaceLg
       visible: NetworkService.hasWifi
@@ -261,6 +264,7 @@ Item {
             level: 2
             bordered: false
             radius: Theme.radiusMedium
+            antialiasing: true
 
             Icon {
               anchors.centerIn: parent
@@ -404,6 +408,7 @@ Item {
       width: parent.width
       height: btCol.implicitHeight + Theme.spaceLg * 2
       radius: Theme.radiusMedium
+      antialiasing: true
       border.color: Theme.border
       padding: Theme.spaceLg
       visible: BluetoothService.hasBluetooth
@@ -423,6 +428,7 @@ Item {
             level: 2
             bordered: false
             radius: Theme.radiusMedium
+            antialiasing: true
 
             Icon {
               anchors.centerIn: parent
@@ -544,6 +550,7 @@ Item {
       width: parent.width
       height: vpnCol.implicitHeight + Theme.spaceLg * 2
       radius: Theme.radiusMedium
+      antialiasing: true
       border.color: Theme.border
       padding: Theme.spaceLg
 
@@ -562,6 +569,7 @@ Item {
             level: 2
             bordered: false
             radius: Theme.radiusMedium
+            antialiasing: true
 
             Icon {
               anchors.centerIn: parent

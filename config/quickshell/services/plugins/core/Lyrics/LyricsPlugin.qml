@@ -129,6 +129,7 @@ BasePlugin {
                         required property int index
                         width: 2
                         radius: 1
+                        antialiasing: true
                         color: lyricsContainer._accentColor
 
                         SequentialAnimation on height {
@@ -345,6 +346,7 @@ BasePlugin {
                                 width: 2
                                 height: Math.min(parent.height - 10, lineText.implicitHeight)
                                 radius: 1
+                                antialiasing: true
                                 color: lyricsContainer._accentColor
                                 visible: modelData.isCurrent
                             }

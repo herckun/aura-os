@@ -135,6 +135,7 @@ PanelWindow {
                 anchors.fill: parent
                 visible: root.framed
                 radius: Theme.radiusLarge
+                antialiasing: true
                 color: Theme.panelBackgroundSecondary
                 border.color: Theme.border
             }

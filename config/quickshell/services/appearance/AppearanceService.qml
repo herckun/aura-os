@@ -48,6 +48,20 @@ Singleton {
     Store.appearance.barFloating = on
   }
 
+  function setBlurAmount(v: int): void {
+    Store.appearance.blurAmount = Math.max(1, Math.min(10, Math.round(v)))
+  }
+
+  function setFontScale(v: real): void {
+    Store.appearance.fontScale = Math.max(0.7, Math.min(1.4, Math.round(v * 100) / 100))
+  }
+
+  function setFont(key: string, family: string): void {
+    if (key === "ui") Store.appearance.fontUi = family
+    else if (key === "display") Store.appearance.fontDisplay = family
+    else if (key === "mono") Store.appearance.fontMono = family
+  }
+
   function applyKittyConfig(): void {
     var opacity = transparencyEnabled ? "0.95" : "1.0"
     var blink = animationsEnabled ? "0.5" : "0"
@@ -79,8 +93,13 @@ Singleton {
       { pattern: /(leaf\s*=\s*"[^"]*",\s*enabled\s*=\s*)(?:true|false)/g, replacement: "$1" + animEnabled }
     ])
 
+    var blurSize = Math.max(1, Math.min(10, Store.appearance.blurAmount || 4))
+    var blurPasses = blurSize > 6 ? 4 : blurSize > 2 ? 3 : 2
+
     HyprlandService.modifyConfig(hyprDir + "/decorations.lua", [
       { pattern: /(blur[\s\S]*?enabled\s*=\s*)(?:true|false)/, replacement: "$1" + blurEnabledStr },
+      { pattern: /(blur\s*=\s*{[\s\S]*?size\s*=\s*)\d+/, replacement: "$1" + blurSize },
+      { pattern: /(blur\s*=\s*{[\s\S]*?passes\s*=\s*)\d+/, replacement: "$1" + blurPasses },
       { pattern: /active_opacity\s*=\s*[\d.]+/, replacement: "active_opacity = " + opacity },
       { pattern: /inactive_opacity\s*=\s*[\d.]+/, replacement: "inactive_opacity = " + opacity },
       { pattern: /fullscreen_opacity\s*=\s*[\d.]+/, replacement: "fullscreen_opacity = " + opacity },
@@ -110,6 +129,7 @@ Singleton {
   readonly property string hyprConfigState: JSON.stringify({
     animations: animationsEnabled,
     blur: blurEnabled,
+    blurAmount: Store.appearance.blurAmount,
     transparency: transparencyEnabled,
     outerGap: Theme.hyprOuterGap,
     innerGap: Theme.hyprInnerGap

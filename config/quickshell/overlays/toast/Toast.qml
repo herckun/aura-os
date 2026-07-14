@@ -70,6 +70,7 @@ PanelWindow {
     id: toastRect
     anchors.fill: parent
     radius: Theme.radiusMedium
+    antialiasing: true
     color: Theme.backgroundTertiary
     border.width: Theme.borderWidth
     border.color: toast.urgency === 2 ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.4) : Theme.border

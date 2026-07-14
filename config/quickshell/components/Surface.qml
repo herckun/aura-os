@@ -10,6 +10,7 @@ Rectangle {
   default property alias content: contentHolder.data
 
   radius: Theme.radiusLarge
+  antialiasing: true
   color: level >= 2 ? Theme.backgroundTertiary : Theme.backgroundSecondary
   border.width: bordered ? Theme.borderWidth : 0
   border.color: Theme.borderVisible

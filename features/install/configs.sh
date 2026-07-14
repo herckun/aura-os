@@ -16,9 +16,15 @@ deploy_hypr_config() {
     _lock_bak="$(mktemp "/tmp/${APP_NAME}-hyprlock-XXXXXX")"
     cp -f "$_lock" "$_lock_bak"
   fi
+  local _idle="$CONFIG_DIR/hypr/hypridle.conf" _idle_bak=""
+  if [[ -f "$_idle" ]] && head -1 "$_idle" | grep -q '@managed: power-settings'; then
+    _idle_bak="$(mktemp "/tmp/${APP_NAME}-hypridle-XXXXXX")"
+    cp -f "$_idle" "$_idle_bak"
+  fi
   copy_config "$REPO_DIR/config/hypr" "$CONFIG_DIR/hypr"
   sed -i "s|@APP_NAME@|${APP_NAME}|g" "$CONFIG_DIR/hypr/hyprland.lua"
   [[ -n "$_lock_bak" ]] && mv -f "$_lock_bak" "$_lock"
+  [[ -n "$_idle_bak" ]] && mv -f "$_idle_bak" "$_idle"
   if [[ -n "$_mon_bak" ]]; then
     mv -f "$_mon_bak" "$_mon"
     log_ok "Hyprland configs deployed (kept user display config)"

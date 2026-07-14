@@ -30,6 +30,7 @@ Rectangle {
 
   height: Theme.controlHeight + Theme.spaceSm
   radius: Theme.radiusSmall
+  antialiasing: true
   color: hoverArea.containsMouse ? Theme.controlBackgroundHover : "transparent"
 
   MouseArea {
@@ -91,6 +92,7 @@ Rectangle {
             width: 3
             height: 4 + index * 3
             radius: 1
+            antialiasing: true
             anchors.bottom: parent.bottom
             color: root.active ? Theme.accent : Theme.textSecondary
             opacity: root.meter >= [15, 40, 65, 85][index] ? 1 : 0.25

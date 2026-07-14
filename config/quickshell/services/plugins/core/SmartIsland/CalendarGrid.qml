@@ -115,6 +115,7 @@ Column {
           width: 22
           height: 22
           radius: Theme.radiusSmall
+          antialiasing: true
           color: isToday ? Theme.accent : "transparent"
           visible: isDay
         }

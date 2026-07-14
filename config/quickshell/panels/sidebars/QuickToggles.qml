@@ -31,6 +31,13 @@ Column {
       toggle: function () { BluetoothService.toggle() }
     },
     {
+      label: "SOUND",
+      settingsPage: "audio",
+      icon: function () { return AudioService.muted ? "volume-mute" : "volume" },
+      isActive: function () { return !AudioService.muted },
+      toggle: function () { AudioService.toggleMute() }
+    },
+    {
       label: "VPN",
       settingsPage: "connectivity",
       icon: function () { return VpnService.activeProvider ? VpnService.activeProvider.icon : "shield" },
@@ -45,31 +52,24 @@ Column {
       toggle: function () { VpnService.toggle() }
     },
     {
-      label: "MONO",
-      settingsPage: "appearance",
-      icon: function () { return "palette" },
-      isActive: function () { return Theme.monochrome },
-      toggle: function () { Theme.setMonochrome(!Theme.monochrome) }
-    },
-    {
       label: "POWER",
-      settingsPage: "dashboard",
+      settingsPage: "power",
       icon: function () { return "zap" },
       isActive: function () { return PerformanceService.profile === 0 },
       toggle: function () { PerformanceService.switchProfile(PerformanceService.profile === 0 ? 1 : 0) }
-    },
-    {
-      label: "SOUND",
-      settingsPage: "audio",
-      icon: function () { return AudioService.muted ? "volume-mute" : "volume" },
-      isActive: function () { return !AudioService.muted },
-      toggle: function () { AudioService.toggleMute() }
     },
     {
       label: "AUTO LOCK",
       icon: function () { return LockService.autoLock ? "lock" : "lock-open" },
       isActive: function () { return LockService.autoLock },
       toggle: function () { LockService.toggleAutoLock() }
+    },
+    {
+      label: "MONO",
+      settingsPage: "appearance",
+      icon: function () { return "palette" },
+      isActive: function () { return Theme.monochrome },
+      toggle: function () { Theme.setMonochrome(!Theme.monochrome) }
     }
   ]
 

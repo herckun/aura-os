@@ -16,6 +16,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: Theme.radiusMedium
+    antialiasing: true
     color: Theme.backgroundSecondary
     border.width: Theme.borderWidth
     border.color: Theme.border
@@ -43,6 +44,7 @@ Item {
           anchors.fill: parent
           anchors.margins: Theme.space2
           radius: Theme.radiusSmall
+          antialiasing: true
           color: tab.active ? Theme.controlBackgroundActive : tabMa.containsMouse ? Theme.hoverOverlay : "transparent"
 
           Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
@@ -89,6 +91,7 @@ Item {
           width: tab.active ? parent.width - Theme.spaceMd * 2 : 0
           height: 2
           radius: 1
+          antialiasing: true
           color: Theme.accent
 
           Behavior on width { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }

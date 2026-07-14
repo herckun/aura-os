@@ -18,6 +18,8 @@ Singleton {
   property var activeClient: null
   property int activeWsId: 1
 
+  signal monitorLayoutChanged()
+
   // ═══════════════════════════════════════════════════════════════
   //  INTERNAL STATE
   // ═══════════════════════════════════════════════════════════════
@@ -187,6 +189,11 @@ Singleton {
           case "movewindow":
           case "changefloatingmode":
           case "fullscreen":
+            svc.poll()
+            break
+          case "monitoradded":
+          case "monitorremoved":
+            svc.monitorLayoutChanged()
             svc.poll()
             break
           default:

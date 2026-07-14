@@ -17,7 +17,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Status",
-    description: "Network, keyboard, and battery indicators",
+    description: "Sound, network, keyboard, and battery indicators",
     icon: "signal",
     locations: ["bar_right"],
     defaultLayout: { "bar_right": { order: 10 } },
@@ -41,6 +41,10 @@ BasePlugin {
   // ── UI components ────────────────────────────────────────────────
   property Component barComponent: Row {
     spacing: Theme.spaceSm
+
+    SoundWidget { anchors.verticalCenter: parent.verticalCenter }
+
+    Divider { vertical: true; height: 18; anchors.verticalCenter: parent.verticalCenter }
 
     NetworkWidget { anchors.verticalCenter: parent.verticalCenter }
 

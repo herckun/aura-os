@@ -76,6 +76,27 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  SIGNAL CONNECTIONS
   // ═══════════════════════════════════════════════════════════════
+  readonly property bool autoSaverEngage: Store.power.autoBatterySaver
+      && BatteryService.hasBattery
+      && BatteryService.discharging
+      && BatteryService.percentage <= Store.power.autoBatterySaverThreshold
+  property bool _autoSaverActive: false
+  property int _profileBeforeSaver: 1
+
+  onAutoSaverEngageChanged: {
+    if (!svc._ready)
+      return
+    if (svc.autoSaverEngage && svc.profile !== 2) {
+      svc._profileBeforeSaver = svc.profile
+      svc._autoSaverActive = true
+      svc.switchProfile(2)
+    } else if (!svc.autoSaverEngage && svc._autoSaverActive) {
+      svc._autoSaverActive = false
+      if (svc.profile === 2)
+        svc.switchProfile(svc._profileBeforeSaver)
+    }
+  }
+
   onProfileChanged: {
     if (!svc._ready) {
       svc._prevProfile = svc.profile

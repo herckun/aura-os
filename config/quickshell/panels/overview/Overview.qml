@@ -189,6 +189,7 @@ OverlayPanel {
         color: Theme.backgroundTertiary
         bordered: true
         radius: Theme.radiusPill
+        antialiasing: true
         implicitWidth: barRow.implicitWidth + Theme.spaceLg * 2
         implicitHeight: barRow.implicitHeight + Theme.spaceSm * 2
 
@@ -330,6 +331,7 @@ OverlayPanel {
             implicitHeight: cardCol.implicitHeight
             height: implicitHeight
             radius: Theme.radiusLarge
+            antialiasing: true
             color: Theme.backgroundSecondary
             clip: true
 
@@ -420,6 +422,7 @@ OverlayPanel {
                         anchors.verticalCenter: parent.verticalCenter
                         color: Theme.backgroundSecondary
                         radius: Theme.radiusLarge
+                        antialiasing: true
                         clip: true
                         height: {
                             if (overview.isSearching)

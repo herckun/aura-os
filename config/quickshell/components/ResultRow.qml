@@ -17,6 +17,7 @@ Rectangle {
   implicitHeight: Math.max(46, textCol.implicitHeight + Theme.spaceSm * 2)
   height: implicitHeight
   radius: Theme.radiusMedium
+  antialiasing: true
   color: root.selected ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.14)
        : rowMouse.containsMouse ? Theme.controlBackgroundHover : "transparent"
 
@@ -32,6 +33,7 @@ Rectangle {
     width: 3
     height: parent.height * 0.5
     radius: Theme.radiusPill
+    antialiasing: true
     color: Theme.accent
     visible: root.selected
   }
@@ -46,6 +48,7 @@ Rectangle {
       Layout.preferredWidth: 30
       Layout.preferredHeight: 30
       radius: Theme.radiusSmall
+      antialiasing: true
       bordered: false
       color: root.selected ? "transparent" : Theme.controlBackground
       clip: true
@@ -89,6 +92,7 @@ Rectangle {
             required property int index
             width: 4; height: 4
             radius: Theme.radiusXs
+            antialiasing: true
             color: index === 4 ? Theme.textSecondary : Theme.border
           }
         }

@@ -22,6 +22,7 @@ Surface {
     // ── Geometry ───────────────────────────────────────────────
     level: 2
     radius: Theme.radiusMedium
+    antialiasing: true
     border.color: Theme.border
     clip: true
     implicitHeight: contentCol.implicitHeight + Theme.spaceMd * 2
@@ -39,6 +40,7 @@ Surface {
         anchors.leftMargin: Theme.borderWidth
         width: 3
         radius: width / 2
+        antialiasing: true
         color: root.urgency === 2 ? Theme.error : root.urgency === 0 ? Theme.textDisabled : Theme.accent
         visible: root.urgency !== 1
     }
@@ -76,6 +78,7 @@ Surface {
                 Layout.preferredWidth: 28
                 Layout.preferredHeight: 28
                 radius: Theme.radiusSmall
+                antialiasing: true
                 color: Theme.accent
 
                 Icon {

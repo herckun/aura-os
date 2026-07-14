@@ -26,6 +26,7 @@ Column {
     width: parent.width
     height: width * root.screenRatio
     radius: Theme.radiusMedium
+    antialiasing: true
     color: Theme.background
     border.width: Theme.borderWidth
     border.color: canvasDrop.containsDrag ? Theme.accent : Theme.borderVisible
@@ -59,6 +60,7 @@ Column {
         width: wRow.implicitWidth + Theme.spaceSm * 2
         height: 26
         radius: Theme.radiusSmall
+        antialiasing: true
         color: root.selectedId === pluginId ? Theme.accent
              : wma.containsMouse ? Theme.controlBackgroundHover : Qt.rgba(0, 0, 0, 0.75)
         border.width: Theme.borderWidth

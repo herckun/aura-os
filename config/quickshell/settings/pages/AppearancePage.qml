@@ -10,7 +10,17 @@ Column {
   spacing: Theme.spaceLg
   width: parent.width
 
-  PageHeader { title: "APPEARANCE" }
+  readonly property var _fontItems: {
+    var out = [{ label: "THEME DEFAULT", value: "" }]
+    var fams = Qt.fontFamilies()
+    for (var i = 0; i < fams.length; i++) {
+      if (fams[i].charAt(0) === ".") continue
+      out.push({ label: fams[i], value: fams[i] })
+    }
+    return out
+  }
+
+  PageHeader { title: "APPEARANCE"; description: "Themes, fonts, effects and shell mode" }
 
   Card {
     width: parent.width
@@ -34,6 +44,7 @@ Column {
           Layout.fillWidth: true
           Layout.preferredHeight: 68
           radius: Theme.radiusMedium
+          antialiasing: true
           color: themeCard._pc.background || "#000000"
           border.width: selected ? 2 : Theme.borderWidth
           border.color: selected ? Theme.accent : Theme.borderVisible
@@ -60,6 +71,7 @@ Column {
                   required property var modelData
                   width: 12; height: 12
                   radius: 6
+                  antialiasing: true
                   color: modelData
                 }
               }
@@ -121,6 +133,7 @@ Column {
         Rectangle {
           width: 10; height: 10
           radius: Theme.radiusSmall
+          antialiasing: true
           color: Theme.accentPure
         }
 
@@ -211,6 +224,81 @@ Column {
           opacity: AppearanceService.locked ? 0.4 : 1
           onToggled: (v) => AppearanceService.setBlur(v)
         }
+      }
+
+      Item {
+        width: parent.width
+        height: Theme.spaceSm
+        visible: Store.appearance.blur
+      }
+
+      SliderControl {
+        width: parent.width
+        visible: Store.appearance.blur
+        label: "BLUR AMOUNT"
+        from: 1
+        to: 10
+        stepSize: 1
+        displayMin: 1
+        displayMax: 10
+        value: Store.appearance.blurAmount
+        onMoved: (v) => AppearanceService.setBlurAmount(v)
+      }
+    }
+  }
+
+  Card {
+    width: parent.width
+    title: "TYPOGRAPHY"
+    description: "Fonts and text size across the shell"
+
+    Column {
+      width: parent.width
+      spacing: Theme.spaceMd
+
+      Repeater {
+        model: [
+          { key: "ui", label: "UI FONT", current: () => Theme.fontFamily, stored: () => Store.appearance.fontUi },
+          { key: "display", label: "DISPLAY FONT", current: () => Theme.fontFamilyDisplay, stored: () => Store.appearance.fontDisplay },
+          { key: "mono", label: "MONO FONT", current: () => Theme.fontFamilyMono, stored: () => Store.appearance.fontMono }
+        ]
+
+        delegate: Column {
+          id: fontRow
+          required property var modelData
+          width: parent.width
+          spacing: Theme.spaceXs
+
+          Text {
+            text: fontRow.modelData.label
+            color: Theme.textSecondary
+            font.pixelSize: Theme.fontSizeCaption
+            font.family: Theme.fontFamilyMono
+            font.letterSpacing: 0.08
+          }
+
+          SelectDropdown {
+            width: parent.width
+            placeholder: "THEME DEFAULT · " + fontRow.modelData.current()
+            value: fontRow.modelData.stored()
+            items: root._fontItems
+            fontRole: "value"
+            onItemSelected: (item) => AppearanceService.setFont(fontRow.modelData.key, item.value)
+          }
+        }
+      }
+
+      SliderControl {
+        width: parent.width
+        label: "FONT SIZE"
+        from: 0.8
+        to: 1.3
+        stepSize: 0.05
+        displayMin: 80
+        displayMax: 130
+        unit: "%"
+        value: Store.appearance.fontScale
+        onMoved: (v) => AppearanceService.setFontScale(v)
       }
     }
   }

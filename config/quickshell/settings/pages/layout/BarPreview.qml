@@ -20,6 +20,7 @@ Stage {
       width: parent.width
       height: zonesRow.implicitHeight + Theme.spaceXs * 2
       radius: Theme.radiusMedium
+      antialiasing: true
       color: Theme.panelBackground
       border.width: Theme.borderWidth
       border.color: Theme.borderVisible

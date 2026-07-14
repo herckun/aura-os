@@ -199,6 +199,7 @@ Item {
     width: widgetLoader.width * root.widgetScale + (root.showBackground ? Theme.spaceMd * 2 : 0)
     height: widgetLoader.height * root.widgetScale + (root.showBackground ? Theme.spaceMd * 2 : 0)
     radius: Theme.radiusMedium
+    antialiasing: true
     color: {
       if (!root.showBackground) return "transparent"
       var base = root._widgetBgColor

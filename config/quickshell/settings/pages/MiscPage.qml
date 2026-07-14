@@ -9,7 +9,7 @@ ColumnLayout {
   spacing: Theme.spaceLg
   width: parent.width
 
-  PageHeader { title: "MISC" }
+  PageHeader { title: "MISC"; description: "Additional shell options" }
 
   // ── Hot Areas ───────────────────────────────────────────────
   Card {

@@ -35,6 +35,7 @@ Column {
 
     PageHeader {
         title: "WALLPAPER"
+        description: "Backgrounds and auto-cycling"
     }
 
     // ── Preview + Actions Row ────────────────────────────────────────
@@ -51,6 +52,7 @@ Column {
             Surface {
                 anchors.fill: parent
                 radius: Theme.radiusLarge
+                antialiasing: true
                 level: 2
             }
 
@@ -69,6 +71,7 @@ Column {
                 anchors.fill: parent
                 anchors.margins: Theme.borderWidth
                 radius: Theme.radiusLarge
+                antialiasing: true
                 color: "white"
                 visible: false
             }
@@ -89,6 +92,7 @@ Column {
                 }
                 height: 32
                 radius: Theme.radiusLarge
+                antialiasing: true
                 gradient: Gradient {
                     GradientStop {
                         position: 0.0
@@ -126,6 +130,7 @@ Column {
                 width: dlText.implicitWidth + Theme.spaceSm * 2
                 height: dlText.implicitHeight + Theme.spaceXs * 2
                 radius: Theme.radiusSmall
+                antialiasing: true
                 color: Theme.accent
                 visible: WallpaperService.downloadStatus !== ""
 
@@ -400,6 +405,7 @@ Column {
                         id: tileBg
                         anchors.fill: parent
                         radius: Theme.radiusSmall
+                        antialiasing: true
                         color: Theme.backgroundTertiary
                         border.width: parent.isCurrent ? 2 : 0
                         border.color: Theme.accent
@@ -432,6 +438,7 @@ Column {
                         id: tileMask
                         anchors.fill: parent
                         radius: Theme.radiusSmall
+                        antialiasing: true
                         color: "white"
                         visible: false
                     }
@@ -447,6 +454,7 @@ Column {
                         id: tileOverlay
                         anchors.fill: parent
                         radius: Theme.radiusSmall
+                        antialiasing: true
                         color: parent.hovered ? "#80000000" : "#30000000"
                         visible: !modelData.isPickMore && (parent.hovered || parent.isCurrent)
                         Behavior on color {
@@ -507,6 +515,7 @@ Column {
                         width: 20
                         height: 20
                         radius: Theme.radiusSmall
+                        antialiasing: true
                         color: Theme.accent
                         visible: parent.isCurrent
                         Behavior on scale {
@@ -530,6 +539,7 @@ Column {
                     Surface {
                         anchors.fill: parent
                         radius: Theme.radiusSmall
+                        antialiasing: true
                         color: pickMoreHover.containsMouse ? Theme.controlBackgroundHover : Theme.backgroundTertiary
                         visible: modelData.isPickMore
                         Behavior on color {

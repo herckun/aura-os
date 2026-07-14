@@ -27,6 +27,7 @@ Card {
         width: parent.width
         height: 52
         radius: Theme.radiusSmall
+        antialiasing: true
         color: rowMa.containsMouse && hasUrl ? Theme.controlBackgroundHover : Theme.controlBackground
         border.width: Theme.borderWidth
         border.color: rowMa.containsMouse && hasUrl ? Theme.borderActive : Theme.border
@@ -43,6 +44,7 @@ Card {
             Layout.preferredWidth: 32
             Layout.preferredHeight: 32
             radius: Theme.radiusSmall
+            antialiasing: true
             color: Theme.backgroundTertiary
             border.width: Theme.borderWidth
             border.color: Theme.borderVisible

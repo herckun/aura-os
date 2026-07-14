@@ -11,6 +11,7 @@ Rectangle {
 
   color: Theme.background
   radius: Theme.radiusMedium
+  antialiasing: true
 
   DotMatrixBackground {
     anchors.fill: parent

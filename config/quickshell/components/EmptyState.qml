@@ -21,6 +21,7 @@ Column {
     width: 56
     height: 56
     radius: width / 2
+    antialiasing: true
     bordered: false
     color: Theme.controlBackground
     anchors.horizontalCenter: parent.horizontalCenter

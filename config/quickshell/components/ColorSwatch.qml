@@ -14,6 +14,7 @@ Rectangle {
     implicitWidth: 60
     implicitHeight: 64
     radius: Theme.radiusMedium
+    antialiasing: true
     color: {
         if (root.selected)
             return Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.06);
@@ -50,6 +51,7 @@ Rectangle {
             width: 28
             height: 28
             radius: Theme.radiusPill
+            antialiasing: true
             color: root.swatchColor
             border.width: root.selected ? 3 : 1
             border.color: root.selected ? Theme.background : Theme.overlay(0.08)
@@ -73,6 +75,7 @@ Rectangle {
                 width: 16
                 height: 16
                 radius: Theme.radiusPill
+                antialiasing: true
                 color: Qt.rgba(0, 0, 0, 0.5)
                 opacity: root.selected ? 1 : 0
                 scale: root.selected ? 1 : 0.4

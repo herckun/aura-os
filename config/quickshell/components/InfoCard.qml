@@ -12,6 +12,7 @@ Surface {
   width: parent.width
   height: Theme.controlHeight + Theme.spaceXs
   radius: Theme.radiusMedium
+  antialiasing: true
 
   RowLayout {
     anchors { fill: parent; leftMargin: Theme.controlPadding; rightMargin: Theme.controlPadding }

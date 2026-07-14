@@ -26,7 +26,7 @@ FloatingWindow {
     try { raise() } catch (e) {}
   }
 
-  property string currentPane: "dashboard"
+  property string currentPane: "power"
   property string _pendingPane: ""
   property bool _loading: false
   property bool _pageReady: false
@@ -52,7 +52,7 @@ FloatingWindow {
 
   function getPageSource(pane: string): string {
     switch (pane) {
-      case "dashboard": return "pages/DashboardPage.qml"
+      case "power": return "pages/PowerPage.qml"
       case "appearance": return "pages/AppearancePage.qml"
       case "wallpaper": return "pages/WallpaperPage.qml"
       case "display": return "pages/DisplayPage.qml"
@@ -64,7 +64,7 @@ FloatingWindow {
       case "plugins": return "pages/layout/LayoutPage.qml"
       case "misc": return "pages/MiscPage.qml"
       case "about": return "pages/AboutPage.qml"
-      default: return "pages/DashboardPage.qml"
+      default: return "pages/PowerPage.qml"
     }
   }
 
@@ -90,6 +90,7 @@ FloatingWindow {
     width: parent.width
     height: 56
     radius: Theme.radiusLarge
+    antialiasing: true
     color: "transparent"
 
     RowLayout {
@@ -148,6 +149,7 @@ FloatingWindow {
       Layout.topMargin: Theme.spaceMd
       Layout.bottomMargin: Theme.spaceMd
       radius: Theme.radiusLarge
+      antialiasing: true
       color: Theme.transparencyEnabled
         ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.06)
         : Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.04)
@@ -158,7 +160,7 @@ FloatingWindow {
         id: navList
         anchors { fill: parent; margins: Theme.spaceSm }
         model: ListModel {
-          ListElement { sid: "dashboard";    icon: "grid";       label: "DASHBOARD" }
+          ListElement { sid: "power";        icon: "bolt";       label: "POWER" }
           ListElement { sid: "display";      icon: "monitor";    label: "DISPLAY" }
           ListElement { sid: "audio";        icon: "volume";     label: "AUDIO" }
           ListElement { sid: "connectivity"; icon: "wifi";       label: "CONNECTIVITY" }
@@ -242,6 +244,7 @@ FloatingWindow {
         contentItem: Rectangle {
           implicitWidth: 4
           radius: Theme.radiusXs
+          antialiasing: true
           color: Theme.borderVisible
         }
       }

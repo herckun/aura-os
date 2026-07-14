@@ -30,6 +30,7 @@ Item {
     width: root.fill ? (root.dragging ? root._pressWidth : root.width) : chipRow.implicitWidth + Theme.spaceSm * 2
     height: 30
     radius: Theme.radiusSmall
+    antialiasing: true
     color: root.selected ? Theme.accent
          : ma.drag.active ? Theme.controlBackgroundPressed
          : ma.containsMouse ? Theme.controlBackgroundHover

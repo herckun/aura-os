@@ -124,6 +124,7 @@ PanelWindow {
     id: bg
     anchors.fill: parent
     radius: Theme.radiusLarge
+    antialiasing: true
 
     Column {
       id: contentCol
@@ -154,6 +155,7 @@ PanelWindow {
               Layout.preferredWidth: 44
               Layout.preferredHeight: 44
               radius: Theme.radiusMedium
+              antialiasing: true
               color: Theme.backgroundTertiary
               border.width: Theme.borderWidth
               border.color: Theme.border

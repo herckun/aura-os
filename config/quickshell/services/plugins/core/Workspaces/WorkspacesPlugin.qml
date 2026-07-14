@@ -92,6 +92,7 @@ BasePlugin {
           Surface {
             anchors.fill: parent
             radius: Theme.radiusMedium
+            antialiasing: true
             color: tileDelegate.isActive ? Theme.controlBackgroundActive : Theme.backgroundSecondary
             border.color: tileDelegate.isActive ? Theme.borderActive : Theme.border
 
@@ -113,6 +114,7 @@ BasePlugin {
               Rectangle {
                 width: 6; height: 6
                 radius: Theme.radiusSmall
+                antialiasing: true
                 color: tileDelegate.isActive ? Theme.accent : Theme.textDisabled
                 anchors.verticalCenter: parent.verticalCenter
               }

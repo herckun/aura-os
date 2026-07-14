@@ -129,10 +129,10 @@ Singleton {
   readonly property int animationSlow: animationsEnabled ? _a("slow") : 0
   readonly property int animationVerySlow: (animationsEnabled ? _a("slow") : 0) * 10
 
-  readonly property string fontFamily: _t("fontFamily")
-  readonly property string fontFamilyDisplay: _t("fontFamilyDisplay")
+  readonly property string fontFamily: _userFont(Store.appearance.fontUi, "fontFamily")
+  readonly property string fontFamilyDisplay: _userFont(Store.appearance.fontDisplay, "fontFamilyDisplay")
   readonly property string fontFamilyDeco: _t("fontFamilyDeco")
-  readonly property string fontFamilyMono: _t("fontFamilyMono")
+  readonly property string fontFamilyMono: _userFont(Store.appearance.fontMono, "fontFamilyMono")
   readonly property string fontFamilyIcons: _t("fontFamilyIcons")
 
   readonly property int fontSizeMicro: _ts("micro")
@@ -150,7 +150,7 @@ Singleton {
 
   readonly property var sizePresets: {
     var raw = _data.sizes || {}
-    var scale = _style.typography && _style.typography.fontSizeScale ? _style.typography.fontSizeScale : 1.0
+    var scale = (_style.typography && _style.typography.fontSizeScale ? _style.typography.fontSizeScale : 1.0) * fontUserScale
     var out = {}
     for (var k in raw) {
       var p = raw[k]
@@ -199,6 +199,13 @@ Singleton {
     return _firstAvailableFamily(raw)
   }
 
+  function _userFont(pref: string, key: string): string {
+    if (pref && root._installedFonts.indexOf(pref) >= 0) return pref
+    return _t(key)
+  }
+
+  readonly property real fontUserScale: Math.max(0.7, Math.min(1.4, Store.appearance.fontScale || 1.0))
+
   function _firstAvailableFamily(raw: string): string {
     if (!raw) return ""
     var parts = raw.split(",")
@@ -216,7 +223,7 @@ Singleton {
   function _ts(key: string): int {
     var base = _data.typography && _data.typography.sizes ? (_data.typography.sizes[key] ?? 11) : 11
     var scale = _style.typography && _style.typography.fontSizeScale ? _style.typography.fontSizeScale : 1.0
-    return Math.round(base * scale)
+    return Math.round(base * scale * fontUserScale)
   }
 
   function _luminance(c: color): real {

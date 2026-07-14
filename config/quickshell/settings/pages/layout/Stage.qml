@@ -13,6 +13,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: Theme.radiusMedium
+    antialiasing: true
     color: Theme.background
     border.width: Theme.borderWidth
     border.color: Theme.borderVisible

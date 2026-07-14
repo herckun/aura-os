@@ -21,6 +21,7 @@ Surface {
     bordered: true
     padding: Theme.spaceSm
     radius: Theme.radiusMedium
+    antialiasing: true
     clip: true
     color: (root.hoverHighlight && hover.hovered) ? Theme.controlBackgroundHover : "transparent"
 

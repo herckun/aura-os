@@ -37,6 +37,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: Theme.radiusSmall
+    antialiasing: true
     color: zone.dragOver ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.08) : zone.bare ? "transparent" : Theme.controlBackground
     border.width: Theme.borderWidth
     border.color: zone.dragOver ? Theme.accent : zone.bare ? "transparent" : Theme.border
@@ -124,6 +125,7 @@ Item {
     visible: zone.dragOver && zone.insertIndex >= 0
     color: Theme.accent
     radius: 1
+    antialiasing: true
     width: zone.vertical ? flow.width : 2
     height: zone.vertical ? 2 : 30
     x: zone._indicatorPt.x

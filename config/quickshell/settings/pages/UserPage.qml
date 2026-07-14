@@ -13,6 +13,7 @@ Column {
 
     PageHeader {
         title: "USER"
+        description: "Profile, avatar and session"
     }
 
     Card {
@@ -45,6 +46,7 @@ Column {
                     Rectangle {
                         anchors.fill: parent
                         radius: width / 2
+                        antialiasing: true
                         color: Qt.rgba(0, 0, 0, 0.55)
                         visible: avatarMa.containsMouse
 

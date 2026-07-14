@@ -22,6 +22,7 @@ Stage {
      : root.align === "left" ? 0
      : Math.round((parent.width - width) / 2)
     radius: Theme.radiusLarge
+    antialiasing: true
     color: Theme.panelBackground
     border.width: Theme.borderWidth
     border.color: Theme.borderVisible

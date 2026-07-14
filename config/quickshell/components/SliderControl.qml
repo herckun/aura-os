@@ -118,6 +118,7 @@ Column {
         width: parent.width
         height: 32
         radius: Theme.radiusPill
+        antialiasing: true
         color: Theme.backgroundTertiary
         border.width: Theme.borderWidth
         border.color: Theme.border
@@ -149,6 +150,7 @@ Column {
                 anchors.rightMargin: Theme.spaceXs
                 height: 6
                 radius: Theme.radiusSmall
+                antialiasing: true
                 color: Theme.border
             }
 
@@ -166,6 +168,7 @@ Column {
                     width: root._hasThresholds ? track.width : fillClip.width
                     height: 6
                     radius: Theme.radiusSmall
+                    antialiasing: true
                     color: root.fillColor()
 
                     gradient: root._hasThresholds ? gradientStops : null

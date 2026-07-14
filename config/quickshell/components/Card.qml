@@ -19,6 +19,7 @@ Item {
   Surface {
     anchors.fill: parent
     radius: Theme.radiusMedium
+    antialiasing: true
     border.color: Theme.border
   }
 

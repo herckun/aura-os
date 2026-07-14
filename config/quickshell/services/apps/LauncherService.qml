@@ -69,7 +69,7 @@ Singleton {
   function index(): void {
     if (svc._indexing) return
     svc._indexing = true
-    ProcessPool.runTracked("Index desktops", [AppInfo.configHome + "/features/system/index-desktops.sh"], {
+    ProcessPool.runTracked("Index desktops", ["bash", AppInfo.configHome + "/features/system/index-desktops.sh"], {
       id: "index-desktops",
       callback: function(r) {
         if (r.exitCode !== 0) {

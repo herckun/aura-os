@@ -10,6 +10,7 @@ Rectangle {
   width: _label.implicitWidth + Theme.spaceSm * 2
   height: _label.implicitHeight + Theme.spaceXs * 2
   radius: Theme.radiusXs
+  antialiasing: true
   color: accent ? Theme.accent : Theme.backgroundTertiary
   border.width: accent ? 0 : 1
   border.color: Theme.controlBorder

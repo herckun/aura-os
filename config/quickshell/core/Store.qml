@@ -24,6 +24,8 @@ Singleton {
   property alias plugins: adapter.plugins
   property alias desktop: adapter.desktop
   property alias lock: adapter.lock
+  property alias display: adapter.display
+  property alias power: adapter.power
 
   function toArray(v: var): var {
     var out = []
@@ -77,6 +79,11 @@ Singleton {
         property bool blur: true
         property bool transparency: true
         property bool barFloating: false
+        property int blurAmount: 4
+        property real fontScale: 1.0
+        property string fontUi: ""
+        property string fontDisplay: ""
+        property string fontMono: ""
       }
 
       property JsonObject theme: JsonObject {
@@ -156,6 +163,18 @@ Singleton {
 
       property JsonObject lock: JsonObject {
         property bool autoLock: true
+        property int autoLockMinutes: 5
+      }
+
+      property JsonObject display: JsonObject {
+        property string primary: ""
+      }
+
+      property JsonObject power: JsonObject {
+        property bool autoSuspend: false
+        property int autoSuspendMinutes: 30
+        property bool autoBatterySaver: false
+        property int autoBatterySaverThreshold: 20
       }
     }
   }

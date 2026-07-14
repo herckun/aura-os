@@ -26,9 +26,22 @@ Singleton {
     //  PUBLIC API
     // ═══════════════════════════════════════════════════════════════
 
+    readonly property string primaryOutput: {
+        var stored = Store.display.primary;
+        for (var i = 0; i < monitors.length; i++) {
+            if (stored && monitors[i].name === stored)
+                return stored;
+        }
+        for (var j = 0; j < monitors.length; j++) {
+            if (monitors[j].focused)
+                return monitors[j].name;
+        }
+        return monitors.length > 0 ? (monitors[0].name || "") : "";
+    }
+
     function detectMonitors(): void {
         detecting = true;
-        HyprlandService.hyprctlJson("monitors", "monitor-detect", function (data, r) {
+        HyprlandService.hyprctlJson("monitors all", "monitor-detect", function (data, r) {
             detecting = false;
             if (Array.isArray(data)) {
                 monitors = data;
@@ -39,30 +52,50 @@ Singleton {
         });
     }
 
-    function updateMonitor(output: string, mode: string, scale: string, position: string): void {
+    function monitorByName(name: string): var {
+        for (var i = 0; i < monitors.length; i++) {
+            if (monitors[i].name === name)
+                return monitors[i];
+        }
+        return null;
+    }
+
+    function updateMonitor(output: string, patch: var): void {
         _snapshotIfNeeded();
         var copy = [];
         var found = false;
         for (var i = 0; i < configEntries.length; i++) {
             var entry = Object.assign({}, configEntries[i]);
             if (entry.output === output) {
-                entry.mode = mode;
-                entry.scale = scale;
-                entry.position = position;
+                entry = Object.assign(entry, patch);
                 found = true;
             }
             copy.push(entry);
         }
         if (!found) {
-            copy.push({
-                output: output,
-                mode: mode,
-                scale: scale,
-                position: position
-            });
+            copy.push(Object.assign(_entryDefaults(output), patch));
         }
         configEntries = copy;
         hasPending = true;
+    }
+
+    function setPrimary(output: string): void {
+        Store.display.primary = output;
+        var mon = monitorByName(output);
+        if (!mon)
+            return;
+        var dx = -(mon.x || 0);
+        var dy = -(mon.y || 0);
+        if (dx === 0 && dy === 0)
+            return;
+        for (var i = 0; i < monitors.length; i++) {
+            var m = monitors[i];
+            if (m.disabled)
+                continue;
+            updateMonitor(m.name, {
+                position: ((m.x || 0) + dx) + "x" + ((m.y || 0) + dy)
+            });
+        }
     }
 
     function removeMonitorConfig(output: string): void {
@@ -79,14 +112,7 @@ Singleton {
 
     function resetToDefaults(): void {
         _snapshotIfNeeded();
-        configEntries = [
-            {
-                output: "",
-                mode: "preferred",
-                position: "auto",
-                scale: "1.0"
-            }
-        ];
+        configEntries = [_entryBase()];
         hasPending = true;
     }
 
@@ -236,6 +262,112 @@ Singleton {
         };
     }
 
+    property bool identifyVisible: false
+
+    function identify(): void {
+        identifyVisible = true;
+        _identifyTimer.restart();
+    }
+
+    property Timer _identifyTimer: Timer {
+        interval: 2500
+        repeat: false
+        onTriggered: svc.identifyVisible = false
+    }
+
+    function getResolutionOptions(monitor: var): var {
+        var out = [
+            { label: "PREFERRED", value: "preferred" },
+            { label: "HIGHEST RESOLUTION", value: "highres" },
+            { label: "HIGHEST REFRESH", value: "highrr" }
+        ];
+        var modes = getAvailableModes(monitor);
+        var seen = ({});
+        for (var i = 0; i < modes.length; i++) {
+            var key = modes[i].width + "x" + modes[i].height;
+            if (seen[key])
+                continue;
+            seen[key] = true;
+            out.push({ label: key, value: key });
+        }
+        return out;
+    }
+
+    function getRefreshOptions(monitor: var, res: string): var {
+        var modes = getAvailableModes(monitor);
+        var out = [];
+        var seen = ({});
+        for (var i = 0; i < modes.length; i++) {
+            var key = modes[i].width + "x" + modes[i].height;
+            if (key !== res)
+                continue;
+            var lbl = Math.round(modes[i].refreshRate * 100) / 100 + " HZ";
+            if (seen[lbl])
+                continue;
+            seen[lbl] = true;
+            out.push({ label: lbl, value: modes[i].value });
+        }
+        return out;
+    }
+
+    function bestModeForResolution(monitor: var, res: string): string {
+        var opts = getRefreshOptions(monitor, res);
+        return opts.length > 0 ? opts[0].value : "preferred";
+    }
+
+    function getTransformOptions(): var {
+        return [
+            { label: "NORMAL", value: 0 },
+            { label: "90°", value: 1 },
+            { label: "180°", value: 2 },
+            { label: "270°", value: 3 },
+            { label: "FLIPPED", value: 4 },
+            { label: "FLIPPED 90°", value: 5 },
+            { label: "FLIPPED 180°", value: 6 },
+            { label: "FLIPPED 270°", value: 7 }
+        ];
+    }
+
+    function getVrrOptions(): var {
+        return [
+            { label: "OFF", value: 0 },
+            { label: "ON", value: 1 },
+            { label: "FULLSCREEN ONLY", value: 2 },
+            { label: "FULLSCREEN MEDIA", value: 3 }
+        ];
+    }
+
+    function getBitdepthOptions(): var {
+        return [
+            { label: "8-BIT", value: 8 },
+            { label: "10-BIT", value: 10 }
+        ];
+    }
+
+    function getCmOptions(): var {
+        return [
+            { label: "SRGB (DEFAULT)", value: "" },
+            { label: "AUTO", value: "auto" },
+            { label: "DCI-P3", value: "dcip3" },
+            { label: "APPLE P3", value: "dp3" },
+            { label: "ADOBE RGB", value: "adobe" },
+            { label: "WIDE GAMUT", value: "wide" },
+            { label: "EDID", value: "edid" },
+            { label: "HDR", value: "hdr" },
+            { label: "HDR EDID", value: "hdredid" }
+        ];
+    }
+
+    function getMirrorOptions(forOutput: string): var {
+        var opts = [{ label: "NONE", value: "" }];
+        for (var i = 0; i < monitors.length; i++) {
+            var name = monitors[i].name || "";
+            if (name && name !== forOutput)
+                opts.push({ label: name, value: name });
+        }
+        return opts;
+    }
+
     function getScaleOptions(): var {
         return [
             {
@@ -273,6 +405,44 @@ Singleton {
     //  PRIVATE HELPERS
     // ═══════════════════════════════════════════════════════════════
 
+    function _entryBase(): var {
+        return {
+            output: "",
+            mode: "preferred",
+            position: "auto",
+            scale: "1.0",
+            transform: 0,
+            mirror: "",
+            disabled: false,
+            vrr: 0,
+            bitdepth: 8,
+            cm: "",
+            sdrbrightness: 1.0,
+            sdrsaturation: 1.0
+        };
+    }
+
+    function _entryDefaults(output: string): var {
+        var entry = _entryBase();
+        entry.output = output;
+        var mon = monitorByName(output);
+        if (!mon)
+            return entry;
+        var rawMode = _findMatchingMode(mon);
+        entry.mode = rawMode || "preferred";
+        entry.position = (mon.x || 0) + "x" + (mon.y || 0);
+        entry.scale = String(mon.scale || 1).replace(/^(\d+)$/, "$1.0");
+        entry.transform = mon.transform || 0;
+        entry.mirror = mon.mirrorOf && mon.mirrorOf !== "none" ? mon.mirrorOf : "";
+        entry.disabled = !!mon.disabled;
+        entry.vrr = mon.vrr ? 1 : 0;
+        entry.bitdepth = mon.currentFormat && mon.currentFormat.indexOf("2101010") >= 0 ? 10 : 8;
+        entry.cm = mon.colorManagementPreset && mon.colorManagementPreset !== "srgb" ? mon.colorManagementPreset : "";
+        entry.sdrbrightness = mon.sdrBrightness || 1.0;
+        entry.sdrsaturation = mon.sdrSaturation || 1.0;
+        return entry;
+    }
+
     function _snapshotIfNeeded(): void {
         if (!_previousConfig && hasPending === false) {
             _previousConfig = configEntries.map(function (e) {
@@ -298,15 +468,9 @@ Singleton {
             }
 
             if (existingConfig) {
-                merged.push(Object.assign({}, existingConfig));
+                merged.push(Object.assign(_entryBase(), existingConfig));
             } else {
-                var rawMode = _findMatchingMode(mon);
-                merged.push({
-                    output: output,
-                    mode: rawMode || "preferred",
-                    position: (mon.x || 0) + "x" + (mon.y || 0),
-                    scale: String(mon.scale || 1).replace(/^(\d+)$/, "$1.0")
-                });
+                merged.push(_entryDefaults(output));
             }
         }
 
@@ -331,9 +495,27 @@ Singleton {
             var e = entries[i];
             lines.push('hl.monitor({');
             lines.push('  output   = "' + (e.output || "") + '",');
-            lines.push('  mode     = "' + (e.mode || "preferred") + '",');
-            lines.push('  position = "' + (e.position || "auto") + '",');
-            lines.push('  scale    = "' + (e.scale || "1.0") + '",');
+            if (e.disabled) {
+                lines.push('  disabled = true,');
+            } else {
+                lines.push('  mode     = "' + (e.mode || "preferred") + '",');
+                lines.push('  position = "' + (e.position || "auto") + '",');
+                lines.push('  scale    = "' + (e.scale || "1.0") + '",');
+                if (e.mirror)
+                    lines.push('  mirror   = "' + e.mirror + '",');
+                if (e.transform)
+                    lines.push('  transform = ' + e.transform + ',');
+                if (e.vrr)
+                    lines.push('  vrr      = ' + e.vrr + ',');
+                if (e.bitdepth === 10)
+                    lines.push('  bitdepth = 10,');
+                if (e.cm)
+                    lines.push('  cm       = "' + e.cm + '",');
+                if (e.sdrbrightness !== undefined && Math.abs(e.sdrbrightness - 1.0) > 0.001)
+                    lines.push('  sdrbrightness = ' + Number(e.sdrbrightness).toFixed(2) + ',');
+                if (e.sdrsaturation !== undefined && Math.abs(e.sdrsaturation - 1.0) > 0.001)
+                    lines.push('  sdrsaturation = ' + Number(e.sdrsaturation).toFixed(2) + ',');
+            }
             lines.push('})');
             if (i < entries.length - 1)
                 lines.push('');
@@ -379,14 +561,7 @@ Singleton {
             silent: true,
             callback: function (r) {
                 if (r.exitCode !== 0) {
-                    configEntries = [
-                        {
-                            output: "",
-                            mode: "preferred",
-                            position: "auto",
-                            scale: "1.0"
-                        }
-                    ];
+                    configEntries = [_entryBase()];
                     loaded = true;
                     return;
                 }
@@ -402,12 +577,7 @@ Singleton {
 
         for (var i = 1; i < blocks.length; i++) {
             var block = blocks[i];
-            var entry = {
-                output: "",
-                mode: "preferred",
-                position: "auto",
-                scale: "1.0"
-            };
+            var entry = _entryBase();
 
             var outputMatch = block.match(/output\s*=\s*"([^"]*)"/);
             if (outputMatch)
@@ -425,20 +595,44 @@ Singleton {
             if (scaleMatch)
                 entry.scale = scaleMatch[1];
 
+            var trMatch = block.match(/transform\s*=\s*(\d+)/);
+            if (trMatch)
+                entry.transform = parseInt(trMatch[1]);
+
+            var mirMatch = block.match(/mirror\s*=\s*"([^"]*)"/);
+            if (mirMatch)
+                entry.mirror = mirMatch[1];
+
+            if (block.match(/disabled\s*=\s*true/))
+                entry.disabled = true;
+
+            var vrrMatch = block.match(/vrr\s*=\s*(\d+)/);
+            if (vrrMatch)
+                entry.vrr = parseInt(vrrMatch[1]);
+
+            var bdMatch = block.match(/bitdepth\s*=\s*(\d+)/);
+            if (bdMatch)
+                entry.bitdepth = parseInt(bdMatch[1]);
+
+            var cmMatch = block.match(/cm\s*=\s*"([^"]*)"/);
+            if (cmMatch)
+                entry.cm = cmMatch[1];
+
+            var sbMatch = block.match(/sdrbrightness\s*=\s*([\d.]+)/);
+            if (sbMatch)
+                entry.sdrbrightness = parseFloat(sbMatch[1]);
+
+            var ssMatch = block.match(/sdrsaturation\s*=\s*([\d.]+)/);
+            if (ssMatch)
+                entry.sdrsaturation = parseFloat(ssMatch[1]);
+
             entries.push(entry);
         }
 
         if (entries.length > 0) {
             configEntries = entries;
         } else {
-            configEntries = [
-                {
-                    output: "",
-                    mode: "preferred",
-                    position: "auto",
-                    scale: "1.0"
-                }
-            ];
+            configEntries = [_entryBase()];
         }
     }
 
@@ -461,6 +655,13 @@ Singleton {
         interval: 700
         repeat: false
         onTriggered: svc.detectMonitors()
+    }
+
+    Connections {
+        target: HyprlandService
+        function onMonitorLayoutChanged() {
+            svc._redetectTimer.restart();
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════

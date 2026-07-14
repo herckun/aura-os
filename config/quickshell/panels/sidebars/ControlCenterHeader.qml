@@ -6,113 +6,133 @@ import "../../services"
 import "../../components"
 
 Section {
+  id: header
   borderEnabled: false
   transparentBg: true
   paddingX: 0
   paddingY: 0
 
+  property bool menuOpen: false
+  readonly property Item menuAnchor: idHit
+
+  readonly property var _menuActions: [
+    { icon: "user",      label: "PROFILE",   act: "profile", group: 0 },
+    { icon: "settings",  label: "SETTINGS",  act: "settings", group: 0 },
+    { icon: "refresh",   label: "RELOAD SHELL", act: "reload", group: 0 },
+    { icon: "lock",      label: "LOCK",      act: "lock", group: 1 },
+    { icon: "moon",      label: "SUSPEND",   act: "cmd", cmd: ["systemctl", "suspend"], group: 1 },
+    { icon: "snowflake", label: "HIBERNATE", act: "cmd", cmd: ["systemctl", "hibernate"], group: 1 },
+    { icon: "logout",    label: "LOG OUT",   act: "cmd", cmd: ["hyprctl", "dispatch", "exit"], group: 2 },
+    { icon: "restart",   label: "REBOOT",    act: "cmd", cmd: ["systemctl", "reboot"], danger: true, group: 2 },
+    { icon: "power",     label: "SHUT DOWN", act: "cmd", cmd: ["systemctl", "poweroff"], danger: true, group: 2 }
+  ]
+
+  function _runAction(a: var): void {
+    header.menuOpen = false
+    switch (a.act) {
+    case "profile":
+      ControlCenterService.visible = false
+      IpcService.navigatePanel("settings", "user")
+      return
+    case "settings":
+      ControlCenterService.visible = false
+      IpcService.togglePanel("settings")
+      return
+    case "reload":
+      ProcessPool.runDetached("hyprctl reload && pkill -TERM -x qs && sleep 1 && nohup qs >/dev/null 2>&1 &", { shell: true })
+      return
+    case "lock":
+      ControlCenterService.visible = false
+      LockService.lock()
+      return
+    default:
+      ProcessPool.runDetached(a.cmd)
+    }
+  }
+
+  Connections {
+    target: ControlCenterService
+    function onVisibleChanged() {
+      if (!ControlCenterService.visible)
+        header.menuOpen = false
+    }
+  }
+
   ColumnLayout {
     width: parent.width
     spacing: Theme.spaceSm
 
-    RowLayout {
+    Rectangle {
+      id: idHit
       Layout.fillWidth: true
-      spacing: Theme.spaceSm
+      implicitHeight: idRow.implicitHeight + Theme.spaceXs * 2
+      radius: Theme.radiusMedium
+      antialiasing: true
+      color: idMa.containsMouse || header.menuOpen
+        ? Theme.controlBackgroundHover
+        : "transparent"
 
-      Item {
-        Layout.fillWidth: true
-        implicitHeight: idRow.implicitHeight
+      Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
 
-        RowLayout {
-          id: idRow
-          anchors.fill: parent
-          spacing: Theme.spaceSm
+      RowLayout {
+        id: idRow
+        anchors.fill: parent
+        anchors.leftMargin: Theme.spaceXs
+        anchors.rightMargin: Theme.spaceSm
+        spacing: Theme.spaceSm
 
-          Avatar {
-            Layout.alignment: Qt.AlignVCenter
-            size: 34
-            source: UserService.avatarSource
-            fallbackText: UserService.initial
-            ringColor: idMa.containsMouse ? Theme.accent : Theme.borderVisible
+        Avatar {
+          Layout.alignment: Qt.AlignVCenter
+          size: 34
+          source: UserService.avatarSource
+          fallbackText: UserService.initial
+          ringColor: idMa.containsMouse || header.menuOpen ? Theme.accent : Theme.borderVisible
+        }
+
+        ColumnLayout {
+          Layout.fillWidth: true
+          Layout.alignment: Qt.AlignVCenter
+          spacing: 0
+
+          Text {
+            text: "HELLO,"
+            color: Theme.textDisabled
+            font.pixelSize: Theme.fontSizeMicro
+            font.family: Theme.fontFamilyMono
+            font.letterSpacing: 0.16
           }
 
-          ColumnLayout {
+          Text {
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
-            spacing: 0
+            text: UserService.displayName.toUpperCase()
+            color: idMa.containsMouse || header.menuOpen ? Theme.accent : Theme.textPrimary
+            font.pixelSize: Theme.fontSizeCaption
+            font.family: Theme.fontFamilyMono
+            font.weight: Font.Bold
+            font.letterSpacing: 0.14
+            elide: Text.ElideRight
 
-            Text {
-              text: "HELLO,"
-              color: Theme.textDisabled
-              font.pixelSize: Theme.fontSizeMicro
-              font.family: Theme.fontFamilyMono
-              font.letterSpacing: 0.16
-            }
-
-            Text {
-              Layout.fillWidth: true
-              text: UserService.displayName.toUpperCase()
-              color: idMa.containsMouse ? Theme.accent : Theme.textPrimary
-              font.pixelSize: Theme.fontSizeCaption
-              font.family: Theme.fontFamilyMono
-              font.weight: Font.Bold
-              font.letterSpacing: 0.14
-              elide: Text.ElideRight
-
-              Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
-            }
+            Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
           }
         }
 
-        MouseArea {
-          id: idMa
-          anchors.fill: parent
-          hoverEnabled: true
-          cursorShape: Qt.PointingHandCursor
-          onClicked: {
-            IpcService.navigatePanel("settings", "user")
-            IpcService.togglePanel("controlcenter")
-          }
+        Icon {
+          Layout.alignment: Qt.AlignVCenter
+          source: Icons.get("caret-down")
+          size: 10
+          color: idMa.containsMouse || header.menuOpen ? Theme.accent : Theme.textDisabled
+          rotation: header.menuOpen ? 180 : 0
+
+          Behavior on rotation { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationFast; easing.type: Easing.OutCubic } }
         }
       }
 
-      ButtonGroup {
-        Layout.alignment: Qt.AlignVCenter
-
-        Button { shape: "circle";
-          icon: "settings"
-          size: "md"
-          buttonWidth: 30
-          buttonHeight: 30
-          iconSize: 14
-          onClicked: IpcService.togglePanel("settings")
-        }
-
-        Button { shape: "circle";
-          icon: "refresh"
-          size: "md"
-          buttonWidth: 30
-          buttonHeight: 30
-          iconSize: 14
-          onClicked: {
-            ProcessPool.runDetached("hyprctl reload && pkill -TERM -x qs && sleep 1 && nohup qs >/dev/null 2>&1 &", { shell: true })
-          }
-        }
-
-        Button { shape: "circle";
-          icon: "power"
-          size: "md"
-          buttonWidth: 30
-          buttonHeight: 30
-          iconSize: 14
-          actionId: "power"
-          onClicked: {
-            ProcessPool.runQueued("Power", ["wleave", "-m", Theme.wleaveSize, "-p", "layer-shell"], {
-              silent: true,
-              id: "power",
-            })
-          }
-        }
+      MouseArea {
+        id: idMa
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: header.menuOpen = !header.menuOpen
       }
     }
 

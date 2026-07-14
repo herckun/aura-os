@@ -86,6 +86,7 @@ Item {
       id: dialogCard
       anchors.fill: parent
       radius: Theme.radiusMedium
+      antialiasing: true
       color: Theme.backgroundSecondary
       border.width: Theme.borderWidth
       border.color: Theme.borderVisible

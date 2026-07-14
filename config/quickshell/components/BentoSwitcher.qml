@@ -45,6 +45,7 @@ Column {
         Rectangle {
           anchors.fill: parent
           radius: Theme.radiusMedium
+          antialiasing: true
           color: cell.selected ? Qt.rgba(root._sc.r, root._sc.g, root._sc.b, 0.15) :
             cell.hovered ? Theme.controlBackgroundHover :
             Theme.backgroundTertiary

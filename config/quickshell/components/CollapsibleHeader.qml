@@ -14,6 +14,7 @@ Rectangle {
   implicitWidth: contentRow.implicitWidth + chevron.width + Theme.spaceSm * 2 + Theme.spaceXs
   implicitHeight: contentRow.implicitHeight + Theme.spaceSm * 2
   radius: Theme.radiusSmall
+  antialiasing: true
   color: headerMa.containsMouse ? Theme.controlBackgroundHover : "transparent"
 
   Behavior on color {

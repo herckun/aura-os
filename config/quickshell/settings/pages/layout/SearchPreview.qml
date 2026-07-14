@@ -14,6 +14,7 @@ Stage {
     height: panelCol.implicitHeight + Theme.spaceMd * 2
     anchors.horizontalCenter: parent.horizontalCenter
     radius: Theme.radiusLarge
+    antialiasing: true
     color: Theme.panelBackground
     border.width: Theme.borderWidth
     border.color: Theme.borderVisible
@@ -27,6 +28,7 @@ Stage {
         width: parent.width
         height: 38
         radius: Theme.radiusMedium
+        antialiasing: true
         color: Theme.backgroundSecondary
         border.width: Theme.borderWidth
         border.color: Theme.borderVisible
@@ -62,6 +64,7 @@ Stage {
           width: panelCol.width
           height: 48
           radius: Theme.radiusMedium
+          antialiasing: true
           color: rowHover.containsMouse ? Theme.controlBackgroundHover : Theme.controlBackground
           border.width: Theme.borderWidth
           border.color: rowHover.containsMouse ? Theme.borderActive : Theme.border
@@ -79,6 +82,7 @@ Stage {
               Layout.preferredWidth: 28
               Layout.preferredHeight: 28
               radius: Theme.radiusSmall
+              antialiasing: true
               color: row.modelData.enabled ? Theme.accent : Theme.controlBackgroundHover
 
               Icon {

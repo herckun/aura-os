@@ -95,6 +95,7 @@ BasePlugin {
               width: clipCol.width
               bordered: true
               radius: Theme.radiusMedium
+              antialiasing: true
               padding: Theme.spaceMd
               clip: true
               color: clipHover.hovered ? Theme.controlBackgroundHover : "transparent"

@@ -30,6 +30,7 @@ Item {
     id: box
     anchors.fill: parent
     radius: Theme.radiusSmall
+    antialiasing: true
     color: root.checked ? root._vc : "transparent"
     border.width: Theme.borderWidth
     border.color: mouse.containsMouse ? root.hoverBorderColor : (root.checked ? root._vc : root.borderColor)

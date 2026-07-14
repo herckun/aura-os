@@ -13,6 +13,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: Theme.radiusPill
+    antialiasing: true
     color: Theme.accent
   }
 

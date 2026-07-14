@@ -277,7 +277,7 @@ Item {
     width: parent.width
     spacing: Theme.spaceLg
 
-    PageHeader { title: "KEYBINDINGS" }
+    PageHeader { title: "KEYBINDINGS"; description: "Keyboard shortcuts and custom binds" }
 
     // ── Top bar with search ─────────────────────────────────────
     Card {
@@ -362,6 +362,7 @@ Item {
           width: parent.width
           height: conflictRow.implicitHeight + Theme.spaceMd * 2
           radius: Theme.radiusMedium
+          antialiasing: true
           color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.08)
           border.color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.3)
 
@@ -496,6 +497,7 @@ Item {
           width: parent.width
           height: captureLabel.implicitHeight + Theme.spaceSm * 2
           radius: Theme.radiusSmall
+          antialiasing: true
           visible: keyCapture.capturing
           color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.08)
           border.color: Theme.accent
@@ -838,6 +840,7 @@ Item {
               width: parent.width
               height: conflictItemRow.implicitHeight + Theme.spaceMd * 2
               radius: Theme.radiusMedium
+              antialiasing: true
               level: 2
               border.color: Theme.border
 
@@ -881,6 +884,7 @@ Item {
           width: parent.width
           height: newItemRow.implicitHeight + Theme.spaceMd * 2
           radius: Theme.radiusMedium
+          antialiasing: true
           color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.08)
           border.color: Theme.accent
 

@@ -18,6 +18,7 @@ import "overlays/cheatsheet"
 import "overlays/dev"
 import "overlays/desktop"
 import "overlays/appswitch"
+import "overlays/identify"
 import "settings"
 
 ShellRoot {
@@ -140,6 +141,13 @@ ShellRoot {
         }
     }
 
+    // ── Display Identify ─────────────────────────────────────────
+    Variants {
+        model: Quickshell.screens
+
+        DisplayIdentify {}
+    }
+
     // ── Panel Loaders ────────────────────────────────────────────
 
     LazyLoader {
@@ -241,7 +249,7 @@ ShellRoot {
             }
             if (ccLoader.item) {
                 ccLoader.item.toggle();
-                ControlCenterService.visible = ccLoader.item.visible;
+                ControlCenterService.visible = ccLoader.item ? ccLoader.item.visible : false;
             }
         });
 

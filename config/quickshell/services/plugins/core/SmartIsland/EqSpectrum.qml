@@ -26,6 +26,7 @@ Rectangle {
   width: parent ? parent.width : 200
   height: 60
   radius: Theme.radiusMedium
+  antialiasing: true
   color: "transparent"
   clip: true
 

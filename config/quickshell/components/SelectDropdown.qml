@@ -9,11 +9,12 @@ Rectangle {
 
     // ── Properties ─────────────────────────────────────────────
     property string placeholder: "Select..."
-    property string value: ""
+    property var value: ""
     property string displayText: ""
     property var items: []
     property string textRole: "label"
     property string valueRole: "value"
+    property string fontRole: ""
 
     // ── Signals ────────────────────────────────────────────────
     signal itemSelected(var item)
@@ -22,6 +23,7 @@ Rectangle {
     width: parent ? parent.width : 200
     height: Theme.controlHeight
     radius: Theme.radiusMedium
+    antialiasing: true
     color: popup.visible ? Theme.backgroundTertiary : Theme.backgroundSecondary
     border.width: Theme.borderWidth
     border.color: popup.visible ? Theme.accent : Theme.border
@@ -95,6 +97,7 @@ Rectangle {
 
         background: Rectangle {
             radius: Theme.radiusMedium
+            antialiasing: true
             color: Theme.backgroundSecondary
             border.width: Theme.borderWidth
             border.color: Theme.border
@@ -110,11 +113,11 @@ Rectangle {
                 width: listView.width
                 height: Theme.controlHeight + Theme.spaceXs * 2
                 radius: Theme.radiusSmall
+                antialiasing: true
                 color: {
                     if (itemMouse.containsMouse)
                         return Theme.controlBackgroundHover;
-                    var itemValue = modelData[root.valueRole] || modelData.value || modelData;
-                    if (itemValue === root.value)
+                    if (root._itemValue(modelData) === root.value)
                         return Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1);
                     return "transparent";
                 }
@@ -135,20 +138,14 @@ Rectangle {
                     Text {
                         Layout.fillWidth: true
                         text: modelData[root.textRole] || modelData.label || modelData
-                        color: {
-                            var itemValue = modelData[root.valueRole] || modelData.value || modelData;
-                            return itemValue === root.value ? Theme.accent : Theme.textPrimary;
-                        }
+                        color: root._itemValue(modelData) === root.value ? Theme.accent : Theme.textPrimary
                         font.pixelSize: Theme.fontSizeCaption
-                        font.family: Theme.fontFamilyMono
+                        font.family: root.fontRole && modelData[root.fontRole] ? modelData[root.fontRole] : Theme.fontFamilyMono
                         elide: Text.ElideRight
                     }
 
                     Icon {
-                        visible: {
-                            var itemValue = modelData[root.valueRole] || modelData.value || modelData;
-                            return itemValue === root.value;
-                        }
+                        visible: root._itemValue(modelData) === root.value
                         source: Icons.get("check")
                         size: 12
                         color: Theme.accent
@@ -169,19 +166,35 @@ Rectangle {
         }
     }
 
+    function _itemValue(item: var): var {
+        if (item === null || item === undefined)
+            return item;
+        if (typeof item !== "object")
+            return item;
+        if (root.valueRole && item[root.valueRole] !== undefined)
+            return item[root.valueRole];
+        if (item.value !== undefined)
+            return item.value;
+        return item;
+    }
+
     function _updateDisplayText(): void {
-        if (!root.value || !root.items || root.items.length === 0)
+        if (root.value === undefined || root.value === null || root.value === "") {
+            root.displayText = "";
+            return;
+        }
+        if (!root.items || root.items.length === 0)
             return;
         for (var i = 0; i < root.items.length; i++) {
             var item = root.items[i];
-            if (!item)
+            if (item === null || item === undefined)
                 continue;
-            var itemValue = item[root.valueRole] || item.value || item;
-            if (itemValue === root.value) {
-                root.displayText = item[root.textRole] || item.label || item;
+            if (root._itemValue(item) === root.value) {
+                root.displayText = typeof item === "object" ? (item[root.textRole] || item.label || String(item)) : String(item);
                 return;
             }
         }
+        root.displayText = "";
     }
 
     Component.onCompleted: _updateDisplayText()

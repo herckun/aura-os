@@ -14,12 +14,14 @@ Rectangle {
 
   height: barHeight
   radius: barHeight / 2
+  antialiasing: true
   color: trackColor
 
   Rectangle {
     width: parent.width * Math.max(0, Math.min(1, root.value))
     height: parent.height
     radius: root.barHeight / 2
+    antialiasing: true
     color: root._bc
 
     Behavior on width {

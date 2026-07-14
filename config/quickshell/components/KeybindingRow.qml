@@ -66,6 +66,7 @@ Item {
     anchors.leftMargin: -Theme.spaceMd
     anchors.rightMargin: -Theme.spaceMd
     radius: Theme.radiusSmall
+    antialiasing: true
     color: hoverArea.containsMouse ? Theme.controlBackgroundHover : "transparent"
 
     Behavior on color {
@@ -93,6 +94,7 @@ Item {
       Layout.preferredWidth: 160
       Layout.preferredHeight: Theme.controlHeightSmall + Theme.spaceXxs * 2
       radius: Theme.radiusSmall
+      antialiasing: true
       color: Theme.backgroundTertiary
       border.width: Theme.borderWidth
       border.color: Theme.border
@@ -163,6 +165,7 @@ Item {
           width: typeLabel.implicitWidth + Theme.spaceSm * 2
           height: typeLabel.implicitHeight + Theme.spaceXxs * 2
           radius: Theme.radiusXs
+          antialiasing: true
           color: {
             if (!binding) return Theme.backgroundTertiary
             return binding.actionType === "shell"
@@ -200,6 +203,7 @@ Item {
           width: customLabel.implicitWidth + Theme.spaceSm * 2
           height: customLabel.implicitHeight + Theme.spaceXxs * 2
           radius: Theme.radiusXs
+          antialiasing: true
           color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.15)
 
           Text {

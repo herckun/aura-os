@@ -14,6 +14,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: root.radius
+    antialiasing: true
     color: root.overlayColor
     opacity: 0.4
   }

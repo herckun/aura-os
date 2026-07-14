@@ -50,6 +50,7 @@ PanelWindow {
     id: osdRect
     anchors.fill: parent
     radius: Theme.radiusLarge
+    antialiasing: true
 
     state: osd.shown ? "shown" : "hidden"
 
@@ -103,11 +104,13 @@ PanelWindow {
         width: parent.width
         height: 4
         radius: Theme.radiusXs
+        antialiasing: true
         color: Theme.border
 
         Rectangle {
           height: parent.height
           radius: Theme.radiusXs
+          antialiasing: true
           width: parent.width * Math.max(0, Math.min(1, osd.value))
           color: Theme.accent
 

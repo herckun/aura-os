@@ -107,6 +107,7 @@ BasePlugin {
         width: parent.width
         height: 300
         radius: Theme.radiusMedium
+        antialiasing: true
         color: Theme.controlBackground
         border.color: notesInput.activeFocus ? Theme.accent : Theme.borderVisible
 

@@ -11,7 +11,7 @@ Singleton {
     readonly property int popupGapFloating: 4
 
     function belowBar(): real {
-        return BarService.barY;
+        return Math.max(0, Theme.spaceXs - BarService.gap);
     }
 
     function anchorCenterX(anchorItem: Item, popupWidth: real, screenW: real): real {

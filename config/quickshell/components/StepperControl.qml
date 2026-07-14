@@ -32,6 +32,7 @@ Row {
   Rectangle {
     width: Theme.controlHeight + Theme.spaceXs * 2; height: Theme.controlHeight
     radius: Theme.radiusPill
+    antialiasing: true
     color: Theme.backgroundTertiary
     border.width: Theme.borderWidth; border.color: Theme.border
 

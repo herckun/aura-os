@@ -29,6 +29,7 @@ Item {
     anchors.right: parent.right
     height: 4
     radius: Theme.radiusXs
+    antialiasing: true
     color: Theme.border
   }
 
@@ -38,6 +39,7 @@ Item {
     anchors.left: parent.left
     height: 4
     radius: Theme.radiusXs
+    antialiasing: true
     width: track.width * ((root.value - root.from) / (root.to - root.from))
     color: root.accentColor
   }
@@ -49,6 +51,7 @@ Item {
     width: 10
     height: 22
     radius: Theme.radiusSmall
+    antialiasing: true
     color: Theme.textDisplay
     visible: root.interactive
   }

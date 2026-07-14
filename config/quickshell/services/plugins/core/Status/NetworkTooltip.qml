@@ -91,6 +91,7 @@ PanelWindow {
     id: bg
     anchors.fill: parent
     radius: Theme.radiusLarge
+    antialiasing: true
 
     Column {
       id: contentCol
@@ -176,6 +177,7 @@ PanelWindow {
           width: 7
           height: 7
           radius: 3.5
+          antialiasing: true
           color: NetworkService.online ? Theme.success : Theme.textDisabled
         }
       }
@@ -345,6 +347,7 @@ PanelWindow {
     width: parent.width
     height: 28
     radius: Theme.radiusSmall
+    antialiasing: true
     color: rowMa.containsMouse ? Theme.controlBackgroundHover : "transparent"
 
     RowLayout {

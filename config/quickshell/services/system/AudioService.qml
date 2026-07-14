@@ -102,6 +102,91 @@ Singleton {
   // ═══════════════════════════════════════════════════════════════
   //  SIGNAL CONNECTIONS
   // ═══════════════════════════════════════════════════════════════
+  property bool _autoSinkReady: false
+  property var _seenSinkNames: ({})
+  property string _autoSwitchedTo: ""
+  property string _autoReturnTo: ""
+
+  readonly property string hwSinkKey: {
+    var nodes = Pipewire.nodes.values
+    var parts = []
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i]
+      if (n.isSink && !n.isStream && n.ready && !_isEeNode(n) &&
+          n.properties && n.properties["device.api"])
+        parts.push(n.name || String(n.id))
+    }
+    return parts.join("|")
+  }
+
+  onHwSinkKeyChanged: _handleSinkTopology()
+
+  Timer {
+    interval: 3000
+    running: true
+    repeat: false
+    onTriggered: {
+      svc._handleSinkTopology()
+      svc._autoSinkReady = true
+    }
+  }
+
+  function _isHeadphoneSink(n: PwNode): bool {
+    var p = n.properties || ({})
+    if ((p["device.api"] || "") === "bluez5") return true
+    var ff = (p["device.form-factor"] || "").toLowerCase()
+    if (ff === "headset" || ff === "headphone" || ff === "headphones" || ff === "hands-free") return true
+    var blob = ((n.description || "") + " " + (n.name || "")).toLowerCase()
+    return blob.indexOf("headphone") !== -1 || blob.indexOf("headset") !== -1 ||
+           blob.indexOf("airpod") !== -1 || blob.indexOf("buds") !== -1
+  }
+
+  function _sinkByName(name: string): PwNode {
+    if (!name) return null
+    var nodes = Pipewire.nodes.values
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i]
+      if (n.isSink && !n.isStream && n.ready && n.name === name) return n
+    }
+    return null
+  }
+
+  function _handleSinkTopology(): void {
+    var nodes = Pipewire.nodes.values
+    var names = ({})
+    var fresh = null
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i]
+      if (!(n.isSink && !n.isStream && n.ready && !_isEeNode(n) &&
+            n.properties && n.properties["device.api"]))
+        continue
+      var name = n.name || String(n.id)
+      names[name] = true
+      if (svc._autoSinkReady && !svc._seenSinkNames[name] && !fresh && _isHeadphoneSink(n))
+        fresh = n
+    }
+
+    if (svc._autoSinkReady) {
+      if (svc._autoSwitchedTo && !names[svc._autoSwitchedTo]) {
+        var back = _sinkByName(svc._autoReturnTo)
+        svc._autoSwitchedTo = ""
+        svc._autoReturnTo = ""
+        if (back)
+          Pipewire.preferredDefaultAudioSink = back
+      }
+      if (fresh) {
+        var def = Pipewire.defaultAudioSink
+        if (def !== fresh) {
+          if (!svc._autoSwitchedTo)
+            svc._autoReturnTo = (def && def.name) || ""
+          svc._autoSwitchedTo = fresh.name || String(fresh.id)
+          Pipewire.preferredDefaultAudioSink = fresh
+        }
+      }
+    }
+
+    svc._seenSinkNames = names
+  }
 
   // ═══════════════════════════════════════════════════════════════
   //  PRIVATE HELPERS
@@ -180,6 +265,8 @@ Singleton {
   //  PUBLIC API
   // ═══════════════════════════════════════════════════════════════
   function setOutputDevice(node: PwNode): void {
+    _autoSwitchedTo = ""
+    _autoReturnTo = ""
     Pipewire.preferredDefaultAudioSink = node
   }
 

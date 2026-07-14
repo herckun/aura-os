@@ -19,8 +19,8 @@ BasePlugin {
     name: "Media",
     description: "Now playing controls",
     icon: "music",
-    locations: ["controlcenter_row", "dashboard"],
-    defaultLayout: { "controlcenter_row": { order: 10 }, "dashboard": { order: 40 } },
+    locations: ["controlcenter_row"],
+    defaultLayout: { "controlcenter_row": { order: 10 } },
     settings: []
   })
 
@@ -59,6 +59,7 @@ BasePlugin {
         Rectangle {
           width: 44; height: 44
           radius: Theme.radiusSmall
+          antialiasing: true
           color: Theme.backgroundTertiary
 
           Image {

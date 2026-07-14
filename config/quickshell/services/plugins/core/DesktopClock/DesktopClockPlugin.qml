@@ -289,6 +289,7 @@ BasePlugin {
         width: 36
         height: 3
         radius: 1.5
+        antialiasing: true
         color: clockContainer._accentContrast
       }
 
@@ -454,6 +455,7 @@ BasePlugin {
         visible: clockContainer._showDate
         width: 3
         radius: 1.5
+        antialiasing: true
         Layout.fillHeight: true
         Layout.preferredHeight: Theme.fontSizeDisplay
         color: clockContainer._accentContrast

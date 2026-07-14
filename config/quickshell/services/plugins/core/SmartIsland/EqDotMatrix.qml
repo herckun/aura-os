@@ -23,6 +23,7 @@ Rectangle {
   width: _cols * (dotSize + dotGap) - dotGap + pad * 2
   height: _rows * (dotSize + dotGap) - dotGap + pad * 2
   radius: Theme.radiusMedium
+  antialiasing: true
   color: bgColor
 
   property var _targetBands: [0,0,0,0,0,0,0]
