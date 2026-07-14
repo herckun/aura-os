@@ -70,7 +70,7 @@ STATE_FILE="${CACHE_DIR}/state"
 
 pf() { printf '%s' "$1" | cut -d'|' -f"$2"; }
 
-MANAGED_DIRS=(hypr quickshell features dev core wallpapers kitty fish wleave)
+MANAGED_DIRS=(hypr quickshell features dev core wallpapers kitty fish)
 
 # ── Installer state ──────────────────────────────────────────────────
 BACKUP_SNAPSHOT=""
@@ -104,7 +104,6 @@ RUN_SFX=true
 RUN_KITTY=true
 RUN_FISH=true
 RUN_SDDM=true
-RUN_WLEAVE=true
 RUN_CAVA=true
 RUN_SCRIPTS=true
 RUN_THEME=true
@@ -209,7 +208,6 @@ count_install_steps() {
   $RUN_KITTY && (( TUI_STEP_TOTAL++ )) || true
   $RUN_FISH && (( TUI_STEP_TOTAL++ )) || true
   $RUN_SDDM && (( TUI_STEP_TOTAL++ )) || true
-  $RUN_WLEAVE && (( TUI_STEP_TOTAL++ )) || true
   $RUN_CAVA && (( TUI_STEP_TOTAL++ )) || true
   $RUN_SCRIPTS && (( TUI_STEP_TOTAL++ )) || true
   $RUN_SCRIPTS && $RUN_THEME && (( TUI_STEP_TOTAL++ )) || true
@@ -241,7 +239,6 @@ do_install() {
   $RUN_KITTY && run_step "Kitty terminal profile" "deploy_kitty_profile"
   $RUN_FISH && run_step "Fish shell config" "deploy_fish_config"
   $RUN_SDDM && run_step "SDDM greeter theme" "deploy_sddm_theme"
-  $RUN_WLEAVE && run_step "wleave config" "deploy_wleave_config"
   $RUN_CAVA && run_step "cava config" "deploy_cava_config"
   $RUN_SCRIPTS && run_step "Desktop scripts" "deploy_desktop_scripts"
   $RUN_SCRIPTS && $RUN_THEME && run_step "Generate GTK/Qt themes" "generate_gtk_qt_themes"
@@ -275,8 +272,6 @@ do_uninstall() {
 
   local sddm="/usr/share/sddm/themes/${APP_NAME}"
   [[ -d "$sddm" || -L "$sddm" ]] && { sudo -n rm -rf "$sddm" 2>/dev/null && _ok "SDDM removed" || true; }
-
-  [[ -d "$CONFIG_DIR/wleave" ]] && { rm -rf "$CONFIG_DIR/wleave" && _ok "wleave config removed" || true; }
 
   local comm="$CONFIG_DIR/quickshell/services/plugins/community"
   if [[ -d "$comm" && -n "$(ls -A "$comm" 2>/dev/null)" ]]; then

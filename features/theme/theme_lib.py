@@ -1,4 +1,4 @@
-# Shared helpers for the theme generators (kitty/fish/sddm/wleave/gtk-qt).
+# Shared helpers for the theme generators (kitty/fish/sddm/gtk-qt).
 # Each generator's inline python does `from theme_lib import ...` after adding
 # this directory to sys.path.
 import json
@@ -24,8 +24,10 @@ def clean_font(f, default="monospace"):
 
 def _styles_dirs():
     here = os.path.dirname(os.path.realpath(__file__))
-    return (os.path.join(here, "../../config/quickshell/styles"),
-            os.path.expanduser("~/.config/quickshell/styles"))
+    return (
+        os.path.join(here, "../../config/quickshell/styles"),
+        os.path.expanduser("~/.config/quickshell/styles"),
+    )
 
 
 def _load_json(path):

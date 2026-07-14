@@ -236,11 +236,6 @@ PY
   log_ok "Plugin layout reset scheduled — defaults apply on next shell start"
 }
 
-deploy_wleave_config() {
-  copy_config "$REPO_DIR/config/wleave" "$CONFIG_DIR/wleave"
-  log_ok "wleave config deployed"
-}
-
 deploy_cava_config() {
   copy_config "$REPO_DIR/config/cava" "$CONFIG_DIR/cava"
   log_ok "cava config deployed"

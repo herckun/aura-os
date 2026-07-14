@@ -61,16 +61,35 @@
   "styles": {
     "default": {
       "spacing": {
-        "xxs": 1, "2": 2, "xs": 4, "sm": 8, "md": 16, "lg": 24, "xl": 32, "2xl": 48
+        "xxs": 1,
+        "2": 2,
+        "xs": 4,
+        "sm": 8,
+        "md": 16,
+        "lg": 24,
+        "xl": 32,
+        "2xl": 48
       },
       "radius": {
-        "xs": 2, "sm": 4, "md": 8, "lg": 12, "xl": 16, "2xl": 20, "ui": 12
+        "xs": 2,
+        "sm": 4,
+        "md": 8,
+        "lg": 12,
+        "xl": 16,
+        "2xl": 20,
+        "ui": 12
       },
       "sizing": {
-        "controlHeight": 28, "controlHeightSmall": 24, "controlWidth": 28, "controlWidthSmall": 24,
-        "controlSpacing": 6, "controlPadding": 8,
+        "controlHeight": 28,
+        "controlHeightSmall": 24,
+        "controlWidth": 28,
+        "controlWidthSmall": 24,
+        "controlSpacing": 6,
+        "controlPadding": 8,
         "barHeight": 36,
-        "controlCenterWidth": 360, "cardPadding": 16, "cardSpacing": 14
+        "controlCenterWidth": 360,
+        "cardPadding": 16,
+        "cardSpacing": 14
       },
       "border": { "width": 1, "alpha": 0.12 },
       "animation": { "fast": 80, "normal": 120, "slow": 200 },
@@ -78,23 +97,41 @@
       "mode": {
         "toastDuration": 5000,
         "toastWidth": 300,
-        "wleaveSize": "130",
         "hyprOuterGap": 8,
         "hyprInnerGap": "4,8"
       }
     },
     "zen": {
       "spacing": {
-        "xxs": 2, "2": 3, "xs": 6, "sm": 12, "md": 20, "lg": 32, "xl": 44, "2xl": 64
+        "xxs": 2,
+        "2": 3,
+        "xs": 6,
+        "sm": 12,
+        "md": 20,
+        "lg": 32,
+        "xl": 44,
+        "2xl": 64
       },
       "radius": {
-        "xs": 4, "sm": 8, "md": 16, "lg": 22, "xl": 28, "2xl": 36, "ui": 22
+        "xs": 4,
+        "sm": 8,
+        "md": 16,
+        "lg": 22,
+        "xl": 28,
+        "2xl": 36,
+        "ui": 22
       },
       "sizing": {
-        "controlHeight": 34, "controlHeightSmall": 28, "controlWidth": 34, "controlWidthSmall": 28,
-        "controlSpacing": 8, "controlPadding": 10,
+        "controlHeight": 34,
+        "controlHeightSmall": 28,
+        "controlWidth": 34,
+        "controlWidthSmall": 28,
+        "controlSpacing": 8,
+        "controlPadding": 10,
         "barHeight": 40,
-        "controlCenterWidth": 380, "cardPadding": 24, "cardSpacing": 22
+        "controlCenterWidth": 380,
+        "cardPadding": 24,
+        "cardSpacing": 22
       },
       "border": { "width": 1, "alpha": 0.08 },
       "animation": { "fast": 120, "normal": 200, "slow": 350 },
@@ -102,23 +139,41 @@
       "mode": {
         "toastDuration": 7000,
         "toastWidth": 360,
-        "wleaveSize": "140",
         "hyprOuterGap": 16,
         "hyprInnerGap": "12,12"
       }
     },
     "focus": {
       "spacing": {
-        "xxs": 1, "2": 2, "xs": 3, "sm": 6, "md": 12, "lg": 18, "xl": 24, "2xl": 36
+        "xxs": 1,
+        "2": 2,
+        "xs": 3,
+        "sm": 6,
+        "md": 12,
+        "lg": 18,
+        "xl": 24,
+        "2xl": 36
       },
       "radius": {
-        "xs": 2, "sm": 3, "md": 6, "lg": 8, "xl": 10, "2xl": 14, "ui": 8
+        "xs": 2,
+        "sm": 3,
+        "md": 6,
+        "lg": 8,
+        "xl": 10,
+        "2xl": 14,
+        "ui": 8
       },
       "sizing": {
-        "controlHeight": 26, "controlHeightSmall": 22, "controlWidth": 26, "controlWidthSmall": 22,
-        "controlSpacing": 4, "controlPadding": 6,
+        "controlHeight": 26,
+        "controlHeightSmall": 22,
+        "controlWidth": 26,
+        "controlWidthSmall": 22,
+        "controlSpacing": 4,
+        "controlPadding": 6,
         "barHeight": 32,
-        "controlCenterWidth": 340, "cardPadding": 12, "cardSpacing": 10
+        "controlCenterWidth": 340,
+        "cardPadding": 12,
+        "cardSpacing": 10
       },
       "border": { "width": 1, "alpha": 0.06 },
       "animation": { "fast": 60, "normal": 100, "slow": 160 },
@@ -126,23 +181,41 @@
       "mode": {
         "toastDuration": 3000,
         "toastWidth": 260,
-        "wleaveSize": "120",
         "hyprOuterGap": 4,
         "hyprInnerGap": "2,4"
       }
     },
     "gaming": {
       "spacing": {
-        "xxs": 0, "2": 1, "xs": 2, "sm": 4, "md": 8, "lg": 12, "xl": 16, "2xl": 24
+        "xxs": 0,
+        "2": 1,
+        "xs": 2,
+        "sm": 4,
+        "md": 8,
+        "lg": 12,
+        "xl": 16,
+        "2xl": 24
       },
       "radius": {
-        "xs": 1, "sm": 2, "md": 4, "lg": 6, "xl": 8, "2xl": 10, "ui": 6
+        "xs": 1,
+        "sm": 2,
+        "md": 4,
+        "lg": 6,
+        "xl": 8,
+        "2xl": 10,
+        "ui": 6
       },
       "sizing": {
-        "controlHeight": 24, "controlHeightSmall": 20, "controlWidth": 24, "controlWidthSmall": 20,
-        "controlSpacing": 4, "controlPadding": 6,
+        "controlHeight": 24,
+        "controlHeightSmall": 20,
+        "controlWidth": 24,
+        "controlWidthSmall": 20,
+        "controlSpacing": 4,
+        "controlPadding": 6,
         "barHeight": 28,
-        "controlCenterWidth": 320, "cardPadding": 10, "cardSpacing": 8
+        "controlCenterWidth": 320,
+        "cardPadding": 10,
+        "cardSpacing": 8
       },
       "border": { "width": 1, "alpha": 0.04 },
       "animation": { "fast": 0, "normal": 0, "slow": 0 },
@@ -150,23 +223,41 @@
       "mode": {
         "toastDuration": 2000,
         "toastWidth": 240,
-        "wleaveSize": "110",
         "hyprOuterGap": 0,
         "hyprInnerGap": "0,0"
       }
     },
     "theater": {
       "spacing": {
-        "xxs": 2, "2": 4, "xs": 8, "sm": 14, "md": 24, "lg": 36, "xl": 48, "2xl": 72
+        "xxs": 2,
+        "2": 4,
+        "xs": 8,
+        "sm": 14,
+        "md": 24,
+        "lg": 36,
+        "xl": 48,
+        "2xl": 72
       },
       "radius": {
-        "xs": 6, "sm": 10, "md": 18, "lg": 26, "xl": 32, "2xl": 40, "ui": 26
+        "xs": 6,
+        "sm": 10,
+        "md": 18,
+        "lg": 26,
+        "xl": 32,
+        "2xl": 40,
+        "ui": 26
       },
       "sizing": {
-        "controlHeight": 38, "controlHeightSmall": 32, "controlWidth": 38, "controlWidthSmall": 32,
-        "controlSpacing": 10, "controlPadding": 12,
+        "controlHeight": 38,
+        "controlHeightSmall": 32,
+        "controlWidth": 38,
+        "controlWidthSmall": 32,
+        "controlSpacing": 10,
+        "controlPadding": 12,
         "barHeight": 44,
-        "controlCenterWidth": 400, "cardPadding": 28, "cardSpacing": 26
+        "controlCenterWidth": 400,
+        "cardPadding": 28,
+        "cardSpacing": 26
       },
       "border": { "width": 2, "alpha": 0.15 },
       "animation": { "fast": 140, "normal": 240, "slow": 400 },
@@ -174,7 +265,6 @@
       "mode": {
         "toastDuration": 8000,
         "toastWidth": 380,
-        "wleaveSize": "150",
         "hyprOuterGap": 20,
         "hyprInnerGap": "16,16"
       }

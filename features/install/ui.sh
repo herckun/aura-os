@@ -373,13 +373,13 @@ screen_expert() {
   local step_labels=(
     "Backup configs" "System packages" "GPU drivers" "Screen sharing"
     "Fonts" "Hyprland config" "QuickShell config" "Tabler icons"
-    "Kitty profile" "Fish config" "SDDM theme" "wleave config"
+    "Kitty profile" "Fish config" "SDDM theme"
     "Desktop scripts" "GTK/Qt themes" "Extra plugins"
   )
   local step_vars=(
     RUN_BACKUP RUN_DEPS RUN_GPU RUN_SCREENSHARE
     RUN_FONTS RUN_HYPR RUN_QS RUN_ICONS
-    RUN_KITTY RUN_FISH RUN_SDDM RUN_WLEAVE
+    RUN_KITTY RUN_FISH RUN_SDDM
     RUN_SCRIPTS RUN_THEME RUN_PLUGINS
   )
   MENU_LABELS=("${step_labels[@]}"); MENU_DESCS=(); MENU_GROUPS=(); MENU_CHECKED=()
@@ -478,7 +478,6 @@ screen_confirm() {
   printf "  Packages ${DIM}%s${NC}\n" "$($RUN_DEPS && echo yes || echo no)"
   printf "  Fonts    ${DIM}%s${NC}\n" "$( $RUN_FONTS && echo yes || echo no)"
   printf "  Apps     ${DIM}%s${NC}\n" "$( (( ${#selected_app_ids[@]} > 0 )) && echo "${#selected_app_ids[@]} selected" || echo none)"
-  printf "  wleave   ${DIM}%s${NC}\n" "$( $RUN_WLEAVE && echo yes || echo no)"
   printf "  Confirm  ${DIM}%s${NC}\n" "$( $CONFIRM_EACH && echo each step || echo no)"
   printf "\n  Press ${BOLD}Enter${NC} to begin, or ${DIM}Ctrl+C${NC} to abort: "
   read -r _

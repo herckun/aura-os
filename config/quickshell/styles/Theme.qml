@@ -90,7 +90,6 @@ Singleton {
 
   readonly property int toastDuration: _mode.toastDuration || 5000
   readonly property int toastWidth: _mode.toastWidth || 300
-  readonly property string wleaveSize: _mode.wleaveSize || "130"
   readonly property int hyprOuterGap: _mode.hyprOuterGap || 8
   readonly property string hyprInnerGap: _mode.hyprInnerGap || "4,8"
 

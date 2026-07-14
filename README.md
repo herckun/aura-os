@@ -108,7 +108,7 @@ One desktop, five personalities. A mode reshapes spacing, effects and bar behavi
 
 ### Theming
 
-11 themes, switchable at runtime — the whole desktop restyles instantly. Each theme brings its own palette and font stack, and reaches beyond the shell: GTK, Qt, kitty, fish, SDDM and wleave are regenerated on every switch. Accents can be picked by hand or extracted from your wallpaper. A theme is one JSON file in `config/quickshell/styles/themes/` — drop in your own.
+11 themes, switchable at runtime — the whole desktop restyles instantly. Each theme brings its own palette and font stack, and reaches beyond the shell: GTK, Qt, kitty, fish, SDDM are regenerated on every switch. Accents can be picked by hand or extracted from your wallpaper. A theme is one JSON file in `config/quickshell/styles/themes/` — drop in your own.
 
 <table>
   <tr>

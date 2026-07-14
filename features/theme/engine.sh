@@ -15,7 +15,6 @@ readonly FISH_THEME_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/fish/conf.d/${APP_NA
 readonly GTK3_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0"
 readonly GTK4_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0"
 readonly GTK2_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-2.0"
-readonly WLEAVE_STYLE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/wleave/style.css"
 readonly SDDM_THEME_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/${APP_NAME}/sddm-theme.json"
 readonly HYPRLOCK_THEME_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprlock-theme.conf"
 
@@ -139,7 +138,6 @@ prepare_rollback() {
   backup_path "$GTK_THEME_DIR"
   backup_path "$KVANTUM_DIR"
   backup_path "$KVANTUM_CONFIG"
-  backup_path "$WLEAVE_STYLE_FILE"
   backup_path "$SDDM_THEME_FILE"
   backup_path "$HYPRLOCK_THEME_FILE"
 }
@@ -193,7 +191,6 @@ main() {
   run_bg "kitty" "$THEME_DIR/kitty.sh" "$normalized_json"
   run_bg "fish" "$THEME_DIR/fish.sh" "$normalized_json"
   run_bg "gtk-qt" "$THEME_DIR/gtk-qt.sh" "$normalized_json"
-  run_bg "wleave" "$THEME_DIR/wleave.sh" "$normalized_json"
   run_bg "sddm" "$THEME_DIR/sddm.sh" "$normalized_json"
   run_bg "hyprlock" "$THEME_DIR/hyprlock.sh" "$normalized_json"
 
