@@ -725,6 +725,18 @@
         "description": "Close window"
       },
       {
+        "id": "force-close",
+        "category": "windows",
+        "mod": "SUPER SHIFT",
+        "key": "W",
+        "actionType": "hypr",
+        "action": "exec",
+        "args": {
+          "cmd": "kill -9 $(hyprctl activewindow -j | jq -r '.pid')"
+        },
+        "description": "Force kill window"
+      },
+      {
         "id": "fullscreen",
         "category": "windows",
         "mod": "SUPER",

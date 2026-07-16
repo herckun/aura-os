@@ -1,0 +1,41 @@
+{
+  "name": "MONOKAI PRO",
+  "dark": true,
+  "accent": "#A9DC76",
+  "monoAccent": "#FCFCFA",
+  "fonts": {
+    "fontFamily": "\"IBM Plex Sans\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"IBM Plex Mono\", \"Space Mono\", monospace",
+    "fontFamilyDeco": "\"Syne\", \"Doto\", monospace"
+  },
+  "colors": {
+    "background": "#2D2A2E",
+    "backgroundSecondary": "#343038",
+    "backgroundTertiary": "#403E41",
+    "border": "#403E41",
+    "borderVisible": "#5B595C",
+    "textDisplay": "#FCFCFA",
+    "textPrimary": "#CCCCC8",
+    "textSecondary": "#939293",
+    "textDisabled": "#5B595C",
+    "success": "#A9DC76",
+    "warning": "#FFD866",
+    "error": "#FF6188",
+    "interactive": "#78DCE8",
+    "controlBackground": "#343038",
+    "controlBackgroundHover": "#403E41",
+    "controlBackgroundPressed": "#4D4B4F",
+    "controlBackgroundActive": "#403E41",
+    "controlBorder": "#403E41",
+    "controlBorderHover": "#5B595C",
+    "controlBorderPressed": "#727072",
+    "separator": "#403E41",
+    "workspaceActive": "#FCFCFA",
+    "workspaceInactive": "#5B595C",
+    "borderActive": "#727072",
+    "buttonHoverOverlay": "#454347",
+    "buttonBorderHover": "#5B595C",
+    "buttonBorderPressed": "#727072",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}

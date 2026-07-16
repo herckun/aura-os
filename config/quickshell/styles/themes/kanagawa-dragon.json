@@ -1,0 +1,41 @@
+{
+  "name": "KANAGAWA DRAGON",
+  "dark": true,
+  "accent": "#7FB4CA",
+  "monoAccent": "#C5C9C5",
+  "fonts": {
+    "fontFamily": "\"Zen Maru Gothic\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"JetBrains Mono\", \"Space Mono\", monospace",
+    "fontFamilyDeco": "\"Shippori Mincho\", \"Doto\", monospace"
+  },
+  "colors": {
+    "background": "#181820",
+    "backgroundSecondary": "#1E1E2A",
+    "backgroundTertiary": "#2A2A3A",
+    "border": "#2A2A3A",
+    "borderVisible": "#4A4A5A",
+    "textDisplay": "#C5C9C5",
+    "textPrimary": "#BFBF96",
+    "textSecondary": "#737373",
+    "textDisabled": "#4A4A5A",
+    "success": "#8ABA65",
+    "warning": "#E6C384",
+    "error": "#C4746E",
+    "interactive": "#7FB4CA",
+    "controlBackground": "#1E1E2A",
+    "controlBackgroundHover": "#2A2A3A",
+    "controlBackgroundPressed": "#363646",
+    "controlBackgroundActive": "#2A2A3A",
+    "controlBorder": "#2A2A3A",
+    "controlBorderHover": "#4A4A5A",
+    "controlBorderPressed": "#5A5A6A",
+    "separator": "#2A2A3A",
+    "workspaceActive": "#C5C9C5",
+    "workspaceInactive": "#4A4A5A",
+    "borderActive": "#5A5A6A",
+    "buttonHoverOverlay": "#242434",
+    "buttonBorderHover": "#4A4A5A",
+    "buttonBorderPressed": "#5A5A6A",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}

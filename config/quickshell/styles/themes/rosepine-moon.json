@@ -1,0 +1,41 @@
+{
+  "name": "ROSÉ PINE MOON",
+  "dark": true,
+  "accent": "#C4A7E7",
+  "monoAccent": "#E0DEF4",
+  "fonts": {
+    "fontFamily": "\"Manrope\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"Red Hat Mono\", \"Space Mono\", monospace",
+    "fontFamilyDeco": "\"Fraunces\", \"Doto\", monospace"
+  },
+  "colors": {
+    "background": "#191724",
+    "backgroundSecondary": "#1F1D2E",
+    "backgroundTertiary": "#2A283E",
+    "border": "#2A283E",
+    "borderVisible": "#44415A",
+    "textDisplay": "#E0DEF4",
+    "textPrimary": "#CFCCE4",
+    "textSecondary": "#908CAA",
+    "textDisabled": "#6E6A86",
+    "success": "#9CCFD8",
+    "warning": "#F6C177",
+    "error": "#EB6F92",
+    "interactive": "#3E8FB0",
+    "controlBackground": "#1F1D2E",
+    "controlBackgroundHover": "#2A283E",
+    "controlBackgroundPressed": "#332E4D",
+    "controlBackgroundActive": "#2A283E",
+    "controlBorder": "#2A283E",
+    "controlBorderHover": "#44415A",
+    "controlBorderPressed": "#565273",
+    "separator": "#2A283E",
+    "workspaceActive": "#E0DEF4",
+    "workspaceInactive": "#44415A",
+    "borderActive": "#565273",
+    "buttonHoverOverlay": "#232136",
+    "buttonBorderHover": "#44415A",
+    "buttonBorderPressed": "#565273",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}

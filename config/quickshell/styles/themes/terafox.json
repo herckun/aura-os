@@ -1,0 +1,41 @@
+{
+  "name": "TERAFOX",
+  "dark": true,
+  "accent": "#73DCF7",
+  "monoAccent": "#E5E5E5",
+  "fonts": {
+    "fontFamily": "\"Lexend\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"Fira Code\", \"Space Mono\", monospace",
+    "fontFamilyDeco": "\"Space Grotesk\", \"Doto\", monospace"
+  },
+  "colors": {
+    "background": "#152528",
+    "backgroundSecondary": "#1A2E32",
+    "backgroundTertiary": "#213B3F",
+    "border": "#213B3F",
+    "borderVisible": "#384F54",
+    "textDisplay": "#E5E5E5",
+    "textPrimary": "#CBD5DB",
+    "textSecondary": "#7A8C8E",
+    "textDisabled": "#384F54",
+    "success": "#7FDAB9",
+    "warning": "#FED26F",
+    "error": "#F16C7F",
+    "interactive": "#73DCF7",
+    "controlBackground": "#1A2E32",
+    "controlBackgroundHover": "#213B3F",
+    "controlBackgroundPressed": "#2A4A4E",
+    "controlBackgroundActive": "#213B3F",
+    "controlBorder": "#213B3F",
+    "controlBorderHover": "#384F54",
+    "controlBorderPressed": "#4E6B70",
+    "separator": "#213B3F",
+    "workspaceActive": "#E5E5E5",
+    "workspaceInactive": "#384F54",
+    "borderActive": "#4E6B70",
+    "buttonHoverOverlay": "#1D3438",
+    "buttonBorderHover": "#384F54",
+    "buttonBorderPressed": "#4E6B70",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}

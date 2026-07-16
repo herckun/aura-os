@@ -6,3 +6,5 @@ __pycache__/
 # Icons — downloaded at install time by features/install/sync-icons.sh
 config/quickshell/icons/*.svg
 .aider*
+
+.*/

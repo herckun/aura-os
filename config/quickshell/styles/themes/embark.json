@@ -1,0 +1,41 @@
+{
+  "name": "EMBARK",
+  "dark": true,
+  "accent": "#CFF9CF",
+  "monoAccent": "#CBE3E7",
+  "fonts": {
+    "fontFamily": "\"Lexend\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"Fira Code\", \"Space Mono\", monospace",
+    "fontFamilyDeco": "\"Space Grotesk\", \"Doto\", monospace"
+  },
+  "colors": {
+    "background": "#1E1C31",
+    "backgroundSecondary": "#232136",
+    "backgroundTertiary": "#302F45",
+    "border": "#302F45",
+    "borderVisible": "#5E5C82",
+    "textDisplay": "#CBE3E7",
+    "textPrimary": "#CBE3E7",
+    "textSecondary": "#A1B3C1",
+    "textDisabled": "#5E5C82",
+    "success": "#CFF9CF",
+    "warning": "#F1FFC4",
+    "error": "#F07198",
+    "interactive": "#91DDFF",
+    "controlBackground": "#232136",
+    "controlBackgroundHover": "#302F45",
+    "controlBackgroundPressed": "#3E3C55",
+    "controlBackgroundActive": "#302F45",
+    "controlBorder": "#302F45",
+    "controlBorderHover": "#5E5C82",
+    "controlBorderPressed": "#807CBA",
+    "separator": "#302F45",
+    "workspaceActive": "#CBE3E7",
+    "workspaceInactive": "#5E5C82",
+    "borderActive": "#807CBA",
+    "buttonHoverOverlay": "#282640",
+    "buttonBorderHover": "#5E5C82",
+    "buttonBorderPressed": "#807CBA",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}

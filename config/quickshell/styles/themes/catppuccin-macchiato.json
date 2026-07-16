@@ -1,0 +1,41 @@
+{
+  "name": "CATPPUCCIN MACCHIATO",
+  "dark": true,
+  "accent": "#B7BDF8",
+  "monoAccent": "#CAD3F5",
+  "fonts": {
+    "fontFamily": "\"Nunito\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"Cascadia Code\", \"Space Mono\", monospace",
+    "fontFamilyDeco": "\"Baloo 2\", \"Doto\", monospace"
+  },
+  "colors": {
+    "background": "#1E2030",
+    "backgroundSecondary": "#24273A",
+    "backgroundTertiary": "#2E3248",
+    "border": "#2E3248",
+    "borderVisible": "#404359",
+    "textDisplay": "#CAD3F5",
+    "textPrimary": "#B8C0E0",
+    "textSecondary": "#A5ADCB",
+    "textDisabled": "#6E738D",
+    "success": "#A6DA95",
+    "warning": "#EED49F",
+    "error": "#ED8796",
+    "interactive": "#7DC4E4",
+    "controlBackground": "#24273A",
+    "controlBackgroundHover": "#2E3248",
+    "controlBackgroundPressed": "#363A4F",
+    "controlBackgroundActive": "#2E3248",
+    "controlBorder": "#2E3248",
+    "controlBorderHover": "#404359",
+    "controlBorderPressed": "#494D64",
+    "separator": "#2E3248",
+    "workspaceActive": "#CAD3F5",
+    "workspaceInactive": "#404359",
+    "borderActive": "#494D64",
+    "buttonHoverOverlay": "#2B2E42",
+    "buttonBorderHover": "#404359",
+    "buttonBorderPressed": "#494D64",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}

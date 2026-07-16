@@ -1,0 +1,41 @@
+{
+  "name": "CATPPUCCIN FRAPPÉ",
+  "dark": true,
+  "accent": "#B4BEFE",
+  "monoAccent": "#CDD6F4",
+  "fonts": {
+    "fontFamily": "\"Nunito\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"Cascadia Code\", \"Space Mono\", monospace",
+    "fontFamilyDeco": "\"Baloo 2\", \"Doto\", monospace"
+  },
+  "colors": {
+    "background": "#303446",
+    "backgroundSecondary": "#363A4F",
+    "backgroundTertiary": "#414559",
+    "border": "#414559",
+    "borderVisible": "#51576D",
+    "textDisplay": "#CDD6F4",
+    "textPrimary": "#BAC2DE",
+    "textSecondary": "#A6ADC8",
+    "textDisabled": "#6C7086",
+    "success": "#A6D189",
+    "warning": "#E5C890",
+    "error": "#E78284",
+    "interactive": "#8CAAEE",
+    "controlBackground": "#363A4F",
+    "controlBackgroundHover": "#414559",
+    "controlBackgroundPressed": "#51576D",
+    "controlBackgroundActive": "#414559",
+    "controlBorder": "#414559",
+    "controlBorderHover": "#51576D",
+    "controlBorderPressed": "#626880",
+    "separator": "#414559",
+    "workspaceActive": "#CDD6F4",
+    "workspaceInactive": "#51576D",
+    "borderActive": "#626880",
+    "buttonHoverOverlay": "#3B3F52",
+    "buttonBorderHover": "#51576D",
+    "buttonBorderPressed": "#626880",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}

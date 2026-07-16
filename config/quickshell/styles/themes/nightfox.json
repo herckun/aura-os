@@ -1,0 +1,41 @@
+{
+  "name": "NIGHTFOX",
+  "dark": true,
+  "accent": "#7AA2F7",
+  "monoAccent": "#D6D6D7",
+  "fonts": {
+    "fontFamily": "\"Lexend\", \"Space Grotesk\", sans-serif",
+    "fontFamilyMono": "\"JetBrains Mono\", \"Space Mono\", monospace",
+    "fontFamilyDeco": "\"Space Grotesk\", \"Doto\", monospace"
+  },
+  "colors": {
+    "background": "#131A24",
+    "backgroundSecondary": "#1D2B3A",
+    "backgroundTertiary": "#293745",
+    "border": "#293745",
+    "borderVisible": "#394B5E",
+    "textDisplay": "#D6D6D7",
+    "textPrimary": "#BAC2DE",
+    "textSecondary": "#7B8EA8",
+    "textDisabled": "#394B5E",
+    "success": "#77D492",
+    "warning": "#E0AF68",
+    "error": "#D55F5F",
+    "interactive": "#7AA2F7",
+    "controlBackground": "#1D2B3A",
+    "controlBackgroundHover": "#293745",
+    "controlBackgroundPressed": "#354756",
+    "controlBackgroundActive": "#293745",
+    "controlBorder": "#293745",
+    "controlBorderHover": "#394B5E",
+    "controlBorderPressed": "#495D73",
+    "separator": "#293745",
+    "workspaceActive": "#D6D6D7",
+    "workspaceInactive": "#394B5E",
+    "borderActive": "#495D73",
+    "buttonHoverOverlay": "#222F3E",
+    "buttonBorderHover": "#394B5E",
+    "buttonBorderPressed": "#495D73",
+    "hoverOverlay": "#0AFFFFFF"
+  }
+}
