@@ -201,7 +201,7 @@ headerbar {
   color: ${FG};
   border-bottom: 1px solid ${BORDER};
   min-height: 47px;
-  padding: 0 6px;
+  padding: 0 ${SPACING_SM}px;
 }
 headerbar:backdrop {
   background-color: ${BG_HEADERBAR};
@@ -213,7 +213,10 @@ headerbar button {
   border: none;
   border-radius: ${RADIUS_SM}px;
   color: ${FG};
-  padding: 4px 8px;
+  padding: 4px 10px;
+  min-height: 24px;
+  min-width: 16px;
+  margin: 2px;
 }
 headerbar button:hover {
   background-color: ${SURFACE_HOVER};
@@ -230,6 +233,8 @@ headerbar entry {
   color: ${FG};
   border: 1px solid ${BORDER};
   border-radius: ${RADIUS_SM}px;
+  padding: 4px 10px;
+  min-height: 24px;
 }
 headerbar entry:focus {
   border-color: ${ACCENT};
@@ -533,55 +538,85 @@ tabbar > tab:checked {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Switch
+   Switch — adw-gtk3 proportions
    ═══════════════════════════════════════════════════════════════ */
 switch {
-  background-color: ${BORDER_SUBTLE};
-  border: 1px solid ${BORDER};
-  border-radius: 12px;
+  outline-offset: -4px;
+  padding: 3px;
+  border-radius: 14px;
+  background-color: alpha(currentColor,0.15);
 }
-switch:hover {
-  background-color: ${SURFACE_HOVER};
+switch:hover:not(:checked) {
+  background-color: alpha(currentColor,0.2);
 }
 switch:checked {
   background-color: ${ACCENT};
-  border-color: ${ACCENT};
+}
+switch:checked:hover {
+  background-image: image(alpha(currentColor,0.1));
 }
 switch:disabled {
-  background-color: ${SURFACE_LOW};
-  border-color: ${BORDER};
+  color: alpha(${FG},0.5);
+  border-color: transparent;
+  background-color: mix(mix(currentColor,${BG},0.73),${BG},0.3);
 }
 switch slider {
-  background-color: ${FG};
-  border: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  margin: 0;
+  min-width: 20px;
+  min-height: 20px;
+  background-color: mix(white,${BG},0.2);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-switch:checked slider {
-  background-color: ${WHITE};
+switch image {
+  color: transparent;
+}
+switch:hover slider {
+  background-color: white;
+}
+switch:checked > slider {
+  background-color: white;
+}
+switch:disabled slider {
+  background-color: mix(${BG},mix(white,${BG},0.2),0.5);
+  box-shadow: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Scale / slider
+   Scale / slider — adw-gtk3 proportions
    ═══════════════════════════════════════════════════════════════ */
+scale {
+  min-height: 10px;
+  min-width: 10px;
+  padding: 12px;
+}
+scale slider {
+  min-height: 18px;
+  min-width: 18px;
+  margin: -9px;
+  background-color: mix(white,${BG},0.2);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
 scale trough {
-  background-color: ${BORDER};
-  border-radius: 4px;
+  outline-offset: 2px;
+  background-color: alpha(currentColor,0.15);
+  border-radius: 5px;
+}
+scale horizontal trough {
   min-height: 4px;
+}
+scale vertical trough {
+  min-width: 4px;
 }
 scale trough highlight {
   background-color: ${ACCENT};
-  border-radius: 4px;
-}
-scale slider {
-  background-color: ${FG};
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  min-width: 18px;
-  min-height: 18px;
+  border-radius: 5px;
 }
 scale slider:hover {
-  background-color: ${WHITE};
+  background-color: white;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -771,32 +806,59 @@ spinbutton button:active {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Check & radio buttons
+   Check & radio buttons — adw-gtk3 proportions
    ═══════════════════════════════════════════════════════════════ */
 checkbutton, radiobutton { color: ${FG}; }
 check {
-  background-color: ${SURFACE_LOW};
-  border: 2px solid ${BORDER_SUBTLE};
-  border-radius: ${RADIUS_SM}px;
-  color: transparent;
+  margin: 0 4px;
+  padding: 1px;
+  min-height: 14px;
+  min-width: 14px;
+  border: 2px solid;
+  background-clip: padding-box;
+  background-image: image(transparent);
+  border-color: alpha(currentColor,0.15);
+  box-shadow: none;
 }
-check:hover { border-color: ${FG}; }
+check:hover:not(:checked):not(:indeterminate) {
+  border-color: alpha(currentColor,0.2);
+}
 check:checked {
+  background-clip: border-box;
   background-color: ${ACCENT};
   border-color: ${ACCENT};
   color: ${WHITE};
+}
+check:disabled {
+  color: alpha(${FG},0.5);
+  border-color: alpha(currentColor,0.15);
+  background-image: image(transparent);
 }
 radio {
-  background-color: ${SURFACE_LOW};
-  border: 2px solid ${BORDER_SUBTLE};
+  margin: 0 4px;
+  padding: 1px;
+  min-height: 14px;
+  min-width: 14px;
+  border: 2px solid;
+  background-clip: padding-box;
+  background-image: image(transparent);
+  border-color: alpha(currentColor,0.15);
   border-radius: 50%;
-  color: transparent;
+  box-shadow: none;
 }
-radio:hover { border-color: ${FG}; }
+radio:hover:not(:checked):not(:indeterminate) {
+  border-color: alpha(currentColor,0.2);
+}
 radio:checked {
+  background-clip: border-box;
   background-color: ${ACCENT};
   border-color: ${ACCENT};
   color: ${WHITE};
+}
+radio:disabled {
+  color: alpha(${FG},0.5);
+  border-color: alpha(currentColor,0.15);
+  background-image: image(transparent);
 }
 
 /* ═══════════════════════════════════════════════════════════════

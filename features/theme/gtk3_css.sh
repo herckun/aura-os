@@ -129,7 +129,7 @@ GtkHeaderBar {
   background-image: none;
   box-shadow: none;
   min-height: 46px;
-  padding: 0 6px;
+  padding: 0 ${SPACING_SM}px;
 }
 .headerbar:backdrop,
 GtkHeaderBar:backdrop {
@@ -143,8 +143,10 @@ GtkHeaderBar GtkButton {
   border: none;
   border-radius: ${RADIUS_SM}px;
   color: ${FG};
-  padding: 4px 8px;
+  padding: 4px 10px;
   min-height: 24px;
+  min-width: 16px;
+  margin: 2px;
   box-shadow: none;
   text-shadow: none;
   icon-shadow: none;
@@ -170,6 +172,8 @@ GtkHeaderBar entry {
   border-radius: ${RADIUS_SM}px;
   background-image: none;
   box-shadow: none;
+  padding: 4px 10px;
+  min-height: 24px;
 }
 .headerbar GtkEntry:focus,
 GtkHeaderBar entry:focus {
@@ -483,75 +487,178 @@ GtkToolbar button:checked, .toolbar button:checked {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Notebook / tabs
+   Notebook / tabs — adw-gtk3 style underline indicator
    ═══════════════════════════════════════════════════════════════ */
-GtkNotebook {
+GtkNotebook,
+notebook {
   background-color: ${BG_HEX};
 }
-GtkNotebook tab {
+GtkNotebook > header,
+notebook > header {
+  padding: 1px;
+  border-width: 1px;
+  background-clip: padding-box;
+  background-color: ${BG_HEX};
+  border-color: alpha(currentColor,0.15);
+}
+GtkNotebook > header > tabs,
+notebook > header > tabs {
+  margin: -1px;
+}
+GtkNotebook tab,
+notebook > header > tabs > tab {
   background-color: transparent;
   color: ${DIMMED_FG};
   border: none;
-  border-bottom: 2px solid transparent;
   border-radius: 0;
   padding: 8px 16px;
+  min-height: 24px;
 }
-GtkNotebook tab:hover {
-  background-color: ${SURFACE_HOVER_HEX};
+GtkNotebook tab:hover,
+notebook > header > tabs > tab:hover {
+  background-color: alpha(currentColor,0.07);
   color: ${FG};
 }
-GtkNotebook tab:checked {
+GtkNotebook tab:checked,
+notebook > header > tabs > tab:checked {
   background-color: transparent;
   color: ${FG};
-  border-bottom-color: ${ACCENT};
+  box-shadow: inset 0 -4px ${ACCENT};
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Switch
+   Switch — adw-gtk3 proportions
    ═══════════════════════════════════════════════════════════════ */
-switch, GtkSwitch {
-  background-color: ${BORDER_SUBTLE};
-  border: 1px solid ${BORDER};
-  border-radius: 12px;
+switch,
+GtkSwitch {
+  outline-offset: -4px;
+  padding: 3px;
+  border-radius: 14px;
+  background-color: alpha(currentColor,0.15);
 }
-switch:hover, GtkSwitch:hover {
-  background-color: ${SURFACE_HOVER_HEX};
+switch:hover:not(:checked),
+GtkSwitch:hover:not(:checked) {
+  background-color: alpha(currentColor,0.2);
 }
-switch:checked, GtkSwitch:checked {
+switch:checked,
+GtkSwitch:checked {
+  background-color: ${ACCENT};
+}
+switch:checked:hover,
+GtkSwitch:checked:hover {
+  background-image: image(alpha(currentColor,0.1));
+}
+switch:disabled,
+GtkSwitch:disabled {
+  color: alpha(${FG},0.5);
+  border-color: transparent;
+  background-color: mix(mix(currentColor,${BG_HEX},0.73),${BG_HEX},0.3);
+}
+switch slider,
+GtkSwitch GtkImage {
+  margin: 0;
+  min-width: 20px;
+  min-height: 20px;
+  background-color: mix(white,${BG_HEX},0.2);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+switch image {
+  color: transparent;
+}
+switch:hover slider {
+  background-color: white;
+}
+switch:checked > slider,
+GtkSwitch:checked > GtkImage {
+  background-color: white;
+}
+switch:disabled slider {
+  background-color: mix(${BG_HEX},mix(white,${BG_HEX},0.2),0.5);
+  box-shadow: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Check & radio — adw-gtk3 proportions
+   ═══════════════════════════════════════════════════════════════ */
+check,
+radio,
+GtkCheckButton check,
+GtkRadioButton radio {
+  margin: 0 4px;
+  padding: 1px;
+  min-height: 14px;
+  min-width: 14px;
+  border: 2px solid;
+  background-clip: padding-box;
+  background-image: image(transparent);
+  border-color: alpha(currentColor,0.15);
+  box-shadow: none;
+}
+check:hover:not(:checked):not(:indeterminate),
+radio:hover:not(:checked):not(:indeterminate) {
+  border-color: alpha(currentColor,0.2);
+}
+check:checked,
+radio:checked,
+GtkCheckButton check:checked,
+GtkRadioButton radio:checked {
+  background-clip: border-box;
   background-color: ${ACCENT};
   border-color: ${ACCENT};
+  color: ${WHITE};
 }
-switch slider, GtkSwitch GtkImage {
-  background-color: ${FG};
-  border: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-switch:checked slider, GtkSwitch:checked GtkImage {
-  background-color: ${WHITE};
+check:disabled,
+radio:disabled {
+  color: alpha(${FG},0.5);
+  border-color: alpha(currentColor,0.15);
+  background-image: image(transparent);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Scale / slider
+   Scale / slider — adw-gtk3 proportions
    ═══════════════════════════════════════════════════════════════ */
-scale trough, GtkScale trough {
-  background-color: ${BORDER};
-  border-radius: 4px;
+scale,
+GtkScale {
+  min-height: 10px;
+  min-width: 10px;
+  padding: 12px;
+}
+scale slider,
+GtkScale slider {
+  min-height: 18px;
+  min-width: 18px;
+  margin: -9px;
+  background-color: mix(white,${BG_HEX},0.2);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+scale trough,
+GtkScale trough {
+  outline-offset: 2px;
+}
+scale.horizontal trough,
+GtkScale.horizontal trough {
   min-height: 4px;
 }
-scale trough highlight, GtkScale trough highlight {
+scale.vertical trough,
+GtkScale.vertical trough {
+  min-width: 4px;
+}
+scale trough {
+  background-color: alpha(currentColor,0.15);
+  border-radius: 5px;
+}
+scale trough highlight,
+GtkScale trough highlight {
   background-color: ${ACCENT};
-  border-radius: 4px;
+  border-radius: 5px;
 }
-scale slider, GtkScale slider {
-  background-color: ${FG};
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  min-width: 18px;
-  min-height: 18px;
-}
-scale slider:hover, GtkScale slider:hover {
-  background-color: ${WHITE};
+scale slider:hover,
+GtkScale slider:hover {
+  background-color: white;
 }
 
 /* ═══════════════════════════════════════════════════════════════
