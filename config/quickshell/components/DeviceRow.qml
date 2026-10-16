@@ -19,6 +19,7 @@ Rectangle {
   property bool showSecondaryAction: false
   property string tagLabel: ""
   property string tagIcon: ""
+  property color tagTextColor: Theme.textDisabled
   property real meter: -1
   property bool busy: false
   property string busyLabel: "CONNECTING"
@@ -105,6 +106,7 @@ Rectangle {
       visible: root.tagLabel !== "" && !root.busy
       label: root.tagLabel
       icon: root.tagIcon
+      textColor: root.tagTextColor
       Layout.alignment: Qt.AlignVCenter
     }
 

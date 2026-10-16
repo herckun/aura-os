@@ -123,6 +123,74 @@ Column {
     }
   }
 
+  // ── Bluetooth audio ────────────────────────────────────────────────
+  Surface {
+    width: parent.width
+    height: btCol.implicitHeight + Theme.spaceLg * 2
+    radius: Theme.radiusMedium
+    antialiasing: true
+    border.color: Theme.border
+    padding: Theme.spaceLg
+    visible: AudioService.bluetoothConnected
+
+    Column {
+      id: btCol
+      width: parent.width
+      spacing: Theme.spaceMd
+
+      RowLayout {
+        width: parent.width
+        spacing: Theme.spaceSm
+
+        Surface {
+          Layout.preferredWidth: 36
+          Layout.preferredHeight: 36
+          level: 2
+          bordered: false
+          radius: Theme.radiusMedium
+          antialiasing: true
+
+          Icon {
+            anchors.centerIn: parent
+            source: Icons.get("bluetooth")
+            size: 16
+            color: Theme.accent
+          }
+        }
+
+        Column {
+          Layout.fillWidth: true
+          spacing: Theme.spaceXxs
+
+          Text {
+            width: parent.width
+            text: "BLUETOOTH AUDIO"
+            color: Theme.textPrimary
+            font.pixelSize: Theme.fontSizeLabel
+            font.family: Theme.fontFamilyMono
+            font.weight: Font.Bold
+            font.letterSpacing: 0.08
+          }
+
+          Text {
+            width: parent.width
+            text: AudioService.bluetoothActive ? "Active output" : "Connected"
+            color: Theme.textDisabled
+            font.pixelSize: Theme.fontSizeMicro
+            font.family: Theme.fontFamilyMono
+            elide: Text.ElideRight
+          }
+        }
+      }
+
+      Divider { width: parent.width }
+
+      BluetoothAudioRow {
+        width: parent.width
+      }
+    }
+  }
+
   // ── Mixer ──────────────────────────────────────────────────────────
   Surface {
     width: parent.width

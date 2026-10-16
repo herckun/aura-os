@@ -19,6 +19,10 @@ Item {
   property bool hoverEffect: true
   property alias label: root.text
   property string sublabel: ""
+  property string badgeIcon: ""
+  property string badgeText: ""
+  property string badgePosition: "top-right"
+  property int badgeMargin: Theme.spaceXs
 
   property string variant: "default"
   property variant size: "md"
@@ -31,6 +35,7 @@ Item {
   property color bgPressedColor: "transparent"
 
   property color iconColor: Theme.textDisplay
+  property color badgeColor: _badgeFg
   property int sizeDim: _sizePreset.dim
   property int buttonWidth: sizeDim
   property int buttonHeight: sizeDim
@@ -43,6 +48,7 @@ Item {
   property bool showBackground: false
   property bool active: false
   property alias tooltip: tooltipLabel.text
+  property int tooltipDelay: 0
   property bool labelCaps: false
   property color overlayColor: _isDefaultShape && _isAccent ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.85) :
     shape === "tile" && active ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.85) :
@@ -130,7 +136,8 @@ Item {
 
   width: implicitWidth
   height: implicitHeight
-  readonly property real tileContentHeight: Math.max(60, _tileColumn.implicitHeight + Theme.spaceSm * 2)
+  readonly property real tileContentHeight: Math.max(root.tileMinHeight, _tileColumn.implicitHeight + Theme.spaceSm * 2)
+  property real tileMinHeight: 60
 
   property int padding: _sizePreset.padding
   property int paddingX: -1
@@ -182,7 +189,34 @@ Item {
     return true
   }
 
+  // ── Badge backdrop ─────────────────────────────────────────
+  // The badge floats over the tile (accent when active, tertiary when idle),
+  // so its scrim is picked from the tile's own contrast: a dark scrim over
+  // bright tiles, a light one over dark tiles — it reads in either state
+  // instead of blending into the control background.
+  readonly property bool _badgeDarkScrim: Theme.contrastTextColor(_bgColor).r === 0
+  readonly property real _badgeScrimAlpha: !Theme.transparencyEnabled ? 1.0 :
+    (Theme.blurEnabled ? 0.45 : 0.55)
+  readonly property color _badgeBg: _badgeDarkScrim
+    ? Qt.rgba(0, 0, 0, _badgeScrimAlpha)
+    : Qt.rgba(1, 1, 1, _badgeScrimAlpha)
+  readonly property color _badgeFg: _badgeDarkScrim ? Qt.color("#FFFFFF") : Qt.color("#000000")
+
   // ── Children ───────────────────────────────────────────────
+  function _badgeX(): real {
+    var m = root.badgeMargin
+    if (root.badgePosition === "top-left" || root.badgePosition === "bottom-left") return m
+    if (root.badgePosition === "top-center" || root.badgePosition === "bottom-center")
+      return (root.width - badge.width) / 2
+    return root.width - badge.width - m
+  }
+
+  function _badgeY(): real {
+    var m = root.badgeMargin
+    if (root.badgePosition === "top-left" || root.badgePosition === "top-center" || root.badgePosition === "top-right") return m
+    return root.height - badge.height - m
+  }
+
   Item {
     id: contentLayer
     anchors.fill: parent
@@ -371,6 +405,7 @@ Item {
         font.family: Theme.fontFamilyMono
         font.letterSpacing: 0.08
         elide: Text.ElideRight
+        visible: root.text !== ""
       }
 
       Text {
@@ -406,6 +441,45 @@ Item {
         root.clicked()
       }
     }
+
+    Badge {
+      id: badge
+      z: 2
+      x: root._badgeX()
+      y: root._badgeY()
+      visible: root.badgeIcon !== "" || root.badgeText !== ""
+      size: "2xs"
+      minWidth: 16
+      paddingX: 4
+      minHeight: 12
+      variant: "default"
+      borderWidth: 0
+      bgColor: root._badgeBg
+      textColor: root.badgeColor
+      contentItem: Component {
+        Row {
+          spacing: 3
+
+          Icon {
+            anchors.verticalCenter: parent.verticalCenter
+            source: root.badgeIcon !== "" ? Icons.get(root.badgeIcon) : ""
+            size: 10
+            color: root.badgeColor
+            visible: root.badgeIcon !== ""
+          }
+
+          Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: root.badgeText
+            color: root.badgeColor
+            font.pixelSize: Theme.fontSizeMicro
+            font.family: Theme.fontFamilyMono
+            font.letterSpacing: 0.06
+            visible: root.badgeText !== ""
+          }
+        }
+      }
+    }
   }
 
   BusyOverlay {
@@ -419,8 +493,23 @@ Item {
   }
 
   HoverHandler {
+    id: tooltipHover
     enabled: root.tooltip !== ""
-    onHoveredChanged: tooltipPopup.visible = hovered && root.tooltip !== ""
+    onHoveredChanged: {
+      if (hovered && root.tooltip !== "") {
+        tooltipDelayTimer.restart()
+      } else {
+        tooltipDelayTimer.stop()
+        tooltipPopup.visible = false
+      }
+    }
+  }
+
+  Timer {
+    id: tooltipDelayTimer
+    interval: root.tooltipDelay
+    repeat: false
+    onTriggered: tooltipPopup.visible = root.tooltip !== ""
   }
 
   Popup {

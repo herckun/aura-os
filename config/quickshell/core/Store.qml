@@ -79,6 +79,8 @@ Singleton {
         property bool blur: true
         property bool transparency: true
         property bool barFloating: false
+        property string barSeparatorStyle: "divider"
+        property bool controlCenterToggleLabels: false
         property int blurAmount: 4
         property real fontScale: 1.0
         property string fontUi: ""

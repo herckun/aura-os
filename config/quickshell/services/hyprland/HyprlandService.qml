@@ -17,6 +17,7 @@ Singleton {
   property var activeWorkspace: null
   property var activeClient: null
   property int activeWsId: 1
+  property int activeSpecialWsId: -1
 
   signal monitorLayoutChanged()
 
@@ -38,7 +39,8 @@ Singleton {
     var script = "C=$(hyprctl clients -j 2>/dev/null || echo '[]'); " +
       "W=$(hyprctl workspaces -j 2>/dev/null || echo '[]'); " +
       "A=$(hyprctl activeworkspace -j 2>/dev/null || echo 'null'); " +
-      "printf '{\"clients\":%s,\"workspaces\":%s,\"active\":%s}' \"$C\" \"$W\" \"$A\""
+      "AW=$(hyprctl activewindow -j 2>/dev/null || echo 'null'); " +
+      "printf '{\"clients\":%s,\"workspaces\":%s,\"active\":%s,\"activeWin\":%s}' \"$C\" \"$W\" \"$A\" \"$AW\""
     _pollHandle = ProcessPool.runTracked("Hyprland poll", script, {
       id: "hypr-poll",
       shell: true,
@@ -52,6 +54,12 @@ Singleton {
           if (Array.isArray(data.workspaces)) svc.workspaces = data.workspaces.sort((a, b) => a.id - b.id)
           svc.activeWorkspace = data.active || null
           if (svc.activeWorkspace) svc.activeWsId = svc.activeWorkspace.id
+          var aw = data.activeWin
+          if (aw && aw.workspace && aw.workspace.id < 0) {
+            svc.activeSpecialWsId = aw.workspace.id
+          } else {
+            svc.activeSpecialWsId = -1
+          }
         } catch (e) {
         }
       }
@@ -59,7 +67,17 @@ Singleton {
   }
 
   function setWorkspace(id: int): void {
-    ProcessPool.runDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.focus({workspace=\"" + String(id) + "\"})'"])
+    if (id < 0) {
+      var name = ""
+      for (var i = 0; i < workspaces.length; i++) {
+        if (workspaces[i].id === id) { name = workspaces[i].name; break }
+      }
+      if (name) {
+        ProcessPool.runDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.focus({workspace=\"" + name + "\"})'"])
+      }
+    } else {
+      ProcessPool.runDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.focus({workspace=\"" + String(id) + "\"})'"])
+    }
   }
 
   function focusWindow(address: string): void {

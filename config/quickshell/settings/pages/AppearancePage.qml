@@ -249,6 +249,51 @@ Column {
 
   Card {
     width: parent.width
+    title: "BAR"
+    description: "How widgets are separated in the bar"
+
+    Column {
+      width: parent.width
+      spacing: 0
+
+      SettingRow {
+        width: parent.width
+        label: "SEPARATOR STYLE"
+        description: "Dividers between widgets or individual background pills"
+        OptionSwitcher {
+          options: ["DIVIDERS", "PILLS"]
+          currentIndex: AppearanceService.barSeparatorStyle === "background" ? 1 : 0
+          onSelected: (idx) => AppearanceService.setBarSeparatorStyle(idx === 0 ? "divider" : "background")
+        }
+      }
+    }
+  }
+
+  Card {
+    width: parent.width
+    title: "CONTROL CENTER"
+    description: "Layout and content of the quick toggles"
+
+    Column {
+      width: parent.width
+      spacing: 0
+
+      SettingRow {
+        width: parent.width
+        label: "TOGGLE LABELS"
+        description: "Show text labels under each quick toggle"
+        Toggle {
+          toggleWidth: 38
+          toggleHeight: 20
+          checked: AppearanceService.controlCenterToggleLabels
+          onToggled: (v) => AppearanceService.setControlCenterToggleLabels(v)
+        }
+      }
+    }
+  }
+
+  Card {
+    width: parent.width
     title: "TYPOGRAPHY"
     description: "Fonts and text size across the shell"
 

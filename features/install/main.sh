@@ -87,6 +87,7 @@ INSTALL_MODE=""     # express | expert
 NO_DEPS=false
 NO_BACKUP=false
 RESET_LAYOUT=false
+FORCE=false
 NONINTERACTIVE=false
 CONFIRM_EACH=false
 COMMUNITY_URL=""
@@ -171,6 +172,7 @@ _show_help() {
     --skip-icons         Skip icon sync
     --skip-sfx           Skip sound effects sync
     --reset-layout       Reset the plugin layout to defaults (otherwise your layout is preserved)
+    --force              Overwrite preserved config with shipped defaults (e.g. styles/theme.json)
 
 EOF
   exit 0
@@ -189,6 +191,7 @@ while [[ $# -gt 0 ]]; do
     --skip-icons)     RUN_ICONS=false; shift ;;
     --skip-sfx)       RUN_SFX=false; shift ;;
     --reset-layout)   RESET_LAYOUT=true; shift ;;
+    --force)          FORCE=true; shift ;;
     *) _err "Unknown option: $1"; exit 1 ;;
   esac
 done

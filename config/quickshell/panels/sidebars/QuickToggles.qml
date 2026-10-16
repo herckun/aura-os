@@ -35,7 +35,13 @@ Column {
       settingsPage: "audio",
       icon: function () { return AudioService.muted ? "volume-mute" : "volume" },
       isActive: function () { return !AudioService.muted },
-      toggle: function () { AudioService.toggleMute() }
+      toggle: function () { AudioService.toggleMute() },
+      badgeIcon: function () { return AudioService.bluetoothConnected ? "bluetooth" : "" },
+      badgeText: function () {
+        if (!AudioService.bluetoothConnected || AudioService.bluetoothBattery < 0) return ""
+        return AudioService.bluetoothBattery + "%"
+      },
+      badgePosition: "top-right"
     },
     {
       label: "VPN",
@@ -123,9 +129,17 @@ Column {
           Layout.fillWidth: true
           Layout.fillHeight: true
           Layout.preferredHeight: tileContentHeight
+          tileMinHeight: 44
           icon: isMore ? (root.expanded ? "chevron.up" : "chevron.down") : t.icon()
-          label: isMore ? (root.expanded ? "LESS" : "MORE") : t.label
+          label: AppearanceService.controlCenterToggleLabels
+            ? (isMore ? (root.expanded ? "LESS" : "MORE") : t.label) : ""
+          tooltip: AppearanceService.controlCenterToggleLabels
+            ? "" : (isMore ? (root.expanded ? "LESS" : "MORE") : t.label)
+          tooltipDelay: 500
           sublabel: !isMore && t.sublabel ? t.sublabel() : ""
+          badgeIcon: !isMore && t.badgeIcon ? t.badgeIcon() : ""
+          badgeText: !isMore && t.badgeText ? t.badgeText() : ""
+          badgePosition: !isMore && t.badgePosition ? t.badgePosition : "top-right"
           busy: !isMore && t.busy ? t.busy() : false
           actionId: !isMore && t.actionId ? t.actionId : ""
           active: !isMore && t.isActive()

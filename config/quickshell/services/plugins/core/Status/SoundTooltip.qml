@@ -71,11 +71,12 @@ PanelWindow {
     anchors.fill: parent
     radius: Theme.radiusLarge
     antialiasing: true
+  }
 
-    Column {
-      id: contentCol
-      anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: Theme.spaceMd }
-      spacing: Theme.spaceSm
+  Column {
+    id: contentCol
+    anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter; margins: Theme.spaceMd }
+    spacing: Theme.spaceSm
 
       // ── Title row ──────────────────────────────────
       Item {
@@ -206,6 +207,7 @@ PanelWindow {
       // ── Volume ─────────────────────────────────────
       SliderControl {
         width: parent.width
+        compact: true
         from: 0; to: 1.0
         stepSize: 0.05
         displayMin: 0; displayMax: 100
@@ -222,6 +224,7 @@ PanelWindow {
       // ── Microphone ─────────────────────────────────
       SliderControl {
         width: parent.width
+        compact: true
         visible: AudioService.sourceReady
         from: 0; to: 1.0
         stepSize: 0.05
@@ -235,7 +238,27 @@ PanelWindow {
         onMoved: (v) => AudioService.setMicVolume(v)
         onIconClicked: AudioService.toggleMicMute()
       }
-    }
+
+      // ── Bluetooth audio ────────────────────────────
+      Column {
+        width: parent.width
+        spacing: Theme.spaceXs
+        visible: AudioService.bluetoothConnected
+
+        Divider { width: parent.width }
+
+        Text {
+          text: "BLUETOOTH AUDIO"
+          color: Theme.textDisabled
+          font.pixelSize: Theme.fontSizeMicro
+          font.family: Theme.fontFamilyMono
+          font.letterSpacing: 0.08
+        }
+
+        BluetoothAudioRow {
+          width: parent.width
+        }
+      }
   }
 
   component SinkRow: Rectangle {

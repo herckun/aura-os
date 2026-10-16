@@ -55,21 +55,27 @@ BasePlugin {
   // ── Lifecycle ────────────────────────────────────────────────────
 
   // ── UI components ────────────────────────────────────────────────
+  readonly property bool _pill: AppearanceService.barSeparatorStyle === "background"
+
   property Component barComponent: Row {
-    spacing: Theme.spaceSm
+    spacing: root._pill ? Theme.spaceXs : Theme.spaceSm
 
     WorkspacesWidget { anchors.verticalCenter: parent.verticalCenter }
 
-    Divider { vertical: true; height: 18; anchors.verticalCenter: parent.verticalCenter }
-
-    Item {
+    Divider {
+      visible: !root._pill
+      vertical: true; height: 18
       anchors.verticalCenter: parent.verticalCenter
-      width: 200
-      height: 24
-      clip: true
+    }
+
+    BarItem {
+      anchors.verticalCenter: parent.verticalCenter
+      pillMode: root._pill
+      centered: false
+      width: 200 + (root._pill ? Theme.spaceSm * 2 + 16 : 0)
 
       Row {
-        anchors { left: parent.left; verticalCenter: parent.verticalCenter }
+        anchors.verticalCenter: parent.verticalCenter
         spacing: Theme.controlSpacing
 
         Text {

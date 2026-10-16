@@ -43,6 +43,7 @@ Singleton {
   property bool _ready: false
   property int _prevProfile: 1
   property real _savedBrightness: 0.7
+  property bool _savedBluetooth: false
   property var _tlpHandle: null
 
   // ═══════════════════════════════════════════════════════════════
@@ -64,13 +65,14 @@ Singleton {
   function _enterBatterySaver(): void {
     _applyTLP(2)
     svc._savedBrightness = BrightnessService.brightness
+    svc._savedBluetooth = BluetoothService.enabled
     BrightnessService.setBrightness(0.30)
     BluetoothService.setPower(false)
   }
 
   function _exitBatterySaver(): void {
     BrightnessService.setBrightness(svc._savedBrightness)
-    BluetoothService.setPower(true)
+    BluetoothService.setPower(svc._savedBluetooth)
   }
 
   // ═══════════════════════════════════════════════════════════════

@@ -17,7 +17,7 @@ BasePlugin {
     version: "1.0",
     shellVersion: "2.0",
     name: "Status",
-    description: "Sound, network, keyboard, and battery indicators",
+    description: "Sound, network, and battery indicators",
     icon: "signal",
     locations: ["bar_right"],
     defaultLayout: { "bar_right": { order: 10 } },
@@ -39,29 +39,49 @@ BasePlugin {
   // ── Lifecycle ────────────────────────────────────────────────────
 
   // ── UI components ────────────────────────────────────────────────
+  readonly property bool _pill: AppearanceService.barSeparatorStyle === "background"
+
   property Component barComponent: Row {
-    spacing: Theme.spaceSm
+    spacing: root._pill ? Theme.spaceXs : Theme.spaceSm
 
-    SoundWidget { anchors.verticalCenter: parent.verticalCenter }
+    BarItem { pillMode: root._pill; SoundWidget { } }
 
-    Divider { vertical: true; height: 18; anchors.verticalCenter: parent.verticalCenter }
-
-    NetworkWidget { anchors.verticalCenter: parent.verticalCenter }
-
-    Divider { vertical: true; height: 18; anchors.verticalCenter: parent.verticalCenter; visible: HyprlandKeyboardService.layout !== "" }
-
-    Text {
+    Divider {
+      visible: !root._pill
+      vertical: true; height: 18
       anchors.verticalCenter: parent.verticalCenter
-      text: HyprlandKeyboardService.layout ? HyprlandKeyboardService.layout.substring(0, 2).toUpperCase() : ""
-      color: Theme.textSecondary
-      font.pixelSize: Theme.fontSizeCaption
-      font.family: Theme.fontFamilyMono
-      font.letterSpacing: 0.04
-      visible: text !== ""
     }
 
-    Divider { vertical: true; height: 18; anchors.verticalCenter: parent.verticalCenter; visible: BatteryService.hasBattery }
+    BarItem { pillMode: root._pill; NetworkWidget { } }
 
-    BatteryWidget { anchors.verticalCenter: parent.verticalCenter; visible: BatteryService.hasBattery }
+    Divider {
+      visible: !root._pill && BatteryService.hasBattery
+      vertical: true; height: 18
+      anchors.verticalCenter: parent.verticalCenter
+    }
+
+    BarItem {
+      pillMode: root._pill
+      visible: BatteryService.hasBattery
+      BatteryWidget { }
+    }
+
+    Divider {
+      visible: !root._pill
+      vertical: true; height: 18
+      anchors.verticalCenter: parent.verticalCenter
+    }
+
+    BarItem {
+      pillMode: root._pill
+      Button {
+        shape: "icon"
+        anchors.centerIn: parent
+        width: 24; height: 24
+        text: "⋮"
+        showBackground: false
+        onClicked: IpcService.togglePanel("controlcenter")
+      }
+    }
   }
 }

@@ -19,6 +19,8 @@ Singleton {
   readonly property bool blurEnabled: Store.appearance.blur && !PerformanceService.batterySaver
   readonly property bool transparencyEnabled: Store.appearance.transparency && !PerformanceService.batterySaver
   readonly property bool barFloating: Store.appearance.barFloating
+  readonly property string barSeparatorStyle: Store.appearance.barSeparatorStyle || "divider"
+  readonly property bool controlCenterToggleLabels: Store.appearance.controlCenterToggleLabels
 
   readonly property bool locked: PerformanceService.batterySaver
 
@@ -46,6 +48,14 @@ Singleton {
   function setBarFloating(on: bool): void {
     if (locked) return
     Store.appearance.barFloating = on
+  }
+
+  function setBarSeparatorStyle(style: string): void {
+    Store.appearance.barSeparatorStyle = style
+  }
+
+  function setControlCenterToggleLabels(on: bool): void {
+    Store.appearance.controlCenterToggleLabels = on
   }
 
   function setBlurAmount(v: int): void {

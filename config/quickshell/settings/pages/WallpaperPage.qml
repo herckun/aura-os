@@ -208,7 +208,6 @@ Column {
                 bgHoverColor: Theme.controlBackgroundHover
                 busy: WallpaperService.downloadStatus !== ""
                 onClicked: {
-                    NotificationService.systemNotify("WALLPAPER", "Downloading random wallpaper...", 1);
                     WallpaperService.downloadRandom();
                 }
             }
@@ -225,7 +224,6 @@ Column {
                 bgHoverColor: Theme.controlBackgroundHover
                 busy: WallpaperService.downloadStatus !== ""
                 onClicked: {
-                    NotificationService.systemNotify("WALLPAPER", "Downloading random anime wallpaper...", 1);
                     WallpaperService.downloadRandomType("anime");
                 }
             }
@@ -242,7 +240,6 @@ Column {
                 bgHoverColor: Theme.controlBackgroundHover
                 busy: WallpaperService.downloadStatus !== ""
                 onClicked: {
-                    NotificationService.systemNotify("WALLPAPER", "Downloading random monochrome wallpaper...", 1);
                     WallpaperService.downloadRandomType("monochrome");
                 }
             }

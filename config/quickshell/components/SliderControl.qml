@@ -22,6 +22,7 @@ Column {
     property color criticalColor: Theme.error
     property string iconName: ""
     property color iconColor: Theme.textSecondary
+    property bool compact: false
     signal moved(real newValue)
     signal iconClicked()
 
@@ -43,7 +44,7 @@ Column {
                                                root.dangerThreshold >= 0 ? root.dangerColor : root._vn
 
     width: parent.width
-    spacing: Theme.spaceSm
+    spacing: root.compact ? Theme.spaceXs : Theme.spaceSm
 
     function displayValue(): string {
       var ratio = (root.value - root.from) / (root.to - root.from)
@@ -65,6 +66,7 @@ Column {
         return Theme.textPrimary
     }
 
+    // ── Label row ──────────────────────────────────────────────────
     Row {
         width: parent.width
 
@@ -75,8 +77,8 @@ Column {
             Button {
                 id: labelIconBtn
                 shape: "icon"
-                width: 18
-                height: 18
+                width: root.compact ? 14 : 18
+                height: root.compact ? 14 : 18
                 size: "xs"
                 showBackground: false
                 icon: root.iconName
@@ -89,7 +91,7 @@ Column {
             Text {
                 text: root.label
                 color: Theme.textSecondary
-                font.pixelSize: Theme.fontSizeCaption
+                font.pixelSize: root.compact ? Theme.fontSizeMicro : Theme.fontSizeCaption
                 font.family: Theme.fontFamilyMono
                 font.letterSpacing: 0.08
                 width: parent.width - (labelIconBtn.visible ? labelIconBtn.width + parent.spacing : 0)
@@ -101,8 +103,9 @@ Column {
         Text {
             text: root.displayValue()
             color: root.textColor()
-            font.pixelSize: Theme.fontSizeLabel
+            font.pixelSize: root.compact ? Theme.fontSizeCaption : Theme.fontSizeLabel
             font.family: Theme.fontFamilyMono
+            font.weight: Font.Bold
             width: parent.width * 0.3
             horizontalAlignment: Text.AlignRight
             anchors.verticalCenter: parent.verticalCenter
@@ -114,9 +117,10 @@ Column {
         }
     }
 
+    // ── Track ──────────────────────────────────────────────────────
     Rectangle {
         width: parent.width
-        height: 32
+        height: root.compact ? 26 : 32
         radius: Theme.radiusPill
         antialiasing: true
         color: Theme.backgroundTertiary
@@ -127,8 +131,9 @@ Column {
             id: minusBtn
             shape: "icon"
             anchors.left: parent.left
-            width: 32
+            width: root.compact ? 26 : 32
             height: parent.height
+            iconSize: root.compact ? 10 : 12
             icon: "minus"
             onClicked: {
                 root.moved(Math.max(root.from, root.value - root.stepSize))
@@ -148,8 +153,8 @@ Column {
                 anchors.right: parent.right
                 anchors.leftMargin: Theme.spaceXs
                 anchors.rightMargin: Theme.spaceXs
-                height: 6
-                radius: Theme.radiusSmall
+                height: root.compact ? 4 : 6
+                radius: Theme.radiusPill
                 antialiasing: true
                 color: Theme.border
             }
@@ -159,15 +164,15 @@ Column {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: Theme.spaceXs
-                height: 6
+                height: root.compact ? 4 : 6
                 width: Math.max(0, track.width * root._ratio)
                 clip: true
 
                 Rectangle {
                     id: fillGradient
                     width: root._hasThresholds ? track.width : fillClip.width
-                    height: 6
-                    radius: Theme.radiusSmall
+                    height: root.compact ? 4 : 6
+                    radius: Theme.radiusPill
                     antialiasing: true
                     color: root.fillColor()
 
@@ -220,8 +225,9 @@ Column {
             id: plusBtn
             shape: "icon"
             anchors.right: parent.right
-            width: 32
+            width: root.compact ? 26 : 32
             height: parent.height
+            iconSize: root.compact ? 10 : 12
             icon: "plus"
             onClicked: {
                 root.moved(Math.min(root.to, root.value + root.stepSize))

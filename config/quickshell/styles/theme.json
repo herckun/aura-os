@@ -50,6 +50,7 @@
     }
   },
   "sizes": {
+    "2xs": { "fontSize": 6, "iconSize": 6, "dim": 12, "padding": 2 },
     "xxs": { "fontSize": 6, "iconSize": 6, "dim": 14, "padding": 4 },
     "xs": { "fontSize": 7, "iconSize": 8, "dim": 18, "padding": 8 },
     "sm": { "fontSize": 10, "iconSize": 10, "dim": 22, "padding": 10 },

@@ -7,8 +7,8 @@ import "../../../../core"
 Item {
   id: root
 
-  width: contentRow.implicitWidth + 4
-  height: 30
+  implicitWidth: contentRow.implicitWidth + 4
+  implicitHeight: 22
   visible: BatteryService.hasBattery
 
   Row {

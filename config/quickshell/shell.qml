@@ -284,6 +284,7 @@ ShellRoot {
             if (appSwitchLoader.item)
                 appSwitchLoader.item.press();
         });
+
         DefaultLayoutService.init();
         AppearanceService.init();
         WallpaperService.init();

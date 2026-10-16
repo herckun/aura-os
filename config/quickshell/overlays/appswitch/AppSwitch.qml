@@ -24,6 +24,7 @@ OverlayPanel {
   property int selectedIndex: 0
   property int _windowCount: 0
   property bool _committed: false
+  property var _excludeApps: ["xwaylandvideobridge", "xwayland-display-bridge"]
 
   function press(): void {
     if (_committed) {
@@ -57,7 +58,13 @@ OverlayPanel {
   function _refreshWindows(): void {
     var clients = HyprlandService.clients
     if (!clients) { root.windows = []; root._windowCount = 0; return }
-    var sorted = clients.slice()
+    var sorted = clients.filter(function(c) {
+      var cls = (c.class || "").toLowerCase()
+      for (var i = 0; i < root._excludeApps.length; i++) {
+        if (cls === root._excludeApps[i]) return false
+      }
+      return true
+    })
     sorted.sort(function(a, b) { return (a.focusHistoryID || 0) - (b.focusHistoryID || 0) })
     root.windows = sorted
     root._windowCount = root.windows.length
@@ -203,227 +210,243 @@ OverlayPanel {
         }
       }
 
-      Row {
-        id: tilesRow
+      Item {
+        id: clipArea
         anchors.centerIn: parent
         anchors.verticalCenterOffset: 14
-        spacing: Theme.spaceLg
+        width: parent.width
+        height: parent.height
+        clip: true
 
-        Repeater {
-          model: root.windows
+        Row {
+          id: tilesRow
+          anchors.verticalCenter: parent.verticalCenter
+          spacing: Theme.spaceLg
+          x: {
+            var normalW = 210
+            var selW = 252
+            var selCenter = root.selectedIndex * (normalW + Theme.spaceLg) + selW / 2
+            return clipArea.width / 2 - selCenter
+          }
 
-          delegate: Item {
-            id: tileItem
+          Behavior on x { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
 
-            required property var modelData
-            required property int index
+          Repeater {
+            model: root.windows
 
-            property bool isSelected: index === root.selectedIndex
-            property var waylandToplevel: root._findToplevelForAddress(tileItem.modelData.address || "")
+            delegate: Item {
+              id: tileItem
 
-            width: isSelected ? 252 : 210
-            height: isSelected ? 310 : 245
-            y: isSelected ? -22 : 18
-            opacity: isSelected ? 1.0 : 0.55
+              required property var modelData
+              required property int index
 
-            Behavior on width { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
-            Behavior on height { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
-            Behavior on y { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
-            Behavior on opacity { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
+              property bool isSelected: index === root.selectedIndex
+              property var waylandToplevel: root._findToplevelForAddress(tileItem.modelData.address || "")
 
-            Rectangle {
-              visible: tileItem.isSelected
-              width: tileCard.width + 16
-              height: tileCard.height + 16
-              x: tileCard.x - 8
-              y: tileCard.y - 8
-              radius: tileCard.radius + 8
-              antialiasing: true
-              color: "transparent"
-              border.width: 1
-              border.color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.2)
-            }
+              width: isSelected ? 252 : 210
+              height: isSelected ? 310 : 245
+              y: isSelected ? -22 : 18
+              opacity: isSelected ? 1.0 : 0.55
 
-            Rectangle {
-              width: tileCard.width
-              height: tileCard.height
-              x: tileCard.x
-              y: tileCard.y + (tileItem.isSelected ? 10 : 5)
-              radius: tileCard.radius
-              antialiasing: true
-              color: Qt.rgba(0, 0, 0, tileItem.isSelected ? 0.4 : 0.1)
-              z: -1
-
+              Behavior on width { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
+              Behavior on height { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
               Behavior on y { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
-              Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
-            }
+              Behavior on opacity { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
 
-            Rectangle {
-              id: tileCard
-              anchors.fill: parent
-              radius: Theme.radiusLarge
-              antialiasing: true
-              color: Theme.backgroundSecondary
-              border.width: tileItem.isSelected ? 2 : 1
-              border.color: tileItem.isSelected ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25)
-
-              Behavior on border.color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
-
-              MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                z: 10
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                  root.selectedIndex = tileItem.index
-                  root._commitSelection()
-                }
-                onEntered: { if (!tileItem.isSelected) tileCard.border.color = Theme.controlBorderHover }
-                onExited: { if (!tileItem.isSelected) tileCard.border.color = Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25) }
+              Rectangle {
+                visible: tileItem.isSelected
+                width: tileCard.width + 16
+                height: tileCard.height + 16
+                x: tileCard.x - 8
+                y: tileCard.y - 8
+                radius: tileCard.radius + 8
+                antialiasing: true
+                color: "transparent"
+                border.width: 1
+                border.color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.2)
               }
 
-              Column {
+              Rectangle {
+                width: tileCard.width
+                height: tileCard.height
+                x: tileCard.x
+                y: tileCard.y + (tileItem.isSelected ? 10 : 5)
+                radius: tileCard.radius
+                antialiasing: true
+                color: Qt.rgba(0, 0, 0, tileItem.isSelected ? 0.4 : 0.1)
+                z: -1
+
+                Behavior on y { enabled: Theme.animationsEnabled; NumberAnimation { duration: Theme.animationNormal; easing.type: Easing.OutCubic } }
+                Behavior on color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
+              }
+
+              Rectangle {
+                id: tileCard
                 anchors.fill: parent
-                anchors.margins: Theme.spaceSm
-                spacing: Theme.spaceXs
+                radius: Theme.radiusLarge
+                antialiasing: true
+                color: Theme.backgroundSecondary
+                border.width: tileItem.isSelected ? 2 : 1
+                border.color: tileItem.isSelected ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25)
 
-                Rectangle {
-                  width: parent.width
-                  height: parent.height - 56
-                  radius: Theme.radiusMedium
-                  antialiasing: true
-                  color: Theme.background
-                  clip: true
+                Behavior on border.color { enabled: Theme.animationsEnabled; ColorAnimation { duration: Theme.animationFast } }
 
-                  Loader {
-                    anchors.fill: parent
-                    anchors.margins: 1
-                    active: tileItem.waylandToplevel !== null
-                    sourceComponent: ScreencopyView {
-                      captureSource: tileItem.waylandToplevel
-                      live: false
-                      visible: hasContent
-                      Component.onCompleted: captureFrame()
+                MouseArea {
+                  anchors.fill: parent
+                  hoverEnabled: true
+                  z: 10
+                  cursorShape: Qt.PointingHandCursor
+                  onClicked: {
+                    root.selectedIndex = tileItem.index
+                    root._commitSelection()
+                  }
+                  onEntered: { if (!tileItem.isSelected) tileCard.border.color = Theme.controlBorderHover }
+                  onExited: { if (!tileItem.isSelected) tileCard.border.color = Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25) }
+                }
+
+                Column {
+                  anchors.fill: parent
+                  anchors.margins: Theme.spaceSm
+                  spacing: Theme.spaceXs
+
+                  Rectangle {
+                    width: parent.width
+                    height: parent.height - 56
+                    radius: Theme.radiusMedium
+                    antialiasing: true
+                    color: Theme.background
+                    clip: true
+
+                    Loader {
+                      anchors.fill: parent
+                      anchors.margins: 1
+                      active: tileItem.waylandToplevel !== null
+                      sourceComponent: ScreencopyView {
+                        captureSource: tileItem.waylandToplevel
+                        live: false
+                        visible: hasContent
+                        Component.onCompleted: captureFrame()
+                      }
+                    }
+
+                    Column {
+                      anchors.centerIn: parent
+                      spacing: Theme.spaceSm
+                      visible: {
+                        var loader = parent.parent.children[1]
+                        return !loader || !loader.item || !loader.item.hasContent
+                      }
+
+                      Rectangle {
+                        width: 44; height: 44
+                        radius: Theme.radiusMedium
+                        antialiasing: true
+                        color: Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.08)
+                        border.width: 1
+                        border.color: Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.1)
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        Icon {
+                          anchors.centerIn: parent
+                          source: Icons.get("window")
+                          size: 22
+                          color: Theme.textDisabled
+                        }
+                      }
+                    }
+
+                    Rectangle {
+                      anchors.left: parent.left
+                      anchors.right: parent.right
+                      anchors.bottom: parent.bottom
+                      height: 40
+                      gradient: Gradient {
+                        GradientStop { position: 0.0; color: "transparent" }
+                        GradientStop { position: 1.0; color: Qt.rgba(Theme.backgroundSecondary.r, Theme.backgroundSecondary.g, Theme.backgroundSecondary.b, 0.9) }
+                      }
+                    }
+
+                    Rectangle {
+                      anchors.left: parent.left
+                      anchors.right: parent.right
+                      anchors.bottom: parent.bottom
+                      anchors.leftMargin: 6
+                      anchors.rightMargin: 6
+                      anchors.bottomMargin: 6
+                      height: 18
+                      radius: Theme.radiusSmall
+                      antialiasing: true
+                      color: Qt.rgba(0, 0, 0, 0.45)
+
+                      Text {
+                        anchors.centerIn: parent
+                        text: tileItem.modelData.class || "unknown"
+                        color: Qt.rgba(1, 1, 1, 0.85)
+                        font.pixelSize: 9
+                        font.family: Theme.fontFamilyMono
+                        font.weight: Font.Medium
+                        elide: Text.ElideRight
+                        width: parent.width - Theme.spaceSm * 2
+                        horizontalAlignment: Text.AlignHCenter
+                      }
                     }
                   }
 
                   Column {
-                    anchors.centerIn: parent
-                    spacing: Theme.spaceSm
-                    visible: {
-                      var loader = parent.parent.children[1]
-                      return !loader || !loader.item || !loader.item.hasContent
+                    width: parent.width
+                    spacing: 3
+
+                    Text {
+                      text: {
+                        var title = tileItem.modelData.title || ""
+                        if (title.length > 24) title = title.substring(0, 24) + "..."
+                        return title || tileItem.modelData.class || "Unknown"
+                      }
+                      color: tileItem.isSelected ? Theme.textPrimary : Theme.textSecondary
+                      font.pixelSize: Theme.fontSizeCaption
+                      font.family: Theme.fontFamily
+                      font.weight: tileItem.isSelected ? Font.DemiBold : Font.Normal
+                      horizontalAlignment: Text.AlignHCenter
+                      anchors.horizontalCenter: parent.horizontalCenter
+                      elide: Text.ElideRight
+                      width: parent.width
                     }
 
                     Rectangle {
-                      width: 44; height: 44
-                      radius: Theme.radiusMedium
+                      width: wsRow.width + Theme.spaceSm * 2
+                      height: 16
+                      radius: Theme.radiusPill
                       antialiasing: true
-                      color: Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.08)
-                      border.width: 1
-                      border.color: Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.1)
+                      color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, tileItem.isSelected ? 0.15 : 0.06)
                       anchors.horizontalCenter: parent.horizontalCenter
+                      visible: tileItem.modelData.workspace && tileItem.modelData.workspace.id !== undefined
 
-                      Icon {
+                      Row {
+                        id: wsRow
                         anchors.centerIn: parent
-                        source: Icons.get("window")
-                        size: 22
-                        color: Theme.textDisabled
-                      }
-                    }
-                  }
+                        spacing: 3
 
-                  Rectangle {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    height: 40
-                    gradient: Gradient {
-                      GradientStop { position: 0.0; color: "transparent" }
-                      GradientStop { position: 1.0; color: Qt.rgba(Theme.backgroundSecondary.r, Theme.backgroundSecondary.g, Theme.backgroundSecondary.b, 0.9) }
-                    }
-                  }
-
-                  Rectangle {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.leftMargin: 6
-                    anchors.rightMargin: 6
-                    anchors.bottomMargin: 6
-                    height: 18
-                    radius: Theme.radiusSmall
-                    antialiasing: true
-                    color: Qt.rgba(0, 0, 0, 0.45)
-
-                    Text {
-                      anchors.centerIn: parent
-                      text: tileItem.modelData.class || "unknown"
-                      color: Qt.rgba(1, 1, 1, 0.85)
-                      font.pixelSize: 9
-                      font.family: Theme.fontFamilyMono
-                      font.weight: Font.Medium
-                      elide: Text.ElideRight
-                      width: parent.width - Theme.spaceSm * 2
-                      horizontalAlignment: Text.AlignHCenter
-                    }
-                  }
-                }
-
-                Column {
-                  width: parent.width
-                  spacing: 3
-
-                  Text {
-                    text: {
-                      var title = tileItem.modelData.title || ""
-                      if (title.length > 24) title = title.substring(0, 24) + "..."
-                      return title || tileItem.modelData.class || "Unknown"
-                    }
-                    color: tileItem.isSelected ? Theme.textPrimary : Theme.textSecondary
-                    font.pixelSize: Theme.fontSizeCaption
-                    font.family: Theme.fontFamily
-                    font.weight: tileItem.isSelected ? Font.DemiBold : Font.Normal
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    elide: Text.ElideRight
-                    width: parent.width
-                  }
-
-                  Rectangle {
-                    width: wsRow.width + Theme.spaceSm * 2
-                    height: 16
-                    radius: Theme.radiusPill
-                    antialiasing: true
-                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, tileItem.isSelected ? 0.15 : 0.06)
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    visible: tileItem.modelData.workspace && tileItem.modelData.workspace.id !== undefined
-
-                    Row {
-                      id: wsRow
-                      anchors.centerIn: parent
-                      spacing: 3
-
-                      Rectangle {
-                        width: 5; height: 5
-                        radius: 3
-                        antialiasing: true
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: tileItem.isSelected ? Theme.accent : Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.4)
-                      }
-
-                      Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: {
-                          var ws = tileItem.modelData.workspace
-                          if (ws && ws.name) return ws.name
-                          if (ws && ws.id !== undefined) return "WS " + ws.id
-                          return ""
+                        Rectangle {
+                          width: 5; height: 5
+                          radius: 3
+                          antialiasing: true
+                          anchors.verticalCenter: parent.verticalCenter
+                          color: tileItem.isSelected ? Theme.accent : Qt.rgba(Theme.textDisabled.r, Theme.textDisabled.g, Theme.textDisabled.b, 0.4)
                         }
-                        color: tileItem.isSelected ? Theme.accent : Theme.textDisabled
-                        font.pixelSize: 8
-                        font.family: Theme.fontFamilyMono
-                        font.weight: Font.Bold
+
+                        Text {
+                          anchors.verticalCenter: parent.verticalCenter
+                          text: {
+                            var ws = tileItem.modelData.workspace
+                            if (ws && ws.name) return ws.name
+                            if (ws && ws.id !== undefined) return "WS " + ws.id
+                            return ""
+                          }
+                          color: tileItem.isSelected ? Theme.accent : Theme.textDisabled
+                          font.pixelSize: 8
+                          font.family: Theme.fontFamilyMono
+                          font.weight: Font.Bold
+                        }
                       }
                     }
                   }

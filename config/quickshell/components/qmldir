@@ -1,7 +1,9 @@
 module components
 Avatar 1.0 Avatar.qml
+BarItem 1.0 BarItem.qml
 Badge 1.0 Badge.qml
 BentoSwitcher 1.0 BentoSwitcher.qml
+BluetoothAudioRow 1.0 BluetoothAudioRow.qml
 BusyOverlay 1.0 BusyOverlay.qml
 ButtonGroup 1.0 ButtonGroup.qml
 Button 1.0 Button.qml

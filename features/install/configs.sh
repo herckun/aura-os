@@ -81,8 +81,12 @@ deploy_quickshell_config() {
     rm -rf "$_keep_bak"
   fi
   if [[ -n "$_theme_bak" ]]; then
-    _merge_theme_json "$CONFIG_DIR/quickshell/styles/theme.json" "$_theme_bak" \
-      || log_warn "theme.json merge failed — shipped defaults kept"
+    if [[ "${FORCE:-false}" == true ]]; then
+      log_info "theme.json: shipping defaults (user copy discarded)"
+    else
+      _merge_theme_json "$CONFIG_DIR/quickshell/styles/theme.json" "$_theme_bak" \
+        || log_warn "theme.json merge failed — shipped defaults kept"
+    fi
     rm -f "$_theme_bak"
   fi
   if [[ -n "$_themes_bak" ]]; then

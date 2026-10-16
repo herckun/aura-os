@@ -14,6 +14,10 @@ Rectangle {
   property int padding: _sizePreset.padding
   property int paddingX: -1
   property int paddingY: -1
+  property int minWidth: 28
+  property int minHeight: 20
+  // defaults to an outline on "default" variant (except xs/2xs-sized usage via override)
+  property int borderWidth: variant === "default" && size !== "xs" ? Theme.borderWidth : 0
   property Component contentItem: null
 
   readonly property var _sizePreset: {
@@ -34,24 +38,25 @@ Rectangle {
 
   implicitWidth: {
     var px = paddingX >= 0 ? paddingX : padding
+    console.log("Badge implicitWidth calculation: px = " + px + ", minWidth = " + root.minWidth)
     if (contentItem && customContent.item) {
-      return Math.max(customContent.item.implicitWidth + px * 2, 28)
+      return Math.max(customContent.item.implicitWidth + px * 2, root.minWidth)
     }
-    return Math.max(label.implicitWidth + px * 2, 28)
+    return Math.max(label.implicitWidth + px * 2, root.minWidth)
   }
   implicitHeight: {
     var py = paddingY >= 0 ? paddingY : padding
     if (contentItem && customContent.item) {
-      return Math.max(customContent.item.implicitHeight + py * 2, 20)
+      return Math.max(customContent.item.implicitHeight + py * 2, root.minHeight)
     }
-    return Math.max(label.implicitHeight + py * 2, 20)
+    return Math.max(label.implicitHeight + py * 2, root.minHeight)
   }
   width: implicitWidth
   height: implicitHeight
   radius: Theme.radiusMedium
   antialiasing: true
   color: _fb
-  border.width: variant === "default" ? (size === "xs" ? 0 : Theme.borderWidth) : 0
+  border.width: root.borderWidth
   border.color: Theme.border
 
   scale: 0.8

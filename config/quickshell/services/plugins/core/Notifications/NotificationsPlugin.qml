@@ -137,40 +137,43 @@ BasePlugin {
     }
   }
 
+  readonly property bool _pill: AppearanceService.barSeparatorStyle === "background"
+
   property Component barComponent: Row {
-    spacing: Theme.spaceSm
+    spacing: root._pill ? Theme.spaceXs : Theme.spaceSm
 
     Component.onCompleted: IpcService.registerPanel("notifications", function () { notifPopup.toggle() })
     Component.onDestruction: IpcService.unregisterPanel("notifications")
 
-    Divider { vertical: true; height: 18; anchors.verticalCenter: parent.verticalCenter }
+    Divider {
+      visible: !root._pill
+      vertical: true; height: 18
+      anchors.verticalCenter: parent.verticalCenter
+    }
 
     Item {
+      width: bellItem.width
+      height: bellItem.height
       anchors.verticalCenter: parent.verticalCenter
-      width: 24; height: 24
 
-      Button {
-        shape: "icon"
-        anchors.fill: parent
-        icon: "bell"
-        showBackground: false
-        onClicked: notifPopup.toggle()
+      BarItem {
+        id: bellItem
+        pillMode: root._pill
+        Button {
+          shape: "icon"
+          anchors.centerIn: parent
+          width: 24; height: 24
+          icon: "bell"
+          showBackground: false
+          onClicked: notifPopup.toggle()
+        }
+
+        NotificationListPopup { id: notifPopup }
       }
 
       NotificationBadge {
         anchors { top: parent.top; right: parent.right; topMargin: -2; rightMargin: -2 }
       }
-
-      NotificationListPopup { id: notifPopup }
-    }
-
-    Button {
-      shape: "icon"
-      anchors.verticalCenter: parent.verticalCenter
-      width: 24; height: 24
-      text: "⋮"
-      showBackground: false
-      onClicked: IpcService.togglePanel("controlcenter")
     }
   }
 }

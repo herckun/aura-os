@@ -71,6 +71,20 @@ hl.window_rule({
 })
 
 hl.window_rule({
+    name             = "hide-battletray",
+    match            = {
+        class = "steam_app_default",
+        title = "",
+    },
+    opacity          = 0.0,
+    no_anim          = true,
+    no_focus         = true,
+    no_initial_focus = true,
+    no_blur          = true,
+    max_size         = { 1, 1 },
+})
+
+hl.window_rule({
     name       = "dim-pavucontrol",
     match      = { class = "pavucontrol" },
     dim_around = true,
